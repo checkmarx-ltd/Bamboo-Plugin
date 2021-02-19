@@ -1,11 +1,65 @@
 package com.cx.plugin.utils;
 
-import com.atlassian.bamboo.configuration.AdministrationConfiguration;
-import com.atlassian.bamboo.configuration.ConfigurationMap;
-import com.atlassian.bamboo.task.TaskException;
-import com.atlassian.spring.container.ContainerManager;
-import com.cx.restclient.configuration.CxScanConfig;
-import org.apache.commons.lang.StringUtils;
+import static com.cx.plugin.utils.CxParam.COMMENT;
+import static com.cx.plugin.utils.CxParam.CUSTOM_CONFIGURATION_CONTROL;
+import static com.cx.plugin.utils.CxParam.CUSTOM_CONFIGURATION_CXSAST;
+import static com.cx.plugin.utils.CxParam.CUSTOM_CONFIGURATION_SERVER;
+import static com.cx.plugin.utils.CxParam.CXSAST_SECTION;
+import static com.cx.plugin.utils.CxParam.CX_ORIGIN;
+import static com.cx.plugin.utils.CxParam.CX_REPORT_LOCATION;
+import static com.cx.plugin.utils.CxParam.FILTER_PATTERN;
+import static com.cx.plugin.utils.CxParam.FOLDER_EXCLUSION;
+import static com.cx.plugin.utils.CxParam.GENERATE_PDF_REPORT;
+import static com.cx.plugin.utils.CxParam.GLOBAL_DENY_PROJECT;
+import static com.cx.plugin.utils.CxParam.GLOBAL_FILTER_PATTERN;
+import static com.cx.plugin.utils.CxParam.GLOBAL_FOLDER_EXCLUSION;
+import static com.cx.plugin.utils.CxParam.GLOBAL_HIDE_RESULTS;
+import static com.cx.plugin.utils.CxParam.GLOBAL_HIGH_THRESHOLD;
+import static com.cx.plugin.utils.CxParam.GLOBAL_IS_SYNCHRONOUS;
+import static com.cx.plugin.utils.CxParam.GLOBAL_LOW_THRESHOLD;
+import static com.cx.plugin.utils.CxParam.GLOBAL_MEDIUM_THRESHOLD;
+import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_HIGH_THRESHOLD;
+import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_LOW_THRESHOLD;
+import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_MEDIUM_THRESHOLD;
+import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_THRESHOLDS_ENABLED;
+import static com.cx.plugin.utils.CxParam.GLOBAL_POLICY_VIOLATION_ENABLED;
+import static com.cx.plugin.utils.CxParam.GLOBAL_PWD;
+import static com.cx.plugin.utils.CxParam.GLOBAL_SCAN_TIMEOUT_IN_MINUTES;
+import static com.cx.plugin.utils.CxParam.GLOBAL_SERVER_URL;
+import static com.cx.plugin.utils.CxParam.GLOBAL_THRESHOLDS_ENABLED;
+import static com.cx.plugin.utils.CxParam.GLOBAL_USER_NAME;
+import static com.cx.plugin.utils.CxParam.HIGH_THRESHOLD;
+import static com.cx.plugin.utils.CxParam.INTERVAL_BEGINS;
+import static com.cx.plugin.utils.CxParam.INTERVAL_ENDS;
+import static com.cx.plugin.utils.CxParam.IS_INCREMENTAL;
+import static com.cx.plugin.utils.CxParam.IS_INTERVALS;
+import static com.cx.plugin.utils.CxParam.IS_SYNCHRONOUS;
+import static com.cx.plugin.utils.CxParam.LOW_THRESHOLD;
+import static com.cx.plugin.utils.CxParam.MEDIUM_THRESHOLD;
+import static com.cx.plugin.utils.CxParam.OPTION_TRUE;
+import static com.cx.plugin.utils.CxParam.OSA_ARCHIVE_INCLUDE_PATTERNS;
+import static com.cx.plugin.utils.CxParam.OSA_ENABLED;
+import static com.cx.plugin.utils.CxParam.OSA_FILTER_PATTERNS;
+import static com.cx.plugin.utils.CxParam.OSA_HIGH_THRESHOLD;
+import static com.cx.plugin.utils.CxParam.OSA_INSTALL_BEFORE_SCAN;
+import static com.cx.plugin.utils.CxParam.OSA_LOW_THRESHOLD;
+import static com.cx.plugin.utils.CxParam.OSA_MEDIUM_THRESHOLD;
+import static com.cx.plugin.utils.CxParam.OSA_THRESHOLDS_ENABLED;
+import static com.cx.plugin.utils.CxParam.PASSWORD;
+import static com.cx.plugin.utils.CxParam.POLICY_VIOLATION_ENABLED;
+import static com.cx.plugin.utils.CxParam.PRESET_ID;
+import static com.cx.plugin.utils.CxParam.PRESET_NAME;
+import static com.cx.plugin.utils.CxParam.PROJECT_NAME;
+import static com.cx.plugin.utils.CxParam.SCAN_CONTROL_SECTION;
+import static com.cx.plugin.utils.CxParam.SCAN_TIMEOUT_IN_MINUTES;
+import static com.cx.plugin.utils.CxParam.SERVER_CREDENTIALS_SECTION;
+import static com.cx.plugin.utils.CxParam.SERVER_URL;
+import static com.cx.plugin.utils.CxParam.TEAM_PATH_ID;
+import static com.cx.plugin.utils.CxParam.TEAM_PATH_NAME;
+import static com.cx.plugin.utils.CxParam.THRESHOLDS_ENABLED;
+import static com.cx.plugin.utils.CxParam.USER_NAME;
+import static com.cx.plugin.utils.CxPluginUtils.decrypt;
+import static com.cx.plugin.utils.CxPluginUtils.resolveInt;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -15,9 +69,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Properties;
 
-import static com.cx.plugin.utils.CxParam.*;
-import static com.cx.plugin.utils.CxPluginUtils.decrypt;
-import static com.cx.plugin.utils.CxPluginUtils.resolveInt;
+import org.apache.commons.lang.StringUtils;
+
+import com.atlassian.bamboo.configuration.AdministrationConfiguration;
+import com.atlassian.bamboo.configuration.ConfigurationMap;
+import com.atlassian.bamboo.task.TaskException;
+import com.atlassian.spring.container.ContainerManager;
+import com.cx.restclient.configuration.CxScanConfig;
+import com.cx.restclient.dto.ScannerType;
 
 /**
  * Created by Galn on 25/10/2017.
@@ -102,7 +161,9 @@ public class CxConfigHelper {
             }
         }
         scanConfig.setGeneratePDFReport(resolveBool(configMap, GENERATE_PDF_REPORT));
-        scanConfig.setOsaEnabled(resolveBool(configMap, OSA_ENABLED));
+        if(resolveBool(configMap, OSA_ENABLED)) {
+        	scanConfig.addScannerType(ScannerType.OSA);
+        }
         scanConfig.setDisableCertificateValidation(true);
         scanConfig.setOsaArchiveIncludePatterns(configMap.get(OSA_ARCHIVE_INCLUDE_PATTERNS));
         scanConfig.setOsaFilterPattern(configMap.get(OSA_FILTER_PATTERNS));

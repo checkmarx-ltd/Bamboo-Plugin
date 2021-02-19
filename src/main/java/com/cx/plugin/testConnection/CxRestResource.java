@@ -1,23 +1,14 @@
 package com.cx.plugin.testConnection;
 
 
-import com.cx.plugin.testConnection.dto.TestConnectionResponse;
-import com.cx.plugin.utils.HttpHelper;
-import com.cx.restclient.CxShragaClient;
-import com.cx.restclient.dto.Team;
-import com.cx.restclient.sast.dto.Preset;
-import org.apache.commons.validator.routines.UrlValidator;
-import org.codehaus.plexus.util.StringUtils;
-import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static com.cx.plugin.utils.CxParam.CONNECTION_FAILED_COMPATIBILITY;
+import static com.cx.plugin.utils.CxParam.CX_ORIGIN;
+import static com.cx.plugin.utils.CxParam.NO_PRESET_ID;
+import static com.cx.plugin.utils.CxParam.NO_PRESET_MESSAGE;
+import static com.cx.plugin.utils.CxParam.NO_TEAM_MESSAGE;
+import static com.cx.plugin.utils.CxParam.NO_TEAM_PATH;
+import static com.cx.plugin.utils.CxPluginUtils.decrypt;
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Response;
 import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
@@ -25,8 +16,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.cx.plugin.utils.CxParam.*;
-import static com.cx.plugin.utils.CxPluginUtils.decrypt;
+import javax.net.ssl.HttpsURLConnection;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
+
+import org.apache.commons.validator.routines.UrlValidator;
+import org.codehaus.plexus.util.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.cx.plugin.configuration.CommonClientFactory;
+import com.cx.plugin.testConnection.dto.TestConnectionResponse;
+import com.cx.plugin.utils.HttpHelper;
+import com.cx.restclient.configuration.CxScanConfig;
+import com.cx.restclient.dto.Team;
+import com.cx.restclient.sast.dto.Preset;
+import com.cx.restclient.sast.utils.LegacyClient;
 
 /**
  * A resource of message.
@@ -36,7 +45,7 @@ public class CxRestResource {
 
     private List<Preset> presets;
     private List<Team> teams;
-    private CxShragaClient shraga;
+    private LegacyClient commonClient;
     private String result = "";
     private Logger logger = LoggerFactory.getLogger(CxRestResource.class);
 
@@ -85,11 +94,11 @@ public class CxRestResource {
         try {
             if (loginToServer(url, username, decrypt(pas))) {
                 try {
-                    teams = shraga.getTeamList();
+                    teams = commonClient.getTeamList();
                 } catch (Exception e) {
                     throw new Exception(CONNECTION_FAILED_COMPATIBILITY + "\nError: " + e.getMessage());
                 }
-                presets = shraga.getPresetList();
+                presets = commonClient.getPresetList();
                 if (presets == null || teams == null) {
                     throw new Exception("invalid preset teamPath");
                 }
@@ -128,10 +137,11 @@ public class CxRestResource {
         return new TestConnectionResponse(result, presets, teams);
     }
 
-    private boolean loginToServer(URL url, String username, String pd) {
+    private boolean loginToServer(URL url, String username, String password) {
         try {
-            shraga = new CxShragaClient(url.toString().trim(), username, pd, CX_ORIGIN, true, logger);
-            shraga.login();
+			CxScanConfig scanConfig = new CxScanConfig(url.toString().trim(), username, password, CX_ORIGIN, true);
+            commonClient = CommonClientFactory.getInstance(scanConfig, logger);
+            commonClient.login();
 
             return true;
         } catch (Exception cxClientException) {

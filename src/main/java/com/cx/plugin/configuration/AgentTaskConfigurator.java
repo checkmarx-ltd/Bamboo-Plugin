@@ -1,5 +1,95 @@
 package com.cx.plugin.configuration;
 
+import static com.cx.plugin.utils.CxParam.ADMINISTRATION_CONFIGURATION;
+import static com.cx.plugin.utils.CxParam.COMMENT;
+import static com.cx.plugin.utils.CxParam.CUSTOM_CONFIGURATION_CONTROL;
+import static com.cx.plugin.utils.CxParam.CUSTOM_CONFIGURATION_CXSAST;
+import static com.cx.plugin.utils.CxParam.CUSTOM_CONFIGURATION_SERVER;
+import static com.cx.plugin.utils.CxParam.CXSAST_SECTION;
+import static com.cx.plugin.utils.CxParam.DEFAULT_FILTER_PATTERNS;
+import static com.cx.plugin.utils.CxParam.DEFAULT_OSA_ARCHIVE_INCLUDE_PATTERNS;
+import static com.cx.plugin.utils.CxParam.ERROR_OCCURRED;
+import static com.cx.plugin.utils.CxParam.ERROR_OCCURRED_MESSAGE;
+import static com.cx.plugin.utils.CxParam.FILTER_PATTERN;
+import static com.cx.plugin.utils.CxParam.FOLDER_EXCLUSION;
+import static com.cx.plugin.utils.CxParam.GENERATE_PDF_REPORT;
+import static com.cx.plugin.utils.CxParam.GLOBAL_CONFIGURATION_CONTROL;
+import static com.cx.plugin.utils.CxParam.GLOBAL_CONFIGURATION_CXSAST;
+import static com.cx.plugin.utils.CxParam.GLOBAL_CONFIGURATION_SERVER;
+import static com.cx.plugin.utils.CxParam.GLOBAL_DENY_PROJECT;
+import static com.cx.plugin.utils.CxParam.GLOBAL_FILTER_PATTERN;
+import static com.cx.plugin.utils.CxParam.GLOBAL_FOLDER_EXCLUSION;
+import static com.cx.plugin.utils.CxParam.GLOBAL_HIDE_RESULTS;
+import static com.cx.plugin.utils.CxParam.GLOBAL_HIGH_THRESHOLD;
+import static com.cx.plugin.utils.CxParam.GLOBAL_IS_SYNCHRONOUS;
+import static com.cx.plugin.utils.CxParam.GLOBAL_LOW_THRESHOLD;
+import static com.cx.plugin.utils.CxParam.GLOBAL_MEDIUM_THRESHOLD;
+import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_HIGH_THRESHOLD;
+import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_LOW_THRESHOLD;
+import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_MEDIUM_THRESHOLD;
+import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_THRESHOLDS_ENABLED;
+import static com.cx.plugin.utils.CxParam.GLOBAL_POLICY_VIOLATION_ENABLED;
+import static com.cx.plugin.utils.CxParam.GLOBAL_PWD;
+import static com.cx.plugin.utils.CxParam.GLOBAL_SCAN_TIMEOUT_IN_MINUTES;
+import static com.cx.plugin.utils.CxParam.GLOBAL_SERVER_URL;
+import static com.cx.plugin.utils.CxParam.GLOBAL_THRESHOLDS_ENABLED;
+import static com.cx.plugin.utils.CxParam.GLOBAL_USER_NAME;
+import static com.cx.plugin.utils.CxParam.HIGH_THRESHOLD;
+import static com.cx.plugin.utils.CxParam.INTERVAL_BEGINS;
+import static com.cx.plugin.utils.CxParam.INTERVAL_BEGINS_LIST;
+import static com.cx.plugin.utils.CxParam.INTERVAL_ENDS;
+import static com.cx.plugin.utils.CxParam.INTERVAL_ENDS_LIST;
+import static com.cx.plugin.utils.CxParam.IS_INCREMENTAL;
+import static com.cx.plugin.utils.CxParam.IS_INTERVALS;
+import static com.cx.plugin.utils.CxParam.IS_SYNCHRONOUS;
+import static com.cx.plugin.utils.CxParam.LOW_THRESHOLD;
+import static com.cx.plugin.utils.CxParam.MEDIUM_THRESHOLD;
+import static com.cx.plugin.utils.CxParam.NO_PRESET;
+import static com.cx.plugin.utils.CxParam.NO_PRESET_MESSAGE;
+import static com.cx.plugin.utils.CxParam.NO_TEAM_MESSAGE;
+import static com.cx.plugin.utils.CxParam.NO_TEAM_PATH;
+import static com.cx.plugin.utils.CxParam.OPTION_FALSE;
+import static com.cx.plugin.utils.CxParam.OPTION_TRUE;
+import static com.cx.plugin.utils.CxParam.OSA_ARCHIVE_INCLUDE_PATTERNS;
+import static com.cx.plugin.utils.CxParam.OSA_ENABLED;
+import static com.cx.plugin.utils.CxParam.OSA_FILTER_PATTERNS;
+import static com.cx.plugin.utils.CxParam.OSA_HIGH_THRESHOLD;
+import static com.cx.plugin.utils.CxParam.OSA_INSTALL_BEFORE_SCAN;
+import static com.cx.plugin.utils.CxParam.OSA_LOW_THRESHOLD;
+import static com.cx.plugin.utils.CxParam.OSA_MEDIUM_THRESHOLD;
+import static com.cx.plugin.utils.CxParam.OSA_THRESHOLDS_ENABLED;
+import static com.cx.plugin.utils.CxParam.PASSWORD;
+import static com.cx.plugin.utils.CxParam.POLICY_VIOLATION_ENABLED;
+import static com.cx.plugin.utils.CxParam.PRESET_ID;
+import static com.cx.plugin.utils.CxParam.PRESET_LIST;
+import static com.cx.plugin.utils.CxParam.PRESET_NAME;
+import static com.cx.plugin.utils.CxParam.PROJECT_NAME;
+import static com.cx.plugin.utils.CxParam.SCAN_CONTROL_SECTION;
+import static com.cx.plugin.utils.CxParam.SCAN_TIMEOUT_IN_MINUTES;
+import static com.cx.plugin.utils.CxParam.SERVER_CREDENTIALS_SECTION;
+import static com.cx.plugin.utils.CxParam.SERVER_URL;
+import static com.cx.plugin.utils.CxParam.TEAM_PATH_ID;
+import static com.cx.plugin.utils.CxParam.TEAM_PATH_LIST;
+import static com.cx.plugin.utils.CxParam.TEAM_PATH_NAME;
+import static com.cx.plugin.utils.CxParam.THRESHOLDS_ENABLED;
+import static com.cx.plugin.utils.CxParam.USER_NAME;
+import static com.cx.plugin.utils.CxPluginUtils.encrypt;
+
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Created by galn
  * Date: 20/12/2016.
@@ -13,34 +103,18 @@ import com.atlassian.bamboo.utils.error.ErrorCollection;
 import com.atlassian.bamboo.ww2.actions.build.admin.config.task.ConfigureBuildTasks;
 import com.atlassian.spring.container.ContainerManager;
 import com.atlassian.util.concurrent.Nullable;
-import com.cx.restclient.CxShragaClient;
+import com.cx.restclient.configuration.CxScanConfig;
 import com.cx.restclient.dto.Team;
 import com.cx.restclient.sast.dto.Preset;
+import com.cx.restclient.sast.utils.LegacyClient;
 import com.google.common.collect.ImmutableMap;
-import org.apache.commons.lang.StringUtils;
-import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static com.cx.plugin.utils.CxParam.*;
-import static com.cx.plugin.utils.CxPluginUtils.decrypt;
-import static com.cx.plugin.utils.CxPluginUtils.encrypt;
 
 public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     private LinkedHashMap<String, String> presetList = new LinkedHashMap<String, String>();
     private LinkedHashMap<String, String> teamPathList = new LinkedHashMap<String, String>();
     private LinkedHashMap<String, String> intervalList = new LinkedHashMap<String, String>();
-    private CxShragaClient shraga = null;
+    private LegacyClient commonClient = null;
     private AdministrationConfiguration adminConfig;
 
     private final static String DEFAULT_SETTING_LABEL = "Use Global Setting";
@@ -54,6 +128,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     private Map<String, String> CONFIGURATION_MODE_TYPES_MAP_CXSAST = ImmutableMap.of(GLOBAL_CONFIGURATION_CXSAST, DEFAULT_SETTING_LABEL, CUSTOM_CONFIGURATION_CXSAST, SPECIFIC_SETTING_LABEL);
     private Map<String, String> CONFIGURATION_MODE_TYPES_MAP_CONTROL = ImmutableMap.of(GLOBAL_CONFIGURATION_CONTROL, DEFAULT_SETTING_LABEL, CUSTOM_CONFIGURATION_CONTROL, SPECIFIC_SETTING_LABEL);
     private final Logger log = LoggerFactory.getLogger(AgentTaskConfigurator.class);
+//    Logger log = Logger.getLogger(AgentTaskConfigurator.class.getName());
 
     //create task configuration
     @Override
@@ -116,7 +191,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
             //the method initialized the CxClient service
             if (tryLogin(username, password, serverUrl)) {
 
-                presetList = convertPresetToMap(shraga.getPresetList());
+                presetList = convertPresetToMap(commonClient.getPresetList());
                 context.put(PRESET_LIST, presetList);
                 if (!StringUtils.isEmpty(preset)) {
                     context.put(PRESET_ID, preset);
@@ -124,7 +199,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
                     context.put(PRESET_ID, presetList.entrySet().iterator().next());
                 }
 
-                teamPathList = convertTeamPathToMap(shraga.getTeamList());
+                teamPathList = convertTeamPathToMap(commonClient.getTeamList());
                 context.put(TEAM_PATH_LIST, teamPathList);
                 if (!StringUtils.isEmpty(teamPath)) {
                     context.put(TEAM_PATH_ID, teamPath);
@@ -295,9 +370,9 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         if (!(NO_PRESET).equals(presetId)) {
             config.put(PRESET_ID, presetId);
             if (presetList.isEmpty()) {
-                if (shraga != null || tryLogin(params.getString(USER_NAME), params.getString(PASSWORD), params.getString(SERVER_URL))) {
+                if (commonClient != null || tryLogin(params.getString(USER_NAME), params.getString(PASSWORD), params.getString(SERVER_URL))) {
                     try {
-                        Preset preset = shraga.getPresetById(Integer.parseInt(presetId));
+                        Preset preset = commonClient.getPresetById(Integer.parseInt(presetId));
                         presetName = preset.getName();
                     } catch (Exception e) {
                         presetName = "";
@@ -314,9 +389,9 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         if (!NO_TEAM_PATH.equals(teamId)) {
             config.put(TEAM_PATH_ID, teamId);
             if (teamPathList.isEmpty()) {
-                if (shraga != null || tryLogin(params.getString(USER_NAME), params.getString(PASSWORD), params.getString(SERVER_URL))) {
+                if (commonClient != null || tryLogin(params.getString(USER_NAME), params.getString(PASSWORD), params.getString(SERVER_URL))) {
                     try {
-                        teaName = shraga.getTeamNameById(teamId);
+                        teaName = commonClient.getTeamNameById(teamId);
                     } catch (Exception e) {
                         teaName = "";
                     }
@@ -396,14 +471,32 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 
         if (!StringUtils.isEmpty(serverUrl) && !StringUtils.isEmpty(username) && !StringUtils.isEmpty(cxPass)) {
             try {
-                URL cxUrl = new URL(serverUrl);
-                shraga = new CxShragaClient(cxUrl.toString().trim(), username, decrypt(cxPass), CX_ORIGIN, true, log);
-                shraga.login();
+                // TODO : SUBHADRA - Initialise the common client;
+                try {
+					CxScanConfig scanConfig = new CxScanConfig(serverUrl, username, cxPass,
+							CommonClientFactory.SCAN_ORIGIN, true);
+                    commonClient = CommonClientFactory.getInstance(scanConfig, log);
+                  //TODO : SUBHADRA to be uncommented while implementing proxy
 
+                   /* if (isProxy) {
+                        scanConfig.setProxyConfig(ProxyHelper.getProxyConfig());
+                    }*/
+                    
+                     
+                    /*if (instance != null && instance.proxy != null && isProxy && !(isCxURLinNoProxyHost(serverUrl, instance.proxy.getNoProxyHostPatterns()))) {
+                        commonClient = CommonClientFactory.getInstance(scanConfig, log);
+                    } else {
+                        commonClient = CommonClientFactory.getInstance(scanConfig, log);
+                    }*/
+                } catch (Exception e) {
+                    log.debug("Failed to init cx client " + e.getMessage(), e);
+                    commonClient = null;
+                }
+                commonClient.login();
                 return true;
             } catch (Exception e) {
                 log.debug("Failed to login to retrieve data from server. " + e.getMessage(), e);
-                shraga = null;
+                commonClient = null;
             }
         }
         return false;

@@ -43,8 +43,8 @@ public abstract class CxPluginUtils {
             log.info("CxSAST low threshold: " + (config.getSastLowThreshold() == null ? "[No Threshold]" : config.getSastLowThreshold()));
         }
         log.info("Policy violations enabled: " + config.getEnablePolicyViolations());
-        log.info("CxOSA enabled: " + config.getOsaEnabled());
-        if (config.getOsaEnabled()) {
+        log.info("CxOSA enabled: " + config.isOsaEnabled());
+        if (config.isOsaEnabled()) {
             log.info("CxOSA filter patterns: " + config.getOsaFilterPattern());
             log.info("CxOSA archive extract patterns: " + config.getOsaArchiveIncludePatterns());
             log.info("Execute dependency managers 'install packages' command before Scan: " + config.getOsaRunInstall());
@@ -65,11 +65,6 @@ public abstract class CxPluginUtils {
         log.error("********************************************");
 
         logError(ret.getGeneralException(), log);
-        logError(ret.getSastCreateException(), log);
-        logError(ret.getSastWaitException(), log);
-        logError(ret.getOsaCreateException(), log);
-        logError(ret.getOsaWaitException(), log);
-
         if (thDescription != null) {
             String[] lines = thDescription.split("\\n");
             for (String s : lines) {
