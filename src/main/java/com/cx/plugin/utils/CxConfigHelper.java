@@ -108,7 +108,10 @@ public class CxConfigHelper {
         scanConfig = new CxScanConfig();
         scanConfig.setCxOrigin(CX_ORIGIN);
         scanConfig.setSourceDir(workDir.getAbsolutePath());
-        scanConfig.setReportsDir(new File(workDir + CX_REPORT_LOCATION));
+        
+        File checkmarxBuildDir = new File(workDir + CX_REPORT_LOCATION);
+        checkmarxBuildDir.mkdir();
+        scanConfig.setReportsDir(checkmarxBuildDir);
         scanConfig.setSastEnabled(true);
         scanConfig.setDisableCertificateValidation(true);
         if (CUSTOM_CONFIGURATION_SERVER.equals(configMap.get(SERVER_CREDENTIALS_SECTION))) {

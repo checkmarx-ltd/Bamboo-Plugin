@@ -74,6 +74,7 @@ import static com.cx.plugin.utils.CxParam.TEAM_PATH_NAME;
 import static com.cx.plugin.utils.CxParam.THRESHOLDS_ENABLED;
 import static com.cx.plugin.utils.CxParam.USER_NAME;
 import static com.cx.plugin.utils.CxPluginUtils.encrypt;
+import static com.cx.plugin.utils.CxPluginUtils.decrypt;
 
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -128,7 +129,6 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     private Map<String, String> CONFIGURATION_MODE_TYPES_MAP_CXSAST = ImmutableMap.of(GLOBAL_CONFIGURATION_CXSAST, DEFAULT_SETTING_LABEL, CUSTOM_CONFIGURATION_CXSAST, SPECIFIC_SETTING_LABEL);
     private Map<String, String> CONFIGURATION_MODE_TYPES_MAP_CONTROL = ImmutableMap.of(GLOBAL_CONFIGURATION_CONTROL, DEFAULT_SETTING_LABEL, CUSTOM_CONFIGURATION_CONTROL, SPECIFIC_SETTING_LABEL);
     private final Logger log = LoggerFactory.getLogger(AgentTaskConfigurator.class);
-//    Logger log = Logger.getLogger(AgentTaskConfigurator.class.getName());
 
     //create task configuration
     @Override
@@ -471,23 +471,10 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 
         if (!StringUtils.isEmpty(serverUrl) && !StringUtils.isEmpty(username) && !StringUtils.isEmpty(cxPass)) {
             try {
-                // TODO : SUBHADRA - Initialise the common client;
                 try {
-					CxScanConfig scanConfig = new CxScanConfig(serverUrl, username, cxPass,
+					CxScanConfig scanConfig = new CxScanConfig(serverUrl, username, decrypt(cxPass),
 							CommonClientFactory.SCAN_ORIGIN, true);
                     commonClient = CommonClientFactory.getInstance(scanConfig, log);
-                  //TODO : SUBHADRA to be uncommented while implementing proxy
-
-                   /* if (isProxy) {
-                        scanConfig.setProxyConfig(ProxyHelper.getProxyConfig());
-                    }*/
-                    
-                     
-                    /*if (instance != null && instance.proxy != null && isProxy && !(isCxURLinNoProxyHost(serverUrl, instance.proxy.getNoProxyHostPatterns()))) {
-                        commonClient = CommonClientFactory.getInstance(scanConfig, log);
-                    } else {
-                        commonClient = CommonClientFactory.getInstance(scanConfig, log);
-                    }*/
                 } catch (Exception e) {
                     log.debug("Failed to init cx client " + e.getMessage(), e);
                     commonClient = null;
