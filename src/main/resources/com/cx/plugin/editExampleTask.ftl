@@ -108,6 +108,7 @@
     [@ww.textfield labelKey="projectName.label" name="projectName" required='true' descriptionKey='projectName.description' /]
     [@ww.select labelKey="preset.label" name="presetId" id="presetListId" list="presetList" listKey="key" listValue="value" multiple="false"  cssClass="long-field" descriptionKey="preset.description"/]
     [@ww.select labelKey="teamPath.label" name="teamPathId" id="teamPathListId" list="teamPathList" listKey="key" listValue="value" multiple="false"  cssClass="long-field" descriptionKey="teamPath.description"/]
+	[@ww.checkbox labelKey="enableProxy.label" name="enableProxy" descriptionKey="enableProxy.description" toggle='true' /]
 [/@ui.bambooSection]
 
 
