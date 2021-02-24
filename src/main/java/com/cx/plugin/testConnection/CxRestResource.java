@@ -31,8 +31,13 @@ import org.slf4j.LoggerFactory;
 
 import com.cx.plugin.configuration.CommonClientFactory;
 import com.cx.plugin.testConnection.dto.TestConnectionResponse;
+import com.cx.plugin.testConnection.dto.TestScaConnectionResponse;
 import com.cx.plugin.utils.HttpHelper;
+import com.cx.restclient.CxClientDelegator;
+import com.cx.restclient.ast.dto.sca.AstScaConfig;
 import com.cx.restclient.configuration.CxScanConfig;
+import com.cx.restclient.dto.ScannerType;
+import com.cx.restclient.dto.SourceLocationType;
 import com.cx.restclient.dto.Team;
 import com.cx.restclient.sast.dto.Preset;
 import com.cx.restclient.sast.utils.LegacyClient;
@@ -116,6 +121,46 @@ public class CxRestResource {
             tcResponse = getTCFailedResponse();
         }
         return Response.status(statusCode).entity(tcResponse).build();
+    }
+    
+    @POST
+    @Path("test/scaconnection")
+    @Consumes({"application/json"})
+    @Produces({"application/json"})
+    public Response testScaConnection(Map<Object, Object> data) {
+    	TestScaConnectionResponse tcResponse;
+    	 int statusCode = 400;
+			try {
+
+				String scaAccessControlUrl = StringUtils.defaultString(data.get("scaAccessControlUrl"));
+				String scaServerUrl = StringUtils.defaultString(data.get("scaServerUrl"));
+				String scaTenant = StringUtils.defaultString(data.get("scaAccountName"));
+				String username = StringUtils.defaultString(data.get("scaUserName"));
+				String pss = StringUtils.defaultString(data.get("pss"));
+
+				CxScanConfig config = new CxScanConfig();
+				config.setCxOrigin(CX_ORIGIN);
+				config.setDisableCertificateValidation(true);
+				config.setOsaGenerateJsonReport(false);
+
+				AstScaConfig scaConfig = new AstScaConfig();
+				scaConfig.setAccessControlUrl(scaAccessControlUrl);
+				scaConfig.setApiUrl(scaServerUrl);
+				scaConfig.setTenant(scaTenant);
+				scaConfig.setUsername(username);
+				scaConfig.setPassword(pss);
+				scaConfig.setSourceLocationType(SourceLocationType.LOCAL_DIRECTORY);
+				scaConfig.setRemoteRepositoryInfo(null);
+				config.setAstScaConfig(scaConfig);
+				config.addScannerType(ScannerType.AST_SCA);
+
+				CxClientDelegator commonClient = CommonClientFactory.getClientDelegatorInstance(config, logger);
+				commonClient.getScaClient().testScaConnection();
+				tcResponse =  new TestScaConnectionResponse("Connection successfull.");
+			} catch (Exception e) {				
+				tcResponse =  new TestScaConnectionResponse("Failed to login: " + e.getMessage());
+			}
+    	return Response.status(statusCode).entity(tcResponse).build();
     }
 
     private Response getInvalidUrlResponse(int statusCode) {

@@ -73,7 +73,24 @@ import static com.cx.plugin.utils.CxParam.TEAM_PATH_LIST;
 import static com.cx.plugin.utils.CxParam.TEAM_PATH_NAME;
 import static com.cx.plugin.utils.CxParam.THRESHOLDS_ENABLED;
 import static com.cx.plugin.utils.CxParam.USER_NAME;
+import static com.cx.plugin.utils.CxParam.ENABLE_DEPENDENCY_SCAN;
+import static com.cx.plugin.utils.CxParam.DEPENDENCY_SCAN_TYPE;
+import static com.cx.plugin.utils.CxParam.CXSCA_API_URL;
+import static com.cx.plugin.utils.CxParam.CXSCA_ACCESS_CONTROL_URL;
+import static com.cx.plugin.utils.CxParam.CXSCA_WEBAPP_URL;
+import static com.cx.plugin.utils.CxParam.CXSCA_ACCOUNT_NAME;
+import static com.cx.plugin.utils.CxParam.CXSCA_USE_CUSTOME_CREDENTIALS;
+import static com.cx.plugin.utils.CxParam.CXSCA_USERNAME;
+import static com.cx.plugin.utils.CxParam.CXSCA_PWD;
+import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_USERNAME;
+import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_PWD;
+import static com.cx.plugin.utils.CxParam.DEFAULT_CXSCA_API_URL;
+import static com.cx.plugin.utils.CxParam.DEFAULT_CXSCA_ACCESS_CONTROL_URL;
+import static com.cx.plugin.utils.CxParam.DEFAULT_CXSCA_WEB_APP_URL;
+
+
 import static com.cx.plugin.utils.CxPluginUtils.encrypt;
+import static com.cx.plugin.utils.CxPluginUtils.decrypt;
 
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -104,6 +121,7 @@ import com.atlassian.bamboo.ww2.actions.build.admin.config.task.ConfigureBuildTa
 import com.atlassian.spring.container.ContainerManager;
 import com.atlassian.util.concurrent.Nullable;
 import com.cx.restclient.configuration.CxScanConfig;
+import com.cx.restclient.dto.ScannerType;
 import com.cx.restclient.dto.Team;
 import com.cx.restclient.sast.dto.Preset;
 import com.cx.restclient.sast.utils.LegacyClient;
@@ -127,6 +145,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     private Map<String, String> CONFIGURATION_MODE_TYPES_MAP_SERVER = ImmutableMap.of(GLOBAL_CONFIGURATION_SERVER, DEFAULT_SETTING_LABEL, CUSTOM_CONFIGURATION_SERVER, SPECIFIC_SETTING_LABEL);
     private Map<String, String> CONFIGURATION_MODE_TYPES_MAP_CXSAST = ImmutableMap.of(GLOBAL_CONFIGURATION_CXSAST, DEFAULT_SETTING_LABEL, CUSTOM_CONFIGURATION_CXSAST, SPECIFIC_SETTING_LABEL);
     private Map<String, String> CONFIGURATION_MODE_TYPES_MAP_CONTROL = ImmutableMap.of(GLOBAL_CONFIGURATION_CONTROL, DEFAULT_SETTING_LABEL, CUSTOM_CONFIGURATION_CONTROL, SPECIFIC_SETTING_LABEL);
+    private Map<String, String> DEPENDENCY_SCAN_TYPES_MAP_DEPENDENCY_SCAN = ImmutableMap.of("OSA", "Use CxOSA dependency scanner", "AST_SCA", "Use CxSCA dependency scanner");
     private final Logger log = LoggerFactory.getLogger(AgentTaskConfigurator.class);
 //    Logger log = Logger.getLogger(AgentTaskConfigurator.class.getName());
 
@@ -137,6 +156,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         context.put("configurationModeTypesServer", CONFIGURATION_MODE_TYPES_MAP_SERVER);
         context.put("configurationModeTypesCxSAST", CONFIGURATION_MODE_TYPES_MAP_CXSAST);
         context.put("configurationModeTypesControl", CONFIGURATION_MODE_TYPES_MAP_CONTROL);
+        context.put("dependencyScanTypeValues", DEPENDENCY_SCAN_TYPES_MAP_DEPENDENCY_SCAN);
         String projectName = resolveProjectName(context);
         context.put(PROJECT_NAME, projectName);
         context.put(SERVER_URL, DEFAULT_SERVER_URL);
@@ -154,8 +174,8 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         populateScanControlFields(context, null, true);
 
         context.put(GENERATE_PDF_REPORT, OPTION_FALSE);
-        context.put(OSA_FILTER_PATTERNS, "");
-        context.put(OSA_ARCHIVE_INCLUDE_PATTERNS, DEFAULT_OSA_ARCHIVE_INCLUDE_PATTERNS);
+        populateOSA_SCA_FieldsForCreate(context);
+        		
     }
 
     private String resolveProjectName(@NotNull Map<String, Object> context) {
@@ -189,7 +209,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     private void populateTeamAndPresetFields(final String serverUrl, final String username, final String password, String preset, String teamPath, @NotNull final Map<String, Object> context) {
         try {
             //the method initialized the CxClient service
-            if (tryLogin(username, password, serverUrl)) {
+            if (tryLogin(username, decrypt(password), serverUrl)) {
 
                 presetList = convertPresetToMap(commonClient.getPresetList());
                 context.put(PRESET_LIST, presetList);
@@ -231,6 +251,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         context.put("configurationModeTypesServer", CONFIGURATION_MODE_TYPES_MAP_SERVER);
         context.put("configurationModeTypesCxSAST", CONFIGURATION_MODE_TYPES_MAP_CXSAST);
         context.put("configurationModeTypesControl", CONFIGURATION_MODE_TYPES_MAP_CONTROL);
+        context.put("dependencyScanTypeValues", DEPENDENCY_SCAN_TYPES_MAP_DEPENDENCY_SCAN);
         context.put(PROJECT_NAME, configMap.get(PROJECT_NAME));
 
         populateCredentialsFieldsForEdit(context, configMap);
@@ -248,15 +269,65 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         context.put(INTERVAL_ENDS, intervalEnds);
 
         context.put(GENERATE_PDF_REPORT, configMap.get(GENERATE_PDF_REPORT));
-        context.put(OSA_ENABLED, configMap.get(OSA_ENABLED));
-        context.put(OSA_INSTALL_BEFORE_SCAN, configMap.get(OSA_INSTALL_BEFORE_SCAN));
-        context.put(OSA_FILTER_PATTERNS, configMap.get(OSA_FILTER_PATTERNS));
-        context.put(OSA_ARCHIVE_INCLUDE_PATTERNS, configMap.get(OSA_ARCHIVE_INCLUDE_PATTERNS));
+        
+        populateOSA_SCA_FieldsForEdit(context, configMap);
 
         populateScanControlFields(context, configMap, false);
     }
 
-    private void populateCredentialsFieldsForEdit(@NotNull final Map<String, Object> context, Map<String, String> configMap) {
+    private void populateOSA_SCA_FieldsForEdit(Map<String, Object> context, Map<String, String> configMap) {
+    	
+    	boolean enableDependencyScan = Boolean.parseBoolean(configMap.get(ENABLE_DEPENDENCY_SCAN));
+        String dependencyScanType = configMap.get(DEPENDENCY_SCAN_TYPE);
+    	String osaEnabled = "false";
+    	
+        
+    	context.put(ENABLE_DEPENDENCY_SCAN, configMap.get(ENABLE_DEPENDENCY_SCAN));
+        context.put(DEPENDENCY_SCAN_TYPE, configMap.get(DEPENDENCY_SCAN_TYPE));
+        
+        if(enableDependencyScan && dependencyScanType.equalsIgnoreCase(ScannerType.OSA.toString()))
+        	osaEnabled = "true";
+        
+        context.put(OSA_ENABLED, osaEnabled);
+        context.put(OSA_INSTALL_BEFORE_SCAN, configMap.get(OSA_INSTALL_BEFORE_SCAN));
+        context.put(OSA_FILTER_PATTERNS, configMap.get(OSA_FILTER_PATTERNS));
+        context.put(OSA_ARCHIVE_INCLUDE_PATTERNS, configMap.get(OSA_ARCHIVE_INCLUDE_PATTERNS));
+		
+        context.put(CXSCA_API_URL,configMap.get(CXSCA_API_URL));
+        context.put(CXSCA_ACCESS_CONTROL_URL,configMap.get(CXSCA_ACCESS_CONTROL_URL));
+		context.put(CXSCA_WEBAPP_URL,configMap.get(CXSCA_WEBAPP_URL));
+		context.put(CXSCA_ACCOUNT_NAME,configMap.get(CXSCA_ACCOUNT_NAME));
+		
+		context.put(CXSCA_USE_CUSTOME_CREDENTIALS,configMap.get(CXSCA_USE_CUSTOME_CREDENTIALS));
+		String useCustomCredsForSCA = configMap.get(CXSCA_USE_CUSTOME_CREDENTIALS);
+		if(!StringUtils.isEmpty(useCustomCredsForSCA) && useCustomCredsForSCA.equalsIgnoreCase("true")) {
+			context.put(CXSCA_USERNAME,configMap.get(CXSCA_USERNAME));
+			context.put(CXSCA_PWD,configMap.get(CXSCA_PWD));        	
+		}else {
+			context.put(CXSCA_USERNAME,configMap.get(GLOBAL_CXSCA_USERNAME));
+			context.put(CXSCA_PWD,configMap.get(GLOBAL_CXSCA_PWD));
+		}	
+	}
+
+    private void populateOSA_SCA_FieldsForCreate(Map<String, Object> context) {
+    	
+    	context.put(ENABLE_DEPENDENCY_SCAN, OPTION_FALSE);        
+        context.put(OSA_INSTALL_BEFORE_SCAN, OPTION_FALSE);
+        context.put(OSA_FILTER_PATTERNS, "");
+        context.put(OSA_ARCHIVE_INCLUDE_PATTERNS, DEFAULT_OSA_ARCHIVE_INCLUDE_PATTERNS);
+		
+        context.put(CXSCA_API_URL,DEFAULT_CXSCA_API_URL);
+        context.put(CXSCA_ACCESS_CONTROL_URL,DEFAULT_CXSCA_ACCESS_CONTROL_URL);
+		context.put(CXSCA_WEBAPP_URL,DEFAULT_CXSCA_WEB_APP_URL);
+		context.put(CXSCA_ACCOUNT_NAME,"");
+		
+		context.put(CXSCA_USE_CUSTOME_CREDENTIALS,OPTION_TRUE);		
+		context.put(CXSCA_USERNAME,"");
+		context.put(CXSCA_PWD,"");        	
+			
+	}
+    
+	private void populateCredentialsFieldsForEdit(@NotNull final Map<String, Object> context, Map<String, String> configMap) {
         String cxServerUrl;
         String cxUser;
         String cxPass;
@@ -370,7 +441,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         if (!(NO_PRESET).equals(presetId)) {
             config.put(PRESET_ID, presetId);
             if (presetList.isEmpty()) {
-                if (commonClient != null || tryLogin(params.getString(USER_NAME), params.getString(PASSWORD), params.getString(SERVER_URL))) {
+                if (commonClient != null || tryLogin(params.getString(USER_NAME), decrypt(params.getString(PASSWORD)), params.getString(SERVER_URL))) {
                     try {
                         Preset preset = commonClient.getPresetById(Integer.parseInt(presetId));
                         presetName = preset.getName();
@@ -389,7 +460,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         if (!NO_TEAM_PATH.equals(teamId)) {
             config.put(TEAM_PATH_ID, teamId);
             if (teamPathList.isEmpty()) {
-                if (commonClient != null || tryLogin(params.getString(USER_NAME), params.getString(PASSWORD), params.getString(SERVER_URL))) {
+                if (commonClient != null || tryLogin(params.getString(USER_NAME), decrypt(params.getString(PASSWORD)), params.getString(SERVER_URL))) {
                     try {
                         teaName = commonClient.getTeamNameById(teamId);
                     } catch (Exception e) {
@@ -402,12 +473,8 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
             config.put(TEAM_PATH_NAME, teaName);
         }
 
-        config.put(OSA_ENABLED, params.getString(OSA_ENABLED));
-        config.put(OSA_FILTER_PATTERNS, params.getString(OSA_FILTER_PATTERNS));
-        config.put(OSA_ARCHIVE_INCLUDE_PATTERNS, params.getString(OSA_ARCHIVE_INCLUDE_PATTERNS));
         config.put(IS_SYNCHRONOUS, params.getString(IS_SYNCHRONOUS));
         config.put(POLICY_VIOLATION_ENABLED, params.getString(POLICY_VIOLATION_ENABLED));
-        config.put(OSA_INSTALL_BEFORE_SCAN, params.getString(OSA_INSTALL_BEFORE_SCAN));
 
         config.put(IS_INCREMENTAL, params.getString(IS_INCREMENTAL));
         config.put(IS_INTERVALS, params.getString(IS_INTERVALS));
@@ -419,6 +486,9 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 
         //save Scan Control  fields
         config = generateScanControlFields(params, config);
+        
+        //save SCA and OSA fields
+        config = generateCxOSAAndSCAFields(params, config);
 
         return config;
     }
@@ -433,6 +503,34 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         return config;
     }
 
+    private Map<String, String> generateCxOSAAndSCAFields(@NotNull final ActionParametersMap params, Map<String, String> config) {
+        
+    	final String configType = getDefaultString(params, DEPENDENCY_SCAN_TYPE);
+    	config.put(ENABLE_DEPENDENCY_SCAN, getDefaultString(params, ENABLE_DEPENDENCY_SCAN).trim());
+        config.put(DEPENDENCY_SCAN_TYPE, configType);
+        
+        config.put(OSA_INSTALL_BEFORE_SCAN, getDefaultString(params, OSA_INSTALL_BEFORE_SCAN).trim());
+        config.put(OSA_FILTER_PATTERNS, getDefaultString(params, OSA_FILTER_PATTERNS).trim());
+        config.put(OSA_ARCHIVE_INCLUDE_PATTERNS, getDefaultString(params, OSA_ARCHIVE_INCLUDE_PATTERNS).trim());
+        		
+        config.put(CXSCA_API_URL,getDefaultString(params, CXSCA_API_URL).trim());
+        config.put(CXSCA_ACCESS_CONTROL_URL,getDefaultString(params, CXSCA_ACCESS_CONTROL_URL).trim());
+        config.put(CXSCA_WEBAPP_URL,getDefaultString(params, CXSCA_WEBAPP_URL).trim());
+        config.put(CXSCA_ACCOUNT_NAME,getDefaultString(params, CXSCA_ACCOUNT_NAME).trim());
+		
+        config.put(CXSCA_USE_CUSTOME_CREDENTIALS,getDefaultString(params, CXSCA_USE_CUSTOME_CREDENTIALS).trim());		
+		String useCustomCredsForSCA = getDefaultString(params, CXSCA_USE_CUSTOME_CREDENTIALS).trim();
+		if(!StringUtils.isEmpty(useCustomCredsForSCA) && useCustomCredsForSCA.equalsIgnoreCase("true")) {
+			config.put(CXSCA_USERNAME,getDefaultString(params, CXSCA_USERNAME).trim());
+			config.put(CXSCA_PWD,getDefaultString(params, CXSCA_PWD).trim());        	
+		}else {
+			config.put(CXSCA_USERNAME,getDefaultString(params, GLOBAL_CXSCA_USERNAME).trim());
+			config.put(CXSCA_PWD,getDefaultString(params, GLOBAL_CXSCA_PWD).trim());
+		}	
+		
+        return config;
+    }
+    
     private Map<String, String> generateCxSASTFields(@NotNull final ActionParametersMap params, Map<String, String> config) {
 
         final String configType = getDefaultString(params, CXSAST_SECTION);

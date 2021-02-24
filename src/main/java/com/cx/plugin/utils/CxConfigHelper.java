@@ -58,6 +58,16 @@ import static com.cx.plugin.utils.CxParam.TEAM_PATH_ID;
 import static com.cx.plugin.utils.CxParam.TEAM_PATH_NAME;
 import static com.cx.plugin.utils.CxParam.THRESHOLDS_ENABLED;
 import static com.cx.plugin.utils.CxParam.USER_NAME;
+import static com.cx.plugin.utils.CxParam.ENABLE_DEPENDENCY_SCAN;
+import static com.cx.plugin.utils.CxParam.DEPENDENCY_SCAN_TYPE;
+import static com.cx.plugin.utils.CxParam.CXSCA_ACCESS_CONTROL_URL;
+import static com.cx.plugin.utils.CxParam.CXSCA_ACCOUNT_NAME;
+import static com.cx.plugin.utils.CxParam.CXSCA_API_URL;
+import static com.cx.plugin.utils.CxParam.CXSCA_PWD;
+import static com.cx.plugin.utils.CxParam.CXSCA_USE_CUSTOME_CREDENTIALS;
+import static com.cx.plugin.utils.CxParam.CXSCA_USERNAME;
+import static com.cx.plugin.utils.CxParam.CXSCA_WEBAPP_URL;
+
 import static com.cx.plugin.utils.CxPluginUtils.decrypt;
 import static com.cx.plugin.utils.CxPluginUtils.resolveInt;
 
@@ -75,6 +85,7 @@ import com.atlassian.bamboo.configuration.AdministrationConfiguration;
 import com.atlassian.bamboo.configuration.ConfigurationMap;
 import com.atlassian.bamboo.task.TaskException;
 import com.atlassian.spring.container.ContainerManager;
+import com.cx.restclient.ast.dto.sca.AstScaConfig;
 import com.cx.restclient.configuration.CxScanConfig;
 import com.cx.restclient.dto.ScannerType;
 
@@ -109,7 +120,8 @@ public class CxConfigHelper {
         scanConfig.setCxOrigin(CX_ORIGIN);
         scanConfig.setSourceDir(workDir.getAbsolutePath());
         scanConfig.setReportsDir(new File(workDir + CX_REPORT_LOCATION));
-        scanConfig.setSastEnabled(true);
+        //TODO changed to false to test SCA
+        scanConfig.setSastEnabled(false);
         scanConfig.setDisableCertificateValidation(true);
         if (CUSTOM_CONFIGURATION_SERVER.equals(configMap.get(SERVER_CREDENTIALS_SECTION))) {
             scanConfig.setUrl(configMap.get(SERVER_URL));
@@ -124,14 +136,18 @@ public class CxConfigHelper {
         scanConfig.setProjectName(configMap.get(PROJECT_NAME).trim());
 
         String presetId = configMap.get(PRESET_ID);
-        if (!StringUtils.isNumeric(presetId)) {
-            throw new TaskException("Invalid preset Id");
-        }
+        if(StringUtils.isEmpty(presetId))
+        	presetId="0";
+		/*
+		 * if (!StringUtils.isNumeric(presetId)) { throw new
+		 * TaskException("Invalid preset Id"); }
+		 */
 
         String teamName = configMap.get(TEAM_PATH_NAME);
-        if (StringUtils.isEmpty(teamName)) {
-            throw new TaskException("Invalid team path");
-        }
+		/*
+		 * if (StringUtils.isEmpty(teamName)) { throw new
+		 * TaskException("Invalid team path"); }
+		 */
 
         scanConfig.setPresetId(Integer.parseInt(presetId));
         scanConfig.setPresetName(StringUtils.defaultString(configMap.get(PRESET_NAME)));
@@ -161,13 +177,23 @@ public class CxConfigHelper {
             }
         }
         scanConfig.setGeneratePDFReport(resolveBool(configMap, GENERATE_PDF_REPORT));
-        if(resolveBool(configMap, OSA_ENABLED)) {
-        	scanConfig.addScannerType(ScannerType.OSA);
+        //add AST_SCA or OSA based on what user has selected
+        ScannerType scannerType = null;
+        if(resolveBool(configMap, ENABLE_DEPENDENCY_SCAN)) {
+        	if(configMap.get(DEPENDENCY_SCAN_TYPE).equalsIgnoreCase(ScannerType.AST_SCA.toString())) {        		
+        		scannerType = ScannerType.AST_SCA;
+        		scanConfig.setAstScaConfig(getScaConfig(configMap));
+        	}else {
+        		scannerType = ScannerType.OSA;
+                scanConfig.setOsaArchiveIncludePatterns(configMap.get(OSA_ARCHIVE_INCLUDE_PATTERNS));
+                scanConfig.setOsaFilterPattern(configMap.get(OSA_FILTER_PATTERNS));
+                scanConfig.setOsaRunInstall(resolveBool(configMap, OSA_INSTALL_BEFORE_SCAN));
+        	}
+        	if (scannerType != null) {
+                scanConfig.addScannerType(scannerType);
+            }
         }
         scanConfig.setDisableCertificateValidation(true);
-        scanConfig.setOsaArchiveIncludePatterns(configMap.get(OSA_ARCHIVE_INCLUDE_PATTERNS));
-        scanConfig.setOsaFilterPattern(configMap.get(OSA_FILTER_PATTERNS));
-        scanConfig.setOsaRunInstall(resolveBool(configMap, OSA_INSTALL_BEFORE_SCAN));
 
         if (CUSTOM_CONFIGURATION_CONTROL.equals(configMap.get(SCAN_CONTROL_SECTION))) {
             scanConfig.setSynchronous(resolveBool(configMap, IS_SYNCHRONOUS));
@@ -255,6 +281,19 @@ public class CxConfigHelper {
         return StringUtils.defaultString(adminConfig.getSystemProperty(key));
     }
 
+    private AstScaConfig getScaConfig(ConfigurationMap configMap) {
+		AstScaConfig result = new AstScaConfig();
+		result.setApiUrl(configMap.get(CXSCA_API_URL));
+		result.setAccessControlUrl(configMap.get(CXSCA_ACCESS_CONTROL_URL));
+		result.setWebAppUrl(configMap.get(CXSCA_WEBAPP_URL));
+		result.setTenant(configMap.get(CXSCA_ACCOUNT_NAME));
+
+		result.setUsername(configMap.get(CXSCA_USERNAME));
+		result.setPassword(configMap.get(CXSCA_PWD));
+
+		return result;
+    }
+    
     public String getPluginVersion() {
         String version = "";
         try {

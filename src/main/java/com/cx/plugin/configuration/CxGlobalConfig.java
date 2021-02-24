@@ -27,6 +27,9 @@ public class CxGlobalConfig extends GlobalAdminAction {
     private String globalUsername;
     private String globalPss;
 
+    private String globalcxScaUsername;
+    private String globalcxScaPss;
+    
     private String globalFilterPatterns = DEFAULT_FILTER_PATTERNS;
     private String globalFolderExclusions;
     private String globalIsSynchronous;
@@ -52,6 +55,9 @@ public class CxGlobalConfig extends GlobalAdminAction {
         globalUsername = adminConfig.getSystemProperty(GLOBAL_USER_NAME);
         globalPss = adminConfig.getSystemProperty(GLOBAL_PWD);
 
+        globalcxScaUsername = adminConfig.getSystemProperty(GLOBAL_CXSCA_USERNAME);
+        globalcxScaPss = adminConfig.getSystemProperty(GLOBAL_CXSCA_PWD);
+        
         globalFolderExclusions = adminConfig.getSystemProperty(GLOBAL_FOLDER_EXCLUSION);
         String filterProperty = adminConfig.getSystemProperty(GLOBAL_FILTER_PATTERN);
         if (filterProperty != null) {
@@ -99,6 +105,9 @@ public class CxGlobalConfig extends GlobalAdminAction {
         adminConfig.setSystemProperty(GLOBAL_SERVER_URL, globalServerUrl);
         adminConfig.setSystemProperty(GLOBAL_USER_NAME, globalUsername);
         adminConfig.setSystemProperty(GLOBAL_PWD, encrypt(globalPss));
+        
+        adminConfig.setSystemProperty(GLOBAL_CXSCA_USERNAME, globalcxScaUsername);
+        adminConfig.setSystemProperty(GLOBAL_CXSCA_PWD, encrypt(globalcxScaPss));
 
         adminConfig.setSystemProperty(GLOBAL_FOLDER_EXCLUSION, globalFolderExclusions);
         adminConfig.setSystemProperty(GLOBAL_FILTER_PATTERN, globalFilterPatterns);
@@ -210,7 +219,23 @@ public class CxGlobalConfig extends GlobalAdminAction {
         this.globalPss = globalPss;
     }
 
-    public String getGlobalFilterPatterns() {
+    public String getGlobalcxScaUsername() {
+		return globalcxScaUsername;
+	}
+
+	public void setGlobalcxScaUsername(String globalcxScaUsername) {
+		this.globalcxScaUsername = globalcxScaUsername;
+	}
+
+	public String getGlobalcxScaPss() {
+		return globalcxScaPss;
+	}
+
+	public void setGlobalcxScaPss(String globalcxScaPss) {
+		this.globalcxScaPss = globalcxScaPss;
+	}
+
+	public String getGlobalFilterPatterns() {
         return globalFilterPatterns;
     }
 

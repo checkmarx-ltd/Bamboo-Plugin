@@ -97,6 +97,11 @@
         [@ww.textfield labelKey="scanTimeoutInMinutes.label" name="globalScanTimeoutInMinutes" required='false'/]
     [/@ui.bambooSection]
 
+    [@ui.bambooSection title='Checkmarx SCA Server' cssClass="cx center"]        
+        [@ww.textfield labelKey="cxScaGlobalUsername.label" name="globalcxScaUsername"/]
+        [@ww.password labelKey="cxScaGlobalPassword.label" name="globalcxScaPss" showPassword='true' /]
+	[/@ui.bambooSection]
+        
     [@ui.bambooSection title='Control Checkmarx Scan' cssClass="cx center"]
 
         [@ww.checkbox labelKey="isSynchronous.label" name="globalIsSynchronous" descriptionKey="isSynchronous.description" toggle='true' /]
