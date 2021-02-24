@@ -33,6 +33,7 @@ public class CxGlobalConfig extends GlobalAdminAction {
     private String globalFilterPatterns = DEFAULT_FILTER_PATTERNS;
     private String globalFolderExclusions;
     private String globalIsSynchronous;
+    private String globalEnableProxy;
     private String globalEnablePolicyViolations;
     private String globalScanTimeoutInMinutes;
     private String globalThresholdsEnabled;
@@ -66,6 +67,7 @@ public class CxGlobalConfig extends GlobalAdminAction {
 
         globalScanTimeoutInMinutes = adminConfig.getSystemProperty(GLOBAL_SCAN_TIMEOUT_IN_MINUTES);
         globalIsSynchronous = adminConfig.getSystemProperty(GLOBAL_IS_SYNCHRONOUS);
+        globalEnableProxy=adminConfig.getSystemProperty(GLOBAL_ENABLE_PROXY);
         globalHideResults = adminConfig.getSystemProperty(GLOBAL_HIDE_RESULTS);
         globalEnablePolicyViolations = adminConfig.getSystemProperty(GLOBAL_POLICY_VIOLATION_ENABLED);
         globalThresholdsEnabled = adminConfig.getSystemProperty(GLOBAL_THRESHOLDS_ENABLED);
@@ -114,6 +116,7 @@ public class CxGlobalConfig extends GlobalAdminAction {
         adminConfig.setSystemProperty(GLOBAL_SCAN_TIMEOUT_IN_MINUTES, globalScanTimeoutInMinutes);
 
         adminConfig.setSystemProperty(GLOBAL_IS_SYNCHRONOUS, globalIsSynchronous);
+        adminConfig.setSystemProperty(GLOBAL_ENABLE_PROXY, globalEnableProxy);
         if (globalIsSynchronous == null) {
             globalThresholdsEnabled = null;
             globalOsaThresholdsEnabled = null;
@@ -254,8 +257,17 @@ public class CxGlobalConfig extends GlobalAdminAction {
     public String getGlobalIsSynchronous() {
         return globalIsSynchronous;
     }
+    
 
-    public String getGlobalEnablePolicyViolations() {
+    public String getGlobalEnableProxy() {
+		return globalEnableProxy;
+	}
+
+	public void setGlobalEnableProxy(String globalEnableProxy) {
+		this.globalEnableProxy = globalEnableProxy;
+	}
+
+	public String getGlobalEnablePolicyViolations() {
         return globalEnablePolicyViolations;
     }
 

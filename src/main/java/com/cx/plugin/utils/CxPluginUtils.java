@@ -3,6 +3,7 @@ package com.cx.plugin.utils;
 import com.atlassian.bamboo.security.EncryptionException;
 import com.atlassian.bamboo.security.EncryptionServiceImpl;
 import com.cx.restclient.configuration.CxScanConfig;
+import com.cx.restclient.dto.ProxyConfig;
 import com.cx.restclient.dto.ScanResults;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -56,6 +57,25 @@ public abstract class CxPluginUtils {
                 log.info("CxOSA low threshold: " + (config.getOsaLowThreshold() == null ? "[No Threshold]" : config.getOsaLowThreshold()));
             }
         }
+        log.info("---------------------------Proxy Configuration----------------------");
+        if(config.isProxy()){
+        ProxyConfig proxy = config.getProxyConfig();
+        String proxyHost =proxy.getHost();
+        int port=proxy.getPort();
+        String userName=proxy.getUsername();
+        String password= proxy.getPassword();
+        
+        if(!proxyHost.isEmpty()&&proxyHost!=""){
+        	log.info("ProxyHost --"+proxyHost);
+        	log.info("Proxy Port --"+port);
+        	log.info("Proxy Username"+userName);
+        	}else{
+        		log.info("Proxy Enabled but proxy is not configured");
+        	}
+        }else{
+        	log.info("Proxy is not enabled");
+        }
+        
         log.info("------------------------------------------------------------------------------------------");
     }
 
