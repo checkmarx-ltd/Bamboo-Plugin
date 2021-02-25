@@ -139,6 +139,11 @@ public class CxConfigHelper {
         proxy.setPassword(HTTP_PASSWORD);
         proxy.setUseHttps(false);
         scanConfig.setProxyConfig(proxy);
+        log.debug("Proxy configuration:");
+        log.debug("Proxy host: " + HTTP_HOST);
+        log.debug("Proxy port: " + port);
+        log.debug("Proxy user: " + HTTP_USERNAME);
+        log.debug("Proxy password: *************");
         }else if(!HTTPS_HOST.isEmpty() && HTTPS_HOST!=""){
         	port=Integer.parseInt(HTTPS_PORT);
             ProxyConfig proxy= new ProxyConfig();
@@ -148,6 +153,11 @@ public class CxConfigHelper {
             proxy.setPassword(HTTPS_PASSWORD);
             proxy.setUseHttps(true);
             scanConfig.setProxyConfig(proxy);
+            log.debug("Proxy configuration:");
+            log.debug("Proxy host: " + HTTPS_HOST);
+            log.debug("Proxy port: " + port);
+            log.debug("Proxy user: " + HTTPS_USERNAME);
+            log.debug("Proxy password: *************");
         }else{
         	ProxyConfig proxy= new ProxyConfig();
         	scanConfig.setProxyConfig(proxy);

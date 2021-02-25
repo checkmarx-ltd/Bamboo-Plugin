@@ -220,7 +220,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
                 context.put(TEAM_PATH_LIST, noTeams);
             }
         } catch (Exception e) {
-            log.warn("Exception caught during populateTeamAndPresetFields: '" + e.getMessage() + "'", e);
+            log.error("Exception caught during populateTeamAndPresetFields: '" + e.getMessage() + "'", e);
         }
     }
 
