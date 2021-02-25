@@ -86,7 +86,7 @@
         [@ww.textfield labelKey="serverUrl.label" name="globalServerUrl"/]
         [@ww.textfield labelKey="username.label" name="globalUsername"/]
         [@ww.password labelKey="password.label" name="globalPss" showPassword='true' /]
-
+		[@ww.checkbox labelKey="globalEnableProxy.label" name="globalEnableProxy" descriptionKey="globalEnableProxy.description" toggle='true' /]
     <button type="button" class="aui-button test-connection" id="g_test_connection" onclick="connectToServer()">Connect to Server</button>
     <div id="gtestConnectionMessage" class="test-connection-message"></div>
     [/@ui.bambooSection]

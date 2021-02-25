@@ -2,6 +2,7 @@ package com.cx.plugin.configuration;
 
 import static com.cx.plugin.utils.CxParam.ADMINISTRATION_CONFIGURATION;
 import static com.cx.plugin.utils.CxParam.COMMENT;
+import static com.cx.plugin.utils.CxParam.ENABLE_PROXY;
 import static com.cx.plugin.utils.CxParam.CUSTOM_CONFIGURATION_CONTROL;
 import static com.cx.plugin.utils.CxParam.CUSTOM_CONFIGURATION_CXSAST;
 import static com.cx.plugin.utils.CxParam.CUSTOM_CONFIGURATION_SERVER;
@@ -20,6 +21,7 @@ import static com.cx.plugin.utils.CxParam.GLOBAL_DENY_PROJECT;
 import static com.cx.plugin.utils.CxParam.GLOBAL_FILTER_PATTERN;
 import static com.cx.plugin.utils.CxParam.GLOBAL_FOLDER_EXCLUSION;
 import static com.cx.plugin.utils.CxParam.GLOBAL_HIDE_RESULTS;
+import static com.cx.plugin.utils.CxParam.GLOBAL_ENABLE_PROXY;
 import static com.cx.plugin.utils.CxParam.GLOBAL_HIGH_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.GLOBAL_IS_SYNCHRONOUS;
 import static com.cx.plugin.utils.CxParam.GLOBAL_LOW_THRESHOLD;
@@ -73,6 +75,7 @@ import static com.cx.plugin.utils.CxParam.TEAM_PATH_LIST;
 import static com.cx.plugin.utils.CxParam.TEAM_PATH_NAME;
 import static com.cx.plugin.utils.CxParam.THRESHOLDS_ENABLED;
 import static com.cx.plugin.utils.CxParam.USER_NAME;
+
 import static com.cx.plugin.utils.CxPluginUtils.encrypt;
 import static com.cx.plugin.utils.CxPluginUtils.decrypt;
 
@@ -140,11 +143,11 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         String projectName = resolveProjectName(context);
         context.put(PROJECT_NAME, projectName);
         context.put(SERVER_URL, DEFAULT_SERVER_URL);
-
+        context.put(ENABLE_PROXY,getAdminConfig(GLOBAL_ENABLE_PROXY));
         populateCredentialsFieldsForCreate(context);
 
         populateCxSASTFields(context, null, true);
-
+        //context.put(ENABLE_PROXY, OPTION_FALSE);
         context.put(IS_INCREMENTAL, OPTION_FALSE);
         context.put(IS_INTERVALS, OPTION_FALSE);
         populateIntervals(context);
@@ -237,6 +240,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 
         populateCxSASTFields(context, configMap, false);
         context.put(IS_INCREMENTAL, configMap.get(IS_INCREMENTAL));
+        context.put(ENABLE_PROXY, configMap.get(ENABLE_PROXY));
         final String isIntervals = configMap.get(IS_INTERVALS);
         context.put(IS_INTERVALS, isIntervals);
         populateIntervals(context);
@@ -362,7 +366,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 
         config.put(PROJECT_NAME, getDefaultString(params, PROJECT_NAME).trim());
         config.put(GENERATE_PDF_REPORT, params.getString(GENERATE_PDF_REPORT));
-
+        config.put(ENABLE_PROXY,params.getString(ENABLE_PROXY));
         String presetId = params.getString(PRESET_ID);
         String presetName = "";
 

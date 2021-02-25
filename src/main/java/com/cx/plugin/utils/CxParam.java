@@ -10,6 +10,8 @@ import java.io.File;
 public class CxParam {
     public static final String CX_REPORT_LOCATION = File.separator + "Checkmarx" + File.separator + "Reports";
 
+    public static final String ENABLE_PROXY= "enableProxy";
+    public static final String GLOBAL_ENABLE_PROXY= "globalEnableProxy";
     public static final String CX_ORIGIN = "Bamboo";
     public static final String USER_NAME = "username";
     public static final String PASSWORD = "password";
@@ -19,6 +21,7 @@ public class CxParam {
     public static final String PRESET_NAME = "presetName";
     public static final String PRESET_LIST = "presetList";
     public static final String TEAM_PATH_ID = "teamPathId";
+    
     public static final String TEAM_PATH_NAME = "teamPathName";
     public static final String TEAM_PATH_LIST = "teamPathList";
     public static final String FOLDER_EXCLUSION = "folderExclusions";

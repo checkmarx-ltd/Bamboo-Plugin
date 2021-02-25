@@ -32,6 +32,7 @@ import static com.cx.plugin.utils.CxParam.HIGH_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.INTERVAL_BEGINS;
 import static com.cx.plugin.utils.CxParam.INTERVAL_ENDS;
 import static com.cx.plugin.utils.CxParam.IS_INCREMENTAL;
+import static com.cx.plugin.utils.CxParam.ENABLE_PROXY;
 import static com.cx.plugin.utils.CxParam.IS_INTERVALS;
 import static com.cx.plugin.utils.CxParam.IS_SYNCHRONOUS;
 import static com.cx.plugin.utils.CxParam.LOW_THRESHOLD;
@@ -83,6 +84,7 @@ import com.atlassian.bamboo.task.TaskException;
 import com.atlassian.bamboo.v2.build.BuildContext;
 import com.atlassian.spring.container.ContainerManager;
 import com.cx.restclient.configuration.CxScanConfig;
+import com.cx.restclient.dto.ProxyConfig;
 import com.cx.restclient.dto.ScannerType;
 
 /**
@@ -96,6 +98,16 @@ public class CxConfigHelper {
     private String intervalBegins;
     private String intervalEnds;
     private CxLoggerAdapter log;
+
+    public static final String HTTP_HOST = System.getProperty("http.proxyHost");
+    public static final String HTTP_PORT = System.getProperty("http.proxyPort");
+    public static final String HTTP_USERNAME = System.getProperty("http.proxyUser");
+    public static final String HTTP_PASSWORD = System.getProperty("http.proxyPassword");
+
+    public static final String HTTPS_HOST = System.getProperty("https.proxyHost");
+    public static final String HTTPS_PORT = System.getProperty("https.proxyPort");
+    public static final String HTTPS_USERNAME = System.getProperty("https.proxyUser");
+    public static final String HTTPS_PASSWORD = System.getProperty("https.proxyPassword");
 
     public CxConfigHelper(CxLoggerAdapter log) {
         this.log = log;
@@ -113,6 +125,36 @@ public class CxConfigHelper {
         }
 
         scanConfig = new CxScanConfig();
+        //adding proxy details 
+        boolean isProxy=resolveBool(configMap, ENABLE_PROXY);
+        scanConfig.setProxy(isProxy);
+        if(isProxy){
+        int port =0;
+        if(!HTTP_HOST.isEmpty() && HTTP_HOST!=""){
+        port=Integer.parseInt(HTTP_PORT);
+        ProxyConfig proxy= new ProxyConfig();
+        proxy.setHost(HTTP_HOST);
+        proxy.setPort(port);
+        proxy.setUsername(HTTP_USERNAME);
+        proxy.setPassword(HTTP_PASSWORD);
+        proxy.setUseHttps(false);
+        scanConfig.setProxyConfig(proxy);
+        }else if(!HTTPS_HOST.isEmpty() && HTTPS_HOST!=""){
+        	port=Integer.parseInt(HTTPS_PORT);
+            ProxyConfig proxy= new ProxyConfig();
+            proxy.setHost(HTTPS_HOST);
+            proxy.setPort(port);
+            proxy.setUsername(HTTPS_USERNAME);
+            proxy.setPassword(HTTPS_PASSWORD);
+            proxy.setUseHttps(true);
+            scanConfig.setProxyConfig(proxy);
+        }else{
+        	ProxyConfig proxy= new ProxyConfig();
+        	scanConfig.setProxyConfig(proxy);
+        }
+        }
+        
+        
         scanConfig.setCxOrigin(CX_ORIGIN);
         Map<String, String> env = System.getenv();
         String originUrl = getCxOriginUrl(adminConfig, taskContext);
