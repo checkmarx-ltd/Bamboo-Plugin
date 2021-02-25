@@ -59,11 +59,11 @@ public class CheckmarxTask implements TaskType {
                     }
                 }
             }
-            int i = 0;
+            int i = 7;
             log.info(" CHANGES COMING IN PLACE ------------------  " + " i " + i);
             //resolve configuration
             CxConfigHelper configHelper = new CxConfigHelper(log);
-            CxScanConfig config = configHelper.resolveConfigurationMap(taskContext.getConfigurationMap(), taskContext.getWorkingDirectory());
+            CxScanConfig config = configHelper.resolveConfigurationMap(taskContext.getConfigurationMap(), taskContext.getWorkingDirectory(), taskContext);
             CxClientDelegator delegator = CommonClientFactory.getClientDelegatorInstance(config, log);
 
             //print configuration
@@ -81,10 +81,6 @@ public class CheckmarxTask implements TaskType {
             	commonClient = CommonClientFactory.getInstance(config, log);
                 ScanResults initResults = delegator.init();
                 results.add(initResults);
-                
-//                String summaryStr = delegator.generateHTMLSummary(initResults);
-//                ret.getSummary().put(HTML_REPORT, summaryStr);
-                
             } catch (Exception ex) {
                 if (ex.getMessage().contains("Server is unavailable")) {
                     try {
@@ -98,7 +94,6 @@ public class CheckmarxTask implements TaskType {
                 throw new TaskException(ex.getMessage());
             }
             if (config.isOsaEnabled()) {
-                //---------------------------
                 //we do this in order to redirect the logs from the filesystem agent component to the build console
                 String appenderName = "cxAppender_" + buildContext.getBuildKey().getKey();
                 Logger.getRootLogger().addAppender(new CxAppender(taskContext.getBuildLogger(), appenderName));
@@ -106,9 +101,6 @@ public class CheckmarxTask implements TaskType {
 
             ScanResults createScanResults = delegator.initiateScan();
             results.add(createScanResults);
-            
-//            String summaryStr = delegator.generateHTMLSummary(createScanResults);
-//            ret.getSummary().put(HTML_REPORT,summaryStr);
             
             //Asynchronous MODE
             if (!config.getSynchronous()) {
@@ -126,8 +118,6 @@ public class CheckmarxTask implements TaskType {
             }
             ScanResults scanResults = config.getSynchronous() ? delegator.waitForScanResults() : delegator.getLatestScanResults();
             results.add(scanResults);
-//            String scanSummaryStr = SummaryUtils.generateSummary(ret.getSastResults(), ret.getOsaResults(), ret.getScaResults(), config);
-//            ret.getSummary().put(HTML_REPORT, scanSummaryStr);
             
             if (config.getSynchronous() && config.isSastEnabled() &&
                     ((createScanResults.getSastResults() != null && createScanResults.getSastResults().getException() != null && createScanResults.getSastResults().getScanId() > 0) || (scanResults.getSastResults() != null && scanResults.getSastResults().getException() != null))) {

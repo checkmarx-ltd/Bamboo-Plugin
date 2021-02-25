@@ -62,18 +62,25 @@ import static com.cx.plugin.utils.CxPluginUtils.decrypt;
 import static com.cx.plugin.utils.CxPluginUtils.resolveInt;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
+import java.net.URLDecoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 
 import com.atlassian.bamboo.configuration.AdministrationConfiguration;
 import com.atlassian.bamboo.configuration.ConfigurationMap;
+import com.atlassian.bamboo.resultsummary.ResultsSummary;
+import com.atlassian.bamboo.resultsummary.ResultsSummaryCriteria;
+import com.atlassian.bamboo.task.TaskContext;
 import com.atlassian.bamboo.task.TaskException;
+import com.atlassian.bamboo.v2.build.BuildContext;
 import com.atlassian.spring.container.ContainerManager;
 import com.cx.restclient.configuration.CxScanConfig;
 import com.cx.restclient.dto.ScannerType;
@@ -94,7 +101,7 @@ public class CxConfigHelper {
         this.log = log;
     }
 
-    public CxScanConfig resolveConfigurationMap(ConfigurationMap configMap, File workDir) throws TaskException {
+    public CxScanConfig resolveConfigurationMap(ConfigurationMap configMap, File workDir, TaskContext taskContext) throws TaskException {
         log.info("Resolving Cx configuration");
 
         Object a = ContainerManager.getComponent("administrationConfigurationAccessor");
@@ -107,6 +114,18 @@ public class CxConfigHelper {
 
         scanConfig = new CxScanConfig();
         scanConfig.setCxOrigin(CX_ORIGIN);
+        Map<String, String> env = System.getenv();
+        String originUrl = getCxOriginUrl(adminConfig, taskContext);
+     // TODO : Uncomment and set later the correct origin URL
+//        scanConfig.setCxOriginUrl(originUrl);
+//        String bambooPlanURL = getBaseURLForThePlan(adminConfig, env);
+
+        //general
+     // TODO : Uncomment and set later the correct origin 
+//        scanConfig.setCxOrigin(bambooPlanURL);
+//        log.debug("  ORIGIN FROM BAMBOO :: "+ bambooPlanURL);
+        log.debug("  ORIGIN URL FROM BAMBOO :: "+ originUrl);
+        
         scanConfig.setSourceDir(workDir.getAbsolutePath());
         
         File checkmarxBuildDir = new File(workDir + CX_REPORT_LOCATION);
@@ -201,6 +220,54 @@ public class CxConfigHelper {
         return scanConfig;
     }
 
+    private String getBaseURLForThePlan(AdministrationConfiguration adminConfig, Map<String, String> env) {
+        String passedURL = "";
+        try {
+            String planName = System.getenv("bamboo_planName");
+            planName = URLDecoder.decode(planName, "UTF-8");
+            planName = planName.replaceAll("[^.a-zA-Z0-9\\s]", " ");
+            String bambooURL = adminConfig.getBaseUrl();
+            bambooURL = bambooURL.substring((bambooURL.lastIndexOf("://")) + 3);
+            String hostName = "";
+            if(bambooURL.indexOf(":")!=-1) {
+                hostName = bambooURL.substring(0, bambooURL.lastIndexOf(":"));
+            } else {
+                hostName = bambooURL;
+            }
+            passedURL = "Bamboo " + hostName + " " + planName;
+            // 50 is the maximum number of characters allowed by SAST server
+            if(passedURL.length()>50)
+                passedURL=passedURL.substring(0,50);
+        } catch (UnsupportedEncodingException e) {
+            log.error("Failed to get BAMBOO URL of the PLAN: " + e.getMessage());
+        }
+        return passedURL;
+    }
+
+
+    private String getCxOriginUrl(AdministrationConfiguration adminConfig, TaskContext taskContext) {
+        String baseURL = adminConfig.getBaseUrl();  
+        BuildContext buildContext = taskContext.getBuildContext();
+        int buildNum = buildContext.getPlanResultKey().getBuildNumber();
+        
+        ///////////////
+        
+       /* for (ResultsSummary buildResult : summaryManager.getResultSummaries(new ResultsSummaryCriteria(job
+                .getKey(), false))) {
+                log.debug("Checking result of build: " + buildResult.getPlanKey().getKey() + " #"
+                    + buildResult.getBuildNumber());
+                if (buildResult.getCustomBuildData().containsKey(TRD_SONAR_PROJECT_KEY)) {
+                    config.setProjectKey(buildResult.getCustomBuildData().get(TRD_SONAR_PROJECT_KEY));
+                    config.setProjectName(buildResult.getCustomBuildData().get(TRD_SONAR_PROJECT_NAME));
+                    break;
+                }
+            }*/
+        ///////////////////////
+        String planName =  buildContext.getPlanName();
+        String originUrl = baseURL+"/browse/"+/*taskContext.getP+*/planName+"-";
+        return originUrl;
+    }
+    
     private boolean resolveBool(ConfigurationMap configMap, String value) {
         return OPTION_TRUE.equals(configMap.get(value));
     }
