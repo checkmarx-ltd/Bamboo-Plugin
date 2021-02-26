@@ -36,7 +36,7 @@ public abstract class CxPluginUtils {
             String userName=proxy.getUsername();
             String password= proxy.getPassword();
 
-            if(!proxyHost.isEmpty()&&proxyHost!=""){
+            if(proxyHost!=null && !proxyHost.isEmpty()){
                 log.info("ProxyHost : "+proxyHost);
                 log.info("Proxy Port : "+port);
                 log.info("Proxy Username : "+userName);

@@ -130,7 +130,7 @@ public class CxConfigHelper {
         scanConfig.setProxy(isProxy);
         if(isProxy){
         int port =0;
-        if(!HTTP_HOST.isEmpty() && HTTP_HOST!=""){
+        if(HTTP_HOST != null && !HTTP_HOST.isEmpty()){
         port=Integer.parseInt(HTTP_PORT);
         ProxyConfig proxy= new ProxyConfig();
         proxy.setHost(HTTP_HOST);
@@ -144,7 +144,7 @@ public class CxConfigHelper {
         log.debug("Proxy port: " + port);
         log.debug("Proxy user: " + HTTP_USERNAME);
         log.debug("Proxy password: *************");
-        }else if(!HTTPS_HOST.isEmpty() && HTTPS_HOST!=""){
+        }else if(HTTPS_HOST != null && !HTTPS_HOST.isEmpty()){
         	port=Integer.parseInt(HTTPS_PORT);
             ProxyConfig proxy= new ProxyConfig();
             proxy.setHost(HTTPS_HOST);
@@ -161,6 +161,7 @@ public class CxConfigHelper {
         }else{
         	ProxyConfig proxy= new ProxyConfig();
         	scanConfig.setProxyConfig(proxy);
+			log.warn("Proxy is enabled but proxy details not configured: ");
         }
         }
         
