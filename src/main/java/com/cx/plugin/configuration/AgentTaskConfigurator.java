@@ -302,12 +302,12 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 		
 		context.put(CXSCA_USE_CUSTOME_CREDENTIALS,configMap.get(CXSCA_USE_CUSTOME_CREDENTIALS));
 		String useCustomCredsForSCA = configMap.get(CXSCA_USE_CUSTOME_CREDENTIALS);
-		if(!StringUtils.isEmpty(useCustomCredsForSCA) && useCustomCredsForSCA.equalsIgnoreCase("true")) {
+		if(!StringUtils.isEmpty(useCustomCredsForSCA) || useCustomCredsForSCA.equalsIgnoreCase("true")) {
 			context.put(CXSCA_USERNAME,configMap.get(CXSCA_USERNAME));
 			context.put(CXSCA_PWD,configMap.get(CXSCA_PWD));        	
 		}else {
-			context.put(CXSCA_USERNAME,configMap.get(GLOBAL_CXSCA_USERNAME));
-			context.put(CXSCA_PWD,configMap.get(GLOBAL_CXSCA_PWD));
+			context.put(CXSCA_USERNAME,getAdminConfig(GLOBAL_CXSCA_USERNAME));
+			context.put(CXSCA_PWD,getAdminConfig(GLOBAL_CXSCA_PWD));
 		}	
 	}
 
@@ -522,12 +522,12 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 		
         config.put(CXSCA_USE_CUSTOME_CREDENTIALS,getDefaultString(params, CXSCA_USE_CUSTOME_CREDENTIALS).trim());		
 		String useCustomCredsForSCA = getDefaultString(params, CXSCA_USE_CUSTOME_CREDENTIALS).trim();
-		if(!StringUtils.isEmpty(useCustomCredsForSCA) && useCustomCredsForSCA.equalsIgnoreCase("true")) {
+		if(StringUtils.isEmpty(useCustomCredsForSCA) || useCustomCredsForSCA.equalsIgnoreCase("true")) {
 			config.put(CXSCA_USERNAME,getDefaultString(params, CXSCA_USERNAME).trim());
 			config.put(CXSCA_PWD,getDefaultString(params, CXSCA_PWD).trim());        	
 		}else {
-			config.put(CXSCA_USERNAME,getDefaultString(params, GLOBAL_CXSCA_USERNAME).trim());
-			config.put(CXSCA_PWD,getDefaultString(params, GLOBAL_CXSCA_PWD).trim());
+			config.put(CXSCA_USERNAME,getAdminConfig(GLOBAL_CXSCA_USERNAME).trim());
+			config.put(CXSCA_PWD,getAdminConfig(GLOBAL_CXSCA_PWD).trim());
 		}	
 		
         return config;

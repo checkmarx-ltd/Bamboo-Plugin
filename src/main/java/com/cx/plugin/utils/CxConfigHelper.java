@@ -132,31 +132,31 @@ public class CxConfigHelper {
         //adding proxy details 
         boolean isProxy=resolveBool(configMap, ENABLE_PROXY);
         scanConfig.setProxy(isProxy);
-        if(isProxy){
-        int port =0;
-        if(!HTTP_HOST.isEmpty() && HTTP_HOST!=""){
-        port=Integer.parseInt(HTTP_PORT);
-        ProxyConfig proxy= new ProxyConfig();
-        proxy.setHost(HTTP_HOST);
-        proxy.setPort(port);
-        proxy.setUsername(HTTP_USERNAME);
-        proxy.setPassword(HTTP_PASSWORD);
-        proxy.setUseHttps(false);
-        scanConfig.setProxyConfig(proxy);
-        }else if(!HTTPS_HOST.isEmpty() && HTTPS_HOST!=""){
-        	port=Integer.parseInt(HTTPS_PORT);
-            ProxyConfig proxy= new ProxyConfig();
-            proxy.setHost(HTTPS_HOST);
-            proxy.setPort(port);
-            proxy.setUsername(HTTPS_USERNAME);
-            proxy.setPassword(HTTPS_PASSWORD);
-            proxy.setUseHttps(true);
-            scanConfig.setProxyConfig(proxy);
-        }else{
-        	ProxyConfig proxy= new ProxyConfig();
-        	scanConfig.setProxyConfig(proxy);
-        }
-        }
+		if (isProxy) {
+			int port = 0;
+			if (StringUtils.isEmpty(HTTP_HOST)) {
+				port = Integer.parseInt(HTTP_PORT);
+				ProxyConfig proxy = new ProxyConfig();
+				proxy.setHost(HTTP_HOST);
+				proxy.setPort(port);
+				proxy.setUsername(HTTP_USERNAME);
+				proxy.setPassword(HTTP_PASSWORD);
+				proxy.setUseHttps(false);
+				scanConfig.setProxyConfig(proxy);
+			} else if (StringUtils.isEmpty(HTTPS_HOST)) {
+				port = Integer.parseInt(HTTPS_PORT);
+				ProxyConfig proxy = new ProxyConfig();
+				proxy.setHost(HTTPS_HOST);
+				proxy.setPort(port);
+				proxy.setUsername(HTTPS_USERNAME);
+				proxy.setPassword(HTTPS_PASSWORD);
+				proxy.setUseHttps(true);
+				scanConfig.setProxyConfig(proxy);
+			} else {
+				ProxyConfig proxy = new ProxyConfig();
+				scanConfig.setProxyConfig(proxy);
+			}
+		}
         
         
         scanConfig.setCxOrigin(CX_ORIGIN);
@@ -179,19 +179,17 @@ public class CxConfigHelper {
 
         scanConfig.setProjectName(configMap.get(PROJECT_NAME).trim());
 
-        String presetId = configMap.get(PRESET_ID);
-        if(StringUtils.isEmpty(presetId))
-        	presetId="0";
-		/*
-		 * if (!StringUtils.isNumeric(presetId)) { throw new
-		 * TaskException("Invalid preset Id"); }
-		 */
+		String presetId = configMap.get(PRESET_ID);
 
-        String teamName = configMap.get(TEAM_PATH_NAME);
-		/*
-		 * if (StringUtils.isEmpty(teamName)) { throw new
-		 * TaskException("Invalid team path"); }
-		 */
+		if (!StringUtils.isNumeric(presetId)) {
+			throw new TaskException("Invalid preset Id");
+		}
+
+		String teamName = configMap.get(TEAM_PATH_NAME);
+
+		if (StringUtils.isEmpty(teamName)) {
+			throw new TaskException("Invalid team path");
+		}
 
         scanConfig.setPresetId(Integer.parseInt(presetId));
         scanConfig.setPresetName(StringUtils.defaultString(configMap.get(PRESET_NAME)));
