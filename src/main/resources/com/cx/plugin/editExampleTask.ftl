@@ -175,7 +175,7 @@
 			[@ww.checkbox labelKey="cxScaCredentialsCustom.label" name="cxScaCredentialsCustom" descriptionKey="cxScaCredentialsCustom.description" toggle='true' /]
 			[@ui.bambooSection dependsOn="cxScaCredentialsCustom" showOn="true"]
 				[@ww.textfield labelKey="cxScaUsername.label"  id="cxScaUsername" name="cxScaUsername" required='true'/]
-				[@ww.password labelKey="cxScaPassword.label"  id="cxScaUsername" name="cxScaUsername" showPassword='true' required='true'/]
+				[@ww.password labelKey="cxScaPassword.label"  id="cxScaPassword" name="cxScaPassword" showPassword='true' required='true'/]
 				<button type="button" class="aui-button test-connection" id="test_cxSca_connection">Connect to Server</button>
 				<div id="cxScaTestConnectionMessage" class="test-connection-message"></div>
 			[/@ui.bambooSection]

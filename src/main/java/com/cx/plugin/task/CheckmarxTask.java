@@ -5,12 +5,10 @@ import static com.cx.plugin.utils.CxParam.HTML_REPORT;
 import static com.cx.plugin.utils.CxPluginUtils.printBuildFailure;
 import static com.cx.plugin.utils.CxPluginUtils.printConfiguration;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -38,23 +36,10 @@ import com.cx.restclient.dto.ScannerType;
 import com.cx.restclient.dto.scansummary.ScanSummary;
 import com.cx.restclient.exception.CxClientException;
 import com.cx.restclient.sast.utils.LegacyClient;
-import com.cx.restclient.sast.utils.SASTUtils;
 
 
 public class CheckmarxTask implements TaskType {
-
 	
-	private void testJAXB() {
-		File input = new File("d:\\deleteit\\cx-result.xml");
-		
-		try {
-			byte[] cxREport = FileUtils.readFileToByteArray(input);
-			SASTUtils.convertToXMLResult(cxREport);	
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
     @NotNull
     public TaskResult execute(@NotNull final TaskContext taskContext) throws TaskException {
         CxLoggerAdapter log;
@@ -63,9 +48,6 @@ public class CheckmarxTask implements TaskType {
         final TaskResultBuilder taskResultBuilder = TaskResultBuilder.newBuilder(taskContext);
         log = new CxLoggerAdapter(taskContext.getBuildLogger());
         
-        log.info("Testing JAXB");
-       // testJAXB();
-        log.info("Testing JAXB over");
         try {
             Map<String, VariableDefinitionContext> effectiveVariables = taskContext.getBuildContext().getVariableContext().getEffectiveVariables();
             for (Map.Entry<String, VariableDefinitionContext> entry : effectiveVariables.entrySet()) {
@@ -78,8 +60,6 @@ public class CheckmarxTask implements TaskType {
                     }
                 }
             }
-            int i = 7;
-            log.info(" CHANGES COMING IN PLACE ------------------  " + " i " + i);
             //resolve configuration
             CxConfigHelper configHelper = new CxConfigHelper(log);
             CxScanConfig config = configHelper.resolveConfigurationMap(taskContext.getConfigurationMap(), taskContext.getWorkingDirectory(), taskContext);
