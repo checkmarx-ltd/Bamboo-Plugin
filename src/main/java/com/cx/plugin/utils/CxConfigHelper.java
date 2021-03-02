@@ -87,6 +87,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.atlassian.bamboo.configuration.AdministrationConfiguration;
 import com.atlassian.bamboo.configuration.ConfigurationMap;
+import com.atlassian.bamboo.plan.PlanKey;
 import com.atlassian.bamboo.resultsummary.ResultsSummary;
 import com.atlassian.bamboo.resultsummary.ResultsSummaryCriteria;
 import com.atlassian.bamboo.task.TaskContext;
@@ -175,19 +176,12 @@ public class CxConfigHelper {
 			log.warn("Proxy is enabled but proxy details not configured: ");
         }
         }
-        
-        
-        scanConfig.setCxOrigin(CX_ORIGIN);
-        Map<String, String> env = System.getenv();
+        //scanConfig.setCxOrigin(CX_ORIGIN);
         String originUrl = getCxOriginUrl(adminConfig, taskContext);
-     // TODO : Uncomment and set later the correct origin URL
-//        scanConfig.setCxOriginUrl(originUrl);
-//        String bambooPlanURL = getBaseURLForThePlan(adminConfig, env);
-
-        //general
-     // TODO : Uncomment and set later the correct origin 
-//        scanConfig.setCxOrigin(bambooPlanURL);
-//        log.debug("  ORIGIN FROM BAMBOO :: "+ bambooPlanURL);
+        scanConfig.setCxOriginUrl(originUrl);
+        String cxOrigin = getOrigin(adminConfig, taskContext);
+        scanConfig.setCxOrigin(cxOrigin);
+        log.debug("  ORIGIN FROM BAMBOO :: "+ cxOrigin);
         log.debug("  ORIGIN URL FROM BAMBOO :: "+ originUrl);
         
         scanConfig.setSourceDir(workDir.getAbsolutePath());
@@ -296,10 +290,12 @@ public class CxConfigHelper {
         return scanConfig;
     }
 
-    private String getBaseURLForThePlan(AdministrationConfiguration adminConfig, Map<String, String> env) {
-        String passedURL = "";
+    private String getOrigin(AdministrationConfiguration adminConfig, TaskContext taskContext) {
+        String origin = "";
         try {
-            String planName = System.getenv("bamboo_planName");
+            BuildContext buildContext = taskContext.getBuildContext();
+            //String planKey = buildContext.getPlanResultKey().getPlanKey().getKey();
+            String planName =  buildContext.getPlanName();
             planName = URLDecoder.decode(planName, "UTF-8");
             planName = planName.replaceAll("[^.a-zA-Z0-9\\s]", " ");
             String bambooURL = adminConfig.getBaseUrl();
@@ -310,37 +306,29 @@ public class CxConfigHelper {
             } else {
                 hostName = bambooURL;
             }
-            passedURL = "Bamboo " + hostName + " " + planName;
+            origin = "Bamboo " + hostName + " " + planName;
+           // String originUrl = baseURL+"/browse/"+/*taskContext.getP+*/planName+"-";
             // 50 is the maximum number of characters allowed by SAST server
-            if(passedURL.length()>50)
-                passedURL=passedURL.substring(0,50);
+            if(!origin.isEmpty()&&origin!=""){
+            if(origin.length()>50){
+            	origin=origin.substring(0,50);
+            	}
+            }
         } catch (UnsupportedEncodingException e) {
             log.error("Failed to get BAMBOO URL of the PLAN: " + e.getMessage());
         }
-        return passedURL;
+        return origin;
     }
 
 
     private String getCxOriginUrl(AdministrationConfiguration adminConfig, TaskContext taskContext) {
-        String baseURL = adminConfig.getBaseUrl();  
+        String baseURL = adminConfig.getBaseUrl();
         BuildContext buildContext = taskContext.getBuildContext();
-        int buildNum = buildContext.getPlanResultKey().getBuildNumber();
-        
-        ///////////////
-        
-       /* for (ResultsSummary buildResult : summaryManager.getResultSummaries(new ResultsSummaryCriteria(job
-                .getKey(), false))) {
-                log.debug("Checking result of build: " + buildResult.getPlanKey().getKey() + " #"
-                    + buildResult.getBuildNumber());
-                if (buildResult.getCustomBuildData().containsKey(TRD_SONAR_PROJECT_KEY)) {
-                    config.setProjectKey(buildResult.getCustomBuildData().get(TRD_SONAR_PROJECT_KEY));
-                    config.setProjectName(buildResult.getCustomBuildData().get(TRD_SONAR_PROJECT_NAME));
-                    break;
-                }
-            }*/
-        ///////////////////////
-        String planName =  buildContext.getPlanName();
-        String originUrl = baseURL+"/browse/"+/*taskContext.getP+*/planName+"-";
+        //int buildNum = buildContext.getPlanResultKey().getBuildNumber();
+       // String nameProject = buildContext.getProjectName();
+        String planKey = buildContext.getPlanResultKey().getPlanKey().getKey();
+        //String planName =  buildContext.getPlanName();
+        String originUrl = baseURL+"/browse/"+planKey;
         return originUrl;
     }
     
