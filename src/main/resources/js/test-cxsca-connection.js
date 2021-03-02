@@ -8,7 +8,6 @@
     function restRequest() {
 
         if (!validateScaFields()) {
-           // return populateEmptyDropdownList();
         	return;
         }
         var request = JSON.stringify(getInputData());
@@ -41,12 +40,9 @@
             var parsed = JSON.parse(xhr.responseText);
             if (xhr.status == 200) {
                 $('#test-cxsca-connection-message').css('color', 'green');
-               //populateDropdownList(parsed.presetList, "#presetListId");
-                // populateDropdownList(parsed.teamPathList, "#teamPathListId");
             }
             else {
                 $('#test-cxsca-connection-message').css('color', '#d22020');
-               // populateEmptyDropdownList();
             }
             $('#test-cxsca-connection-message').html(parsed.loginResponse);
         };
