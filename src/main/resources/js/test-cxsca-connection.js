@@ -7,8 +7,9 @@
 
     function restRequest() {
 
-        if (!validateFields()) {
+        if (!validateScaFields()) {
            // return populateEmptyDropdownList();
+        	return;
         }
         var request = JSON.stringify(getInputData());
 

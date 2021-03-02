@@ -139,7 +139,6 @@ public class CxRestResource {
 				String pss = StringUtils.defaultString(data.get("pss"));
 
 				CxScanConfig config = new CxScanConfig();
-				config.setCxOrigin(CX_ORIGIN);
 				config.setDisableCertificateValidation(true);
 				config.setOsaGenerateJsonReport(false);
 
