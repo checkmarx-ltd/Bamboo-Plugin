@@ -309,7 +309,7 @@ public class CxConfigHelper {
             origin = "Bamboo " + hostName + " " + planName;
            // String originUrl = baseURL+"/browse/"+/*taskContext.getP+*/planName+"-";
             // 50 is the maximum number of characters allowed by SAST server
-            if(!origin.isEmpty()&&origin!=""){
+            if(origin!=null && !origin.isEmpty()){
             if(origin.length()>50){
             	origin=origin.substring(0,50);
             	}
