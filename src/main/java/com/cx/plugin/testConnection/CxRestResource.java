@@ -156,7 +156,8 @@ public class CxRestResource {
 
 				CxClientDelegator commonClient = CommonClientFactory.getClientDelegatorInstance(config, logger);
 				commonClient.getScaClient().testScaConnection();
-				tcResponse =  new TestScaConnectionResponse("Connection successfull.");
+				tcResponse =  new TestScaConnectionResponse("Connection successful.");
+				statusCode=200;
 			} catch (Exception e) {				
 				tcResponse =  new TestScaConnectionResponse("Failed to login: " + e.getMessage());
 			}

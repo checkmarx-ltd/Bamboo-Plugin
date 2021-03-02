@@ -5,8 +5,16 @@ import static com.cx.plugin.utils.CxParam.CUSTOM_CONFIGURATION_CONTROL;
 import static com.cx.plugin.utils.CxParam.CUSTOM_CONFIGURATION_CXSAST;
 import static com.cx.plugin.utils.CxParam.CUSTOM_CONFIGURATION_SERVER;
 import static com.cx.plugin.utils.CxParam.CXSAST_SECTION;
-import static com.cx.plugin.utils.CxParam.CX_ORIGIN;
+import static com.cx.plugin.utils.CxParam.CXSCA_ACCESS_CONTROL_URL;
+import static com.cx.plugin.utils.CxParam.CXSCA_ACCOUNT_NAME;
+import static com.cx.plugin.utils.CxParam.CXSCA_API_URL;
+import static com.cx.plugin.utils.CxParam.CXSCA_PWD;
+import static com.cx.plugin.utils.CxParam.CXSCA_USERNAME;
+import static com.cx.plugin.utils.CxParam.CXSCA_WEBAPP_URL;
 import static com.cx.plugin.utils.CxParam.CX_REPORT_LOCATION;
+import static com.cx.plugin.utils.CxParam.DEPENDENCY_SCAN_TYPE;
+import static com.cx.plugin.utils.CxParam.ENABLE_DEPENDENCY_SCAN;
+import static com.cx.plugin.utils.CxParam.ENABLE_PROXY;
 import static com.cx.plugin.utils.CxParam.FILTER_PATTERN;
 import static com.cx.plugin.utils.CxParam.FOLDER_EXCLUSION;
 import static com.cx.plugin.utils.CxParam.GENERATE_PDF_REPORT;
@@ -32,14 +40,12 @@ import static com.cx.plugin.utils.CxParam.HIGH_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.INTERVAL_BEGINS;
 import static com.cx.plugin.utils.CxParam.INTERVAL_ENDS;
 import static com.cx.plugin.utils.CxParam.IS_INCREMENTAL;
-import static com.cx.plugin.utils.CxParam.ENABLE_PROXY;
 import static com.cx.plugin.utils.CxParam.IS_INTERVALS;
 import static com.cx.plugin.utils.CxParam.IS_SYNCHRONOUS;
 import static com.cx.plugin.utils.CxParam.LOW_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.MEDIUM_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.OPTION_TRUE;
 import static com.cx.plugin.utils.CxParam.OSA_ARCHIVE_INCLUDE_PATTERNS;
-import static com.cx.plugin.utils.CxParam.OSA_ENABLED;
 import static com.cx.plugin.utils.CxParam.OSA_FILTER_PATTERNS;
 import static com.cx.plugin.utils.CxParam.OSA_HIGH_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.OSA_INSTALL_BEFORE_SCAN;
@@ -59,16 +65,6 @@ import static com.cx.plugin.utils.CxParam.TEAM_PATH_ID;
 import static com.cx.plugin.utils.CxParam.TEAM_PATH_NAME;
 import static com.cx.plugin.utils.CxParam.THRESHOLDS_ENABLED;
 import static com.cx.plugin.utils.CxParam.USER_NAME;
-import static com.cx.plugin.utils.CxParam.ENABLE_DEPENDENCY_SCAN;
-import static com.cx.plugin.utils.CxParam.DEPENDENCY_SCAN_TYPE;
-import static com.cx.plugin.utils.CxParam.CXSCA_ACCESS_CONTROL_URL;
-import static com.cx.plugin.utils.CxParam.CXSCA_ACCOUNT_NAME;
-import static com.cx.plugin.utils.CxParam.CXSCA_API_URL;
-import static com.cx.plugin.utils.CxParam.CXSCA_PWD;
-import static com.cx.plugin.utils.CxParam.CXSCA_USE_CUSTOME_CREDENTIALS;
-import static com.cx.plugin.utils.CxParam.CXSCA_USERNAME;
-import static com.cx.plugin.utils.CxParam.CXSCA_WEBAPP_URL;
-
 import static com.cx.plugin.utils.CxPluginUtils.decrypt;
 import static com.cx.plugin.utils.CxPluginUtils.resolveInt;
 
@@ -80,16 +76,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 
 import com.atlassian.bamboo.configuration.AdministrationConfiguration;
 import com.atlassian.bamboo.configuration.ConfigurationMap;
-import com.atlassian.bamboo.plan.PlanKey;
-import com.atlassian.bamboo.resultsummary.ResultsSummary;
-import com.atlassian.bamboo.resultsummary.ResultsSummaryCriteria;
 import com.atlassian.bamboo.task.TaskContext;
 import com.atlassian.bamboo.task.TaskException;
 import com.atlassian.bamboo.v2.build.BuildContext;
@@ -176,7 +168,6 @@ public class CxConfigHelper {
 			log.warn("Proxy is enabled but proxy details not configured: ");
         }
         }
-        //scanConfig.setCxOrigin(CX_ORIGIN);
         String originUrl = getCxOriginUrl(adminConfig, taskContext);
         scanConfig.setCxOriginUrl(originUrl);
         String cxOrigin = getOrigin(adminConfig, taskContext);
