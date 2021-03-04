@@ -314,7 +314,6 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     private void populateOSA_SCA_FieldsForCreate(Map<String, Object> context) {
     	
     	context.put(ENABLE_DEPENDENCY_SCAN, OPTION_FALSE);        
-        context.put(OSA_INSTALL_BEFORE_SCAN, OPTION_FALSE);
         context.put(OSA_FILTER_PATTERNS, "");
         context.put(OSA_ARCHIVE_INCLUDE_PATTERNS, DEFAULT_OSA_ARCHIVE_INCLUDE_PATTERNS);
 		
