@@ -526,7 +526,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 			config.put(CXSCA_PWD,getDefaultString(params, CXSCA_PWD).trim());        	
 		}else {
 			config.put(CXSCA_USERNAME,getAdminConfig(GLOBAL_CXSCA_USERNAME).trim());
-			config.put(CXSCA_PWD,getAdminConfig(GLOBAL_CXSCA_PWD).trim());
+			config.put(CXSCA_PWD,decrypt(getAdminConfig(GLOBAL_CXSCA_PWD).trim()));
 		}	
 		
         return config;
@@ -564,7 +564,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         return StringUtils.defaultString(params.getString(key));
     }
 
-    //the method initialized shraga client
+    //the method initialized common client
     private boolean tryLogin(String username, String cxPass, String serverUrl) {
         log.debug("tryLogin: server URL: " + serverUrl + " username" + username);
 

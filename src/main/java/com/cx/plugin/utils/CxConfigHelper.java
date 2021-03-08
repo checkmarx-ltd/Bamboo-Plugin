@@ -194,11 +194,8 @@ public class CxConfigHelper {
 
         scanConfig.setProjectName(configMap.get(PROJECT_NAME).trim());
 
-		String presetId = configMap.get(PRESET_ID);
-
-		if (!StringUtils.isNumeric(presetId)) {
-			throw new TaskException("Invalid preset Id");
-		}
+		String presetIdStr = configMap.get(PRESET_ID);
+		int presetId = parseInt(presetIdStr, log, "Invalid presetId: [%s]. Using default preset.", 0);
 
 		String teamName = configMap.get(TEAM_PATH_NAME);
 
@@ -206,7 +203,7 @@ public class CxConfigHelper {
 			throw new TaskException("Invalid team path");
 		}
 
-        scanConfig.setPresetId(Integer.parseInt(presetId));
+		scanConfig.setPresetId(presetId);
         scanConfig.setPresetName(StringUtils.defaultString(configMap.get(PRESET_NAME)));
         scanConfig.setTeamId(StringUtils.defaultString(configMap.get(TEAM_PATH_ID)));
         scanConfig.setTeamPath(teamName);
@@ -280,12 +277,20 @@ public class CxConfigHelper {
         scanConfig.setDisableCertificateValidation(true);
         return scanConfig;
     }
-
+    
+    private int parseInt(String number, CxLoggerAdapter log, String templateMessage, int defaultVal) {
+        int ret = defaultVal;
+        try {
+            ret = Integer.parseInt(number);
+        } catch (Exception e) {
+            log.warn(String.format(templateMessage, number));
+        }
+        return ret;
+    }
     private String getOrigin(AdministrationConfiguration adminConfig, TaskContext taskContext) {
         String origin = "";
         try {
             BuildContext buildContext = taskContext.getBuildContext();
-            //String planKey = buildContext.getPlanResultKey().getPlanKey().getKey();
             String planName =  buildContext.getPlanName();
             planName = URLDecoder.decode(planName, "UTF-8");
             planName = planName.replaceAll("[^.a-zA-Z0-9\\s]", " ");
@@ -298,7 +303,6 @@ public class CxConfigHelper {
                 hostName = bambooURL;
             }
             origin = "Bamboo " + hostName + " " + planName;
-           // String originUrl = baseURL+"/browse/"+/*taskContext.getP+*/planName+"-";
             // 50 is the maximum number of characters allowed by SAST server
             if(origin!=null && !origin.isEmpty()){
             if(origin.length()>50){
@@ -315,10 +319,7 @@ public class CxConfigHelper {
     private String getCxOriginUrl(AdministrationConfiguration adminConfig, TaskContext taskContext) {
         String baseURL = adminConfig.getBaseUrl();
         BuildContext buildContext = taskContext.getBuildContext();
-        //int buildNum = buildContext.getPlanResultKey().getBuildNumber();
-       // String nameProject = buildContext.getProjectName();
         String planKey = buildContext.getPlanResultKey().getPlanKey().getKey();
-        //String planName =  buildContext.getPlanName();
         String originUrl = baseURL+"/browse/"+planKey;
         return originUrl;
     }
