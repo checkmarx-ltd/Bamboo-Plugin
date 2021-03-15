@@ -130,7 +130,7 @@ public class CxRestResource {
 
     private boolean loginToServer(URL url, String username, String pd) {
         try {
-            shraga = new CxShragaClient(url.toString().trim(), username, pd, CX_ORIGIN, true, logger);
+            shraga = new CxShragaClient(url.toString().trim(), username, pd, CX_ORIGIN, true, true, logger);
             shraga.login();
 
             return true;
