@@ -36,6 +36,7 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+        
     </repositories>
 
     <build>
@@ -84,7 +85,7 @@
         <atlassian.plugin.key>${project.groupId}.${project.artifactId}</atlassian.plugin.key>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <common.client.version>2021.1.146</common.client.version>
+        <common.client.version>2021.1.1</common.client.version>
 
 <!--        <sonar.projectKey>checkmarx-ltd_Bamboo-Plugin</sonar.projectKey>
         <sonar.organization>checkmarx-ltd</sonar.organization>
@@ -261,12 +262,39 @@
             <version>1.1.1</version>
             <scope>provided</scope>
         </dependency>
+        
+        		<!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
+		<dependency>
+		    <groupId>javax.xml.bind</groupId>
+		    <artifactId>jaxb-api</artifactId>
+		    <version>2.2.11</version>
+		    <scope>provided</scope>
+		</dependency>
+        		    
+        		
+        		 <dependency>
+            		<groupId>org.glassfish.jaxb</groupId>
+            		<artifactId>jaxb-runtime</artifactId>
+            		 <version>2.3.1</version>
+        		</dependency>
+        		
+        		
         <dependency>
             <groupId>com.checkmarx</groupId>
             <artifactId>cx-client-common</artifactId>
             <version>${common.client.version}</version>
             <exclusions>
-                        
+                  
+                <exclusion>
+            		<groupId>jakarta.xml.bind</groupId>
+            		<artifactId>jakarta.xml.bind-api</artifactId>
+        		</exclusion>    
+        		
+        		 <exclusion>
+            		<groupId>org.glassfish.jaxb</groupId>
+            		<artifactId>jaxb-runtime</artifactId>
+        		</exclusion>
+        		  
             <exclusion>
                     <groupId>xml-apis</groupId>
                     <artifactId>xml-apis</artifactId>
