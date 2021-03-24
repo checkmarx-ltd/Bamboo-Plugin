@@ -176,10 +176,8 @@ public class CxConfigHelper {
         log.debug("  ORIGIN URL FROM BAMBOO :: "+ originUrl);
         
         scanConfig.setSourceDir(workDir.getAbsolutePath());
+        scanConfig.setReportsDir(workDir);
         
-        File checkmarxBuildDir = new File(workDir + CX_REPORT_LOCATION);
-        checkmarxBuildDir.mkdir();
-        scanConfig.setReportsDir(checkmarxBuildDir);
         scanConfig.setSastEnabled(true);
         scanConfig.setDisableCertificateValidation(true);
         if (CUSTOM_CONFIGURATION_SERVER.equals(configMap.get(SERVER_CREDENTIALS_SECTION))) {

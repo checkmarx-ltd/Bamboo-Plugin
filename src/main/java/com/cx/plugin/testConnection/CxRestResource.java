@@ -184,6 +184,7 @@ public class CxRestResource {
 
     private boolean loginToServer(URL url, String username, String password) {
         try {
+            
 			CxScanConfig scanConfig = new CxScanConfig(url.toString().trim(), username, password, CX_ORIGIN, true);
             commonClient = CommonClientFactory.getInstance(scanConfig, logger);
             commonClient.login();

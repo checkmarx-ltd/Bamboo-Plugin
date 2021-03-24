@@ -21,6 +21,13 @@ import com.atlassian.bamboo.task.TaskException;
 import com.atlassian.bamboo.task.TaskResult;
 import com.atlassian.bamboo.task.TaskResultBuilder;
 import com.atlassian.bamboo.task.TaskType;
+
+import com.atlassian.bamboo.Key;
+import com.atlassian.bamboo.build.artifact.ArtifactManager;
+import com.atlassian.bamboo.plan.artifact.ArtifactDefinitionContext;
+import com.atlassian.bamboo.plan.artifact.ArtifactDefinitionContextImpl;
+import com.atlassian.bamboo.plan.artifact.ArtifactPublishingResult;
+import com.atlassian.bamboo.task.*;
 import com.atlassian.bamboo.v2.build.BuildContext;
 import com.atlassian.bamboo.variable.VariableDefinitionContext;
 import com.cx.plugin.configuration.CommonClientFactory;
@@ -28,6 +35,7 @@ import com.cx.plugin.dto.BambooScanResults;
 import com.cx.plugin.utils.CxAppender;
 import com.cx.plugin.utils.CxConfigHelper;
 import com.cx.plugin.utils.CxLoggerAdapter;
+
 import com.cx.restclient.CxClientDelegator;
 import com.cx.restclient.configuration.CxScanConfig;
 import com.cx.restclient.dto.Results;
@@ -37,9 +45,19 @@ import com.cx.restclient.dto.scansummary.ScanSummary;
 import com.cx.restclient.exception.CxClientException;
 import com.cx.restclient.sast.utils.LegacyClient;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CheckmarxTask implements TaskType {
 	
+    private final ArtifactManager artifactManager;
+
+    public CheckmarxTask(final ArtifactManager artifactManager) {
+        this.artifactManager = artifactManager;
+    }
+
     @NotNull
     public TaskResult execute(@NotNull final TaskContext taskContext) throws TaskException {
         CxLoggerAdapter log;
@@ -51,10 +69,7 @@ public class CheckmarxTask implements TaskType {
         try {
             Map<String, VariableDefinitionContext> effectiveVariables = taskContext.getBuildContext().getVariableContext().getEffectiveVariables();
             for (Map.Entry<String, VariableDefinitionContext> entry : effectiveVariables.entrySet()) {
-                if (entry.getKey().contains("CX_MAVEN_PATH") ||
-                        entry.getKey().contains("CX_GRADLE_PATH") ||
-                        entry.getKey().contains("CX_NPM_PATH") ||
-                        entry.getKey().contains("CX_COMPOSER_PATH")) {
+                if (entry.getKey().contains("CX_")) {
                     if (StringUtils.isNotEmpty(entry.getValue().getValue())) {
                         System.setProperty(entry.getKey(), entry.getValue().getValue());
                     }
@@ -77,6 +92,7 @@ public class CheckmarxTask implements TaskType {
             List<ScanResults> results = new ArrayList<>();
             //initialize cx client
             try {
+                
             	commonClient = CommonClientFactory.getInstance(config, log);
                 ScanResults initResults = delegator.init();
                 results.add(initResults);
@@ -128,9 +144,31 @@ public class CheckmarxTask implements TaskType {
             }
             ScanResults finalScanResults = getFinalScanResults(results);
             if (!config.getHideResults()) {
-            	String showSummaryStr = delegator.generateHTMLSummary(finalScanResults);
+                String showSummaryStr = delegator.generateHTMLSummary(finalScanResults);
                 ret.getSummary().put(HTML_REPORT, showSummaryStr);
+                SASTResults sastResults = ret.getSastResults();
+                String sastPDFLink = sastResults.getSastPDFLink();
+                String pdfName = sastPDFLink.substring(sastPDFLink.lastIndexOf(File.separator) + 1);
+                Key buildKey = buildContext.getParentBuildContext().getResultKey().getEntityKey();
+                int buildNumber = buildContext.getParentBuildContext().getResultKey().getResultNumber();
+                String buildPath = buildContext.getPlanResultKey().getPlanKey().getKey().substring(buildContext.getPlanResultKey().getPlanKey().getKey().lastIndexOf("-") + 1);
+                shraga.updateSASTPdfLink("/artifact/" + buildKey + "/" + buildPath + "/build-" + buildNumber + "/Checkmarx-PDF-Report/" + pdfName);
+
+                
                 buildContext.getBuildResult().getCustomBuildData().putAll(ret.getSummary());
+
+/*                String workDir = buildContext.getBuildResult().getCustomBuildData().get("build.working.directory");
+                workDir = workDir.substring(workDir.lastIndexOf(File.separator) + 1) + CxParam.CX_REPORT_LOCATION;*/
+                ArtifactDefinitionContext artifact = new ArtifactDefinitionContextImpl("Checkmarx PDF Report", false, null);
+                artifact.setCopyPattern("**/" + pdfName);
+
+                ArtifactPublishingResult result = artifactManager.publish(taskContext.getBuildLogger(),
+                        buildContext.getPlanResultKey(),
+                        new File(taskContext.getWorkingDirectory(), CxParam.CX_REPORT_LOCATION),
+                        artifact,
+                        new HashMap<>(),
+                        15);
+                taskContext.getBuildContext().getArtifactContext().addPublishingResult(result);
             }
 
             //assert if expected exception is thrown  OR when vulnerabilities under threshold OR when policy violated

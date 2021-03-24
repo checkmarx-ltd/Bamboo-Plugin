@@ -570,7 +570,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 
         if (!StringUtils.isEmpty(serverUrl) && !StringUtils.isEmpty(username) && !StringUtils.isEmpty(cxPass)) {
             try {
-                try {
+                 try {
 					CxScanConfig scanConfig = new CxScanConfig(serverUrl, username, decrypt(cxPass),
 							CommonClientFactory.SCAN_ORIGIN, true);
                     commonClient = CommonClientFactory.getInstance(scanConfig, log);
