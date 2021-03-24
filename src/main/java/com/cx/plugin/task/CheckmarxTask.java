@@ -100,6 +100,8 @@ public class CheckmarxTask implements TaskType {
 
             ScanResults createScanResults = delegator.initiateScan();
             results.add(createScanResults);
+            ScanResults scanResults = config.getSynchronous() ? delegator.waitForScanResults() : delegator.getLatestScanResults();
+            results.add(scanResults);
             
             //Asynchronous MODE
             if (!config.getSynchronous()) {
@@ -115,8 +117,6 @@ public class CheckmarxTask implements TaskType {
 
                 return taskResultBuilder.success().build();
             }
-            ScanResults scanResults = config.getSynchronous() ? delegator.waitForScanResults() : delegator.getLatestScanResults();
-            results.add(scanResults);
             
             if (config.getSynchronous() && config.isSastEnabled() &&
                     ((createScanResults.getSastResults() != null && createScanResults.getSastResults().getException() != null && createScanResults.getSastResults().getScanId() > 0) || (scanResults.getSastResults() != null && scanResults.getSastResults().getException() != null))) {
