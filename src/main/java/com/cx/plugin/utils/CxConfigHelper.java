@@ -129,45 +129,27 @@ public class CxConfigHelper {
         }
 
         scanConfig = new CxScanConfig();
-        //adding proxy details 
-        boolean isProxy=resolveBool(configMap, ENABLE_PROXY);
-        scanConfig.setProxy(isProxy);
-        if(isProxy){
-        int port =0;
-        if(HTTP_HOST != null && !HTTP_HOST.isEmpty()){
-        port=Integer.parseInt(HTTP_PORT);
-        ProxyConfig proxy= new ProxyConfig();
-        proxy.setHost(HTTP_HOST);
-        proxy.setPort(port);
-        proxy.setUsername(HTTP_USERNAME);
-        proxy.setPassword(HTTP_PASSWORD);
-        proxy.setUseHttps(false);
-        scanConfig.setProxyConfig(proxy);
-        log.debug("Proxy configuration:");
-        log.debug("Proxy host: " + HTTP_HOST);
-        log.debug("Proxy port: " + port);
-        log.debug("Proxy user: " + HTTP_USERNAME);
-        log.debug("Proxy password: *************");
-        }else if(HTTPS_HOST != null && !HTTPS_HOST.isEmpty()){
-        	port=Integer.parseInt(HTTPS_PORT);
-            ProxyConfig proxy= new ProxyConfig();
-            proxy.setHost(HTTPS_HOST);
-            proxy.setPort(port);
-            proxy.setUsername(HTTPS_USERNAME);
-            proxy.setPassword(HTTPS_PASSWORD);
-            proxy.setUseHttps(true);
-            scanConfig.setProxyConfig(proxy);
-            log.debug("Proxy configuration:");
-            log.debug("Proxy host: " + HTTPS_HOST);
-            log.debug("Proxy port: " + port);
-            log.debug("Proxy user: " + HTTPS_USERNAME);
-            log.debug("Proxy password: *************");
-        }else{
-        	ProxyConfig proxy= new ProxyConfig();
-        	scanConfig.setProxyConfig(proxy);
-			log.warn("Proxy is enabled but proxy details not configured: ");
-        }
-        }
+		// adding proxy details
+		boolean isProxy = resolveBool(configMap, ENABLE_PROXY);
+		scanConfig.setProxy(isProxy);
+		if (isProxy) {
+			ProxyConfig proxyConfig = HttpHelper.getProxyConfig();
+			if (proxyConfig != null) {
+				scanConfig.setProxyConfig(proxyConfig);
+				log.debug("Proxy configuration:");
+				log.debug("Proxy host: " + proxyConfig.getHost());
+				log.debug("Proxy port: " + proxyConfig.getPort());
+				log.debug("Proxy user: " + proxyConfig.getUsername());
+				log.debug("Proxy password: *************");
+				log.debug("Proxy Scheme: " + (proxyConfig.isUseHttps() ? "https" : "http"));
+
+			}
+		} else {
+			ProxyConfig proxy = new ProxyConfig();
+			scanConfig.setProxyConfig(proxy);
+			log.warn("Proxy is enabled but proxy details are not configured: ");
+		}
+	
         String originUrl = getCxOriginUrl(adminConfig, taskContext);
         scanConfig.setCxOriginUrl(originUrl);
         String cxOrigin = getOrigin(adminConfig, taskContext);

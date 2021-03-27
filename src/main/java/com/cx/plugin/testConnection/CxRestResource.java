@@ -36,6 +36,7 @@ import com.cx.plugin.utils.HttpHelper;
 import com.cx.restclient.CxClientDelegator;
 import com.cx.restclient.ast.dto.sca.AstScaConfig;
 import com.cx.restclient.configuration.CxScanConfig;
+import com.cx.restclient.dto.ProxyConfig;
 import com.cx.restclient.dto.ScannerType;
 import com.cx.restclient.dto.SourceLocationType;
 import com.cx.restclient.dto.Team;
@@ -67,37 +68,14 @@ public class CxRestResource {
         String urlToCheck;
         int statusCode = 400;
 
-        urlToCheck = StringUtils.defaultString(data.get("url"));
-
-        try {
-            UrlValidator urlValidator = new UrlValidator();
-            if (!urlValidator.isValid(urlToCheck)) {
-                return getInvalidUrlResponse(statusCode);
-            }
-            url = new URL(urlToCheck);
-            URLConnection urlConn;
-
-            Proxy proxy = HttpHelper.getHttpProxy();
-            if (proxy != null) {
-                logger.info("Using proxy to connect to SAST server");
-                urlConn = url.openConnection(proxy);
-            } else {
-                urlConn = url.openConnection();
-            }
-            if (url.getProtocol().equalsIgnoreCase("https")) {
-                ((HttpsURLConnection) urlConn).setSSLSocketFactory(HttpHelper.getSSLSocketFactory());
-                ((HttpsURLConnection) urlConn).setHostnameVerifier(HttpHelper.getHostnameVerifier());
-            }
-            urlConn.connect();
-        } catch (Exception e) {
-            return getInvalidUrlResponse(statusCode);
-        }
-
         String username = StringUtils.defaultString(data.get("username"));
         String pas = StringUtils.defaultString(data.get("pas"));
 
         try {
-            if (loginToServer(url, username, decrypt(pas))) {
+            urlToCheck = StringUtils.defaultString(data.get("url"));
+            url = new URL(urlToCheck);
+            
+        	if (loginToServer(url, username, decrypt(pas))) {
                 try {
                     teams = commonClient.getTeamList();
                 } catch (Exception e) {
@@ -142,6 +120,20 @@ public class CxRestResource {
 				config.setDisableCertificateValidation(true);
 				config.setOsaGenerateJsonReport(false);
 
+				ProxyConfig proxyConfig = HttpHelper.getProxyConfig();
+				if (proxyConfig != null) {
+					config.setProxy(true);
+					config.setProxyConfig(proxyConfig);
+		            logger.error("Testing login with proxy details:");
+					logger.debug("Proxy host: " + proxyConfig.getHost());
+					logger.debug("Proxy port: " + proxyConfig.getPort());
+					logger.debug("Proxy user: " + proxyConfig.getUsername());
+					logger.debug("Proxy password: *************");
+					logger.debug("Proxy Scheme: " + (proxyConfig.isUseHttps() ? "https" : "http"));
+				}else {
+		            logger.error("Testing login.");
+				}
+				
 				AstScaConfig scaConfig = new AstScaConfig();
 				scaConfig.setAccessControlUrl(scaAccessControlUrl);
 				scaConfig.setApiUrl(scaServerUrl);
@@ -185,7 +177,21 @@ public class CxRestResource {
     private boolean loginToServer(URL url, String username, String password) {
         try {
             
+        	ProxyConfig proxyConfig = HttpHelper.getProxyConfig();        	
 			CxScanConfig scanConfig = new CxScanConfig(url.toString().trim(), username, password, CX_ORIGIN, true);
+			if (proxyConfig != null) {
+				scanConfig.setProxy(true);
+				scanConfig.setProxyConfig(proxyConfig);
+	            logger.error("Testing login with proxy details:");
+				logger.debug("Proxy host: " + proxyConfig.getHost());
+				logger.debug("Proxy port: " + proxyConfig.getPort());
+				logger.debug("Proxy user: " + proxyConfig.getUsername());
+				logger.debug("Proxy password: *************");
+				logger.debug("Proxy Scheme: " + (proxyConfig.isUseHttps() ? "https" : "http"));
+			}else {
+	            logger.error("Testing login.");
+			}
+			
             commonClient = CommonClientFactory.getInstance(scanConfig, logger);
             commonClient.login();
 

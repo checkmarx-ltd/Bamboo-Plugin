@@ -1,5 +1,6 @@
 package com.cx.plugin.utils;
 
+import com.cx.restclient.dto.ProxyConfig;
 import com.cx.restclient.exception.CxClientException;
 import org.apache.http.conn.ssl.TrustAllStrategy;
 import org.apache.http.ssl.SSLContexts;
@@ -58,6 +59,31 @@ public class HttpHelper {
 
         return proxy;
     }
+    
+	public static ProxyConfig getProxyConfig() {
+
+		ProxyConfig proxyConfig = null;
+		int port = 0;
+		if (HTTP_HOST != null && !HTTP_HOST.isEmpty()) {
+			port = Integer.parseInt(HTTP_PORT);
+			proxyConfig = new ProxyConfig();
+			proxyConfig.setHost(HTTP_HOST);
+			proxyConfig.setPort(port);
+			proxyConfig.setUsername(HTTP_USERNAME);
+			proxyConfig.setPassword(HTTP_PASSWORD);
+			proxyConfig.setUseHttps(false);
+		} else if (HTTPS_HOST != null && !HTTPS_HOST.isEmpty()) {
+			port = Integer.parseInt(HTTPS_PORT);
+			proxyConfig = new ProxyConfig();
+			proxyConfig.setHost(HTTPS_HOST);
+			proxyConfig.setPort(port);
+			proxyConfig.setUsername(HTTPS_USERNAME);
+			proxyConfig.setPassword(HTTPS_PASSWORD);
+			proxyConfig.setUseHttps(true);
+		} 
+		
+		return proxyConfig;
+	}
 
     public static SSLSocketFactory getSSLSocketFactory() throws CxClientException {
         TrustStrategy acceptingTrustStrategy = new TrustAllStrategy();

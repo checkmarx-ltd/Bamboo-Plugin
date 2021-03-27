@@ -122,7 +122,9 @@ import com.atlassian.bamboo.utils.error.ErrorCollection;
 import com.atlassian.bamboo.ww2.actions.build.admin.config.task.ConfigureBuildTasks;
 import com.atlassian.spring.container.ContainerManager;
 import com.atlassian.util.concurrent.Nullable;
+import com.cx.plugin.utils.HttpHelper;
 import com.cx.restclient.configuration.CxScanConfig;
+import com.cx.restclient.dto.ProxyConfig;
 import com.cx.restclient.dto.ScannerType;
 import com.cx.restclient.dto.Team;
 import com.cx.restclient.sast.dto.Preset;
@@ -573,6 +575,20 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
                  try {
 					CxScanConfig scanConfig = new CxScanConfig(serverUrl, username, decrypt(cxPass),
 							CommonClientFactory.SCAN_ORIGIN, true);
+					ProxyConfig proxyConfig = HttpHelper.getProxyConfig();
+					if (proxyConfig != null) {
+						scanConfig.setProxy(true);
+						scanConfig.setProxyConfig(proxyConfig);
+			            log.error("Testing login with proxy details:");
+						log.debug("Proxy host: " + proxyConfig.getHost());
+						log.debug("Proxy port: " + proxyConfig.getPort());
+						log.debug("Proxy user: " + proxyConfig.getUsername());
+						log.debug("Proxy password: *************");
+						log.debug("Proxy Scheme: " + (proxyConfig.isUseHttps() ? "https" : "http"));
+					}else {
+			            log.error("Testing login.");
+					}
+					
                     commonClient = CommonClientFactory.getInstance(scanConfig, log);
                 } catch (Exception e) {
                     log.debug("Failed to init cx client " + e.getMessage(), e);
