@@ -37,9 +37,13 @@ public abstract class CxPluginUtils {
             String password= proxy.getPassword();
 
             if(proxyHost!=null && !proxyHost.isEmpty()){
-                log.info("ProxyHost : "+proxyHost);
-                log.info("Proxy Port : "+port);
-                log.info("Proxy Username : "+userName);
+				log.debug("Proxy host: " + proxy.getHost());
+				log.debug("Proxy port: " + proxy.getPort());
+				log.debug("Proxy user: " + proxy.getUsername());
+				log.debug("Proxy password: *************");
+				log.debug("Proxy Scheme: " + (proxy.isUseHttps() ? "https" : "http"));
+				log.debug("Non Proxy Hosts: " + proxy.getNoproxyHosts());
+
             }else{
                 log.info("Proxy Enabled but proxy is not configured");
             }

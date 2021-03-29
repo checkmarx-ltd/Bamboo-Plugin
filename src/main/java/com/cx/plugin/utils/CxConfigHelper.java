@@ -131,34 +131,26 @@ public class CxConfigHelper {
         }
 
         scanConfig = new CxScanConfig();
-		// adding proxy details
+		
+        // adding proxy details
 		boolean isProxy = resolveBool(configMap, ENABLE_PROXY);
 		scanConfig.setProxy(isProxy);
 		if (isProxy) {
 			ProxyConfig proxyConfig = HttpHelper.getProxyConfig();
 			if (proxyConfig != null) {
 				scanConfig.setProxyConfig(proxyConfig);
-				log.debug("Proxy configuration:");
-				log.debug("Proxy host: " + proxyConfig.getHost());
-				log.debug("Proxy port: " + proxyConfig.getPort());
-				log.debug("Proxy user: " + proxyConfig.getUsername());
-				log.debug("Proxy password: *************");
-				log.debug("Proxy Scheme: " + (proxyConfig.isUseHttps() ? "https" : "http"));
-				log.debug("Non Proxy Hosts: " + proxyConfig.getNoproxyHosts());
-
+			}else {
+				ProxyConfig proxy = new ProxyConfig();
+				scanConfig.setProxyConfig(proxy);
 			}
-		} else {
-			ProxyConfig proxy = new ProxyConfig();
-			scanConfig.setProxyConfig(proxy);
-			log.warn("Proxy is enabled but proxy details are not configured: ");
 		}
 	
         String originUrl = getCxOriginUrl(adminConfig, taskContext);
         scanConfig.setCxOriginUrl(originUrl);
         String cxOrigin = getOrigin(adminConfig, taskContext);
         scanConfig.setCxOrigin(cxOrigin);
-        log.debug("  ORIGIN FROM BAMBOO :: "+ cxOrigin);
-        log.debug("  ORIGIN URL FROM BAMBOO :: "+ originUrl);
+        log.info("CxOrigin : "+ cxOrigin);
+        log.info("CxOrigin URL : "+ originUrl);
         
         scanConfig.setSourceDir(workDir.getAbsolutePath());
         scanConfig.setReportsDir(workDir);
@@ -276,7 +268,7 @@ public class CxConfigHelper {
             BuildContext buildContext = taskContext.getBuildContext();
             String planName =  buildContext.getPlanName();
             planName = URLDecoder.decode(planName, "UTF-8");
-            planName = planName.replaceAll("[^.a-zA-Z0-9\\s]", " ");
+            planName = planName.replaceAll("[^.a-zA-Z0-9\\s]", "");
             String bambooURL = adminConfig.getBaseUrl();
             bambooURL = bambooURL.substring((bambooURL.lastIndexOf("://")) + 3);
             String hostName = "";

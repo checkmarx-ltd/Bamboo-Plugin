@@ -596,14 +596,15 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 					if (proxyConfig != null) {
 						scanConfig.setProxy(true);
 						scanConfig.setProxyConfig(proxyConfig);
-			            log.error("Testing login with proxy details:");
+			            log.debug("Testing login with proxy details:");
 						log.debug("Proxy host: " + proxyConfig.getHost());
 						log.debug("Proxy port: " + proxyConfig.getPort());
 						log.debug("Proxy user: " + proxyConfig.getUsername());
 						log.debug("Proxy password: *************");
 						log.debug("Proxy Scheme: " + (proxyConfig.isUseHttps() ? "https" : "http"));
+						log.debug("Non Proxy Hosts: " + proxyConfig.getNoproxyHosts());
 					}else {
-			            log.error("Testing login.");
+			            log.debug("Testing login.");
 					}
 					
                     commonClient = CommonClientFactory.getInstance(scanConfig, log);
