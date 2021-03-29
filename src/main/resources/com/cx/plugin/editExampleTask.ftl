@@ -147,6 +147,8 @@
 [@ui.bambooSection title='Dependency Scan' cssClass="cx center"]
 	[@ww.checkbox labelKey="enableDependencyScan.label" name="enableDependencyScan" descriptionKey="enableDependencyScan.description" toggle='true' /]
     [@ui.bambooSection dependsOn="enableDependencyScan" showOn="true"]
+    [@ww.checkbox labelKey="cxDependencySettingsCustom.label" name="cxDependencySettingsCustom" descriptionKey="cxDependencySettingsCustom.description" toggle='true' /]
+			[@ui.bambooSection dependsOn="cxDependencySettingsCustom" showOn="true"]
 		[@ww.radio id = 'radioGroup' name='dependencyScanType' listKey='key' listValue='value' toggle='true' list=dependencyScanTypeValues /]
 		
 		[@ui.bambooSection title='Checkmarx Scan CxOSA' dependsOn='dependencyScanType' showOn='OSA' cssClass="cx center" ]
@@ -168,12 +170,12 @@
 					source libraries in your applications
 				</small>
 			</p>
-			[@ui.bambooSection dependsOn="cxScaCredentialsCustom" showOn="true"]
+			
 			[@ww.textfield labelKey="cxScaAPIUrl.label" name="cxScaAPIUrl" id="cxScaAPIUrl" descriptionKey="cxScaAPIUrl.description"/]
 			[@ww.textfield labelKey="cxAccessControlServerUrl.label" name="cxAccessControlServerUrl" id="cxAccessControlServerUrl" descriptionKey="cxAccessControlServerUrl.description"/]
 			[@ww.textfield labelKey="cxScaWebAppUrl.label" name="cxScaWebAppUrl" id="cxScaWebAppUrl" descriptionKey="cxScaWebAppUrl.description"/]
 			[@ww.textfield labelKey="cxScaAccountName.label" name="cxScaAccountName" id="cxScaAccountName" descriptionKey="cxScaAccountName.description"/]
-			[@ww.checkbox labelKey="cxScaCredentialsCustom.label" name="cxScaCredentialsCustom" descriptionKey="cxScaCredentialsCustom.description" toggle='true' /]
+			
 			
 				[@ww.textfield labelKey="cxScaUsername.label"  id="cxScaUsername" name="cxScaUsername" required='true'/]
 				[@ww.password labelKey="cxScaPassword.label"  id="cxScaPassword" name="cxScaPassword" showPassword='true' required='true'/]

@@ -97,17 +97,41 @@
         [@ww.textfield labelKey="scanTimeoutInMinutes.label" name="globalScanTimeoutInMinutes" required='false'/]
     [/@ui.bambooSection]
 
-    [@ui.bambooSection title='Checkmarx SCA Server' cssClass="cx center"]      
-   		[@ww.textfield labelKey="cxScaGlobalAPIUrl.label" name="cxScaGlobalAPIUrl" id="cxScaGlobalAPIUrl" descriptionKey="cxScaGlobalAPIUrl.description"/]
-		[@ww.textfield labelKey="cxGlobalAccessControlServerUrl.label" name="cxGlobalAccessControlServerUrl" id="cxGlobalAccessControlServerUrl" descriptionKey="cxGlobalAccessControlServerUrl.description"/]
-		[@ww.textfield labelKey="cxScaGlobalWebAppUrl.label" name="cxScaGlobalWebAppUrl" id="cxScaGlobalWebAppUrl" descriptionKey="cxScaGlobalWebAppUrl.description"/]
-		[@ww.textfield labelKey="cxScaGlobalAccountName.label" name="cxScaGlobalAccountName" id="cxScaGlobalAccountName" descriptionKey="cxScaGlobalAccountName.description"/]
+    [@ui.bambooSection title='Dependency Scan' cssClass="cx center"]
+	[@ww.checkbox labelKey="globalEnableDependencyScan.label" name="globalEnableDependencyScan" toggle='true' /]
+    [@ui.bambooSection dependsOn="globalEnableDependencyScan" showOn="true"]
+		[@ww.radio id = 'radioGroup' name='globalDependencyScanType' listKey='key' listValue='value' toggle='true' list=globalDependencyScanTypeValues /]
+		
+		[@ui.bambooSection title='Checkmarx Scan CxOSA' dependsOn='globalDependencyScanType' showOn='OSA' cssClass="cx center" ]
+			<p class="description">
+				<small>
+					Open Source Analysis (OSA) helps you manage the security risk involved in using open
+					source libraries in your applications
+				</small>
+			</p>
+			[@ww.textarea labelKey="cxGlobalOsaFilterPatterns.label" name="cxGlobalOsaFilterPatterns" descriptionKey="cxGlobalOsaFilterPatterns.description" rows="4" cssClass="long-field"/]
+			[@ww.textfield labelKey="cxGlobalOsaArchiveIncludePatterns.label" name="cxGlobalOsaArchiveIncludePatterns" descriptionKey="cxGlobalOsaArchiveIncludePatterns.description"/]
+			[@ww.checkbox labelKey="cxGlobalOsaInstallBeforeScan.label" name="cxGlobalOsaInstallBeforeScan" descriptionKey="cxGlobalOsaInstallBeforeScan.description" toggle='true' /]
+		[/@ui.bambooSection]
+		[@ui.bambooSection title='Checkmarx Scan CxSCA' dependsOn='globalDependencyScanType' showOn='AST_SCA' cssClass="cx center"]
+			<p class="description">
+				<small>
+					Software Composition Analysis (SCA) helps you manage the security risk involved in using open
+					source libraries in your applications
+				</small>
+			</p>
+   		[@ww.textfield labelKey="cxScaGlobalAPIUrl.label" name="cxScaGlobalAPIUrl"/]
+		[@ww.textfield labelKey="cxGlobalAccessControlServerUrl.label" name="cxGlobalAccessControlServerUrl"/]
+		[@ww.textfield labelKey="cxScaGlobalWebAppUrl.label" name="cxScaGlobalWebAppUrl"/]
+		[@ww.textfield labelKey="cxScaGlobalAccountName.label" name="cxScaGlobalAccountName"/]
         
         [@ww.textfield labelKey="cxScaGlobalUsername.label" name="globalcxScaUsername"/]
         [@ww.password labelKey="cxScaGlobalPassword.label" name="globalcxScaPss" showPassword='true' /]
         <button type="button" class="aui-button test-cxsca-connection" id="g_test-cxsca-connection" onclick="connectToScaServer()">Connect to Server</button>
 		<div id="gtestScaConnectionMessage" class="test-cxsca-connection-message"></div>
+		[/@ui.bambooSection]
 	[/@ui.bambooSection]
+[/@ui.bambooSection]
         
     [@ui.bambooSection title='Control Checkmarx Scan' cssClass="cx center"]
 

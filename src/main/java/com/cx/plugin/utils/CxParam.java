@@ -69,6 +69,13 @@ public class CxParam {
     public final static String HTML_REPORT = "htmlReport";
     public final static String ENABLE_DEPENDENCY_SCAN = "enableDependencyScan";
     public final static String DEPENDENCY_SCAN_TYPE = "dependencyScanType";
+    
+    public final static String GLOBAL_ENABLE_DEPENDENCY_SCAN = "globalEnableDependencyScan";
+    public final static String GLOBAL_DEPENDENCY_SCAN_TYPE = "globalDependencyScanType";
+    public static final String GLOBAL_OSA_FILTER_PATTERNS = "cxGlobalOsaFilterPatterns";
+    public static final String GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS = "cxGlobalOsaArchiveIncludePatterns";
+    public static final String GLOBAL_OSA_INSTALL_BEFORE_SCAN = "cxGlobalOsaInstallBeforeScan";
+    
     public final static String CXSCA_API_URL = "cxScaAPIUrl";
     public final static String CXSCA_ACCESS_CONTROL_URL = "cxAccessControlServerUrl";
     public final static String CXSCA_WEBAPP_URL = "cxScaWebAppUrl";
@@ -79,7 +86,7 @@ public class CxParam {
     public final static String GLOBAL_CXSCA_WEBAPP_URL = "cxScaGlobalWebAppUrl";
     public final static String GLOBAL_CXSCA_ACCOUNT_NAME = "cxScaGlobalAccountName";
     
-    public final static String CXSCA_USE_CUSTOME_CREDENTIALS = "cxScaCredentialsCustom";
+    public final static String CX_USE_CUSTOM_DEPENDENCY_SETTINGS = "cxDependencySettingsCustom";
     public final static String CXSCA_USERNAME = "cxScaUsername";
     public final static String CXSCA_PWD = "cxScaPassword";
     public static final String GLOBAL_CXSCA_USERNAME = "globalcxScaUsername";
