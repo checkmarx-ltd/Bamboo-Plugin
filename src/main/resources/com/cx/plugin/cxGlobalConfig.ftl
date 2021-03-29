@@ -97,9 +97,16 @@
         [@ww.textfield labelKey="scanTimeoutInMinutes.label" name="globalScanTimeoutInMinutes" required='false'/]
     [/@ui.bambooSection]
 
-    [@ui.bambooSection title='Checkmarx SCA Server' cssClass="cx center"]        
+    [@ui.bambooSection title='Checkmarx SCA Server' cssClass="cx center"]      
+   		[@ww.textfield labelKey="cxScaGlobalAPIUrl.label" name="cxScaGlobalAPIUrl" id="cxScaGlobalAPIUrl" descriptionKey="cxScaGlobalAPIUrl.description"/]
+		[@ww.textfield labelKey="cxGlobalAccessControlServerUrl.label" name="cxGlobalAccessControlServerUrl" id="cxGlobalAccessControlServerUrl" descriptionKey="cxGlobalAccessControlServerUrl.description"/]
+		[@ww.textfield labelKey="cxScaGlobalWebAppUrl.label" name="cxScaGlobalWebAppUrl" id="cxScaGlobalWebAppUrl" descriptionKey="cxScaGlobalWebAppUrl.description"/]
+		[@ww.textfield labelKey="cxScaGlobalAccountName.label" name="cxScaGlobalAccountName" id="cxScaGlobalAccountName" descriptionKey="cxScaGlobalAccountName.description"/]
+        
         [@ww.textfield labelKey="cxScaGlobalUsername.label" name="globalcxScaUsername"/]
         [@ww.password labelKey="cxScaGlobalPassword.label" name="globalcxScaPss" showPassword='true' /]
+        <button type="button" class="aui-button test-cxsca-connection" id="g_test-cxsca-connection" onclick="connectToScaServer()">Connect to Server</button>
+		<div id="gtestScaConnectionMessage" class="test-cxsca-connection-message"></div>
 	[/@ui.bambooSection]
         
     [@ui.bambooSection title='Control Checkmarx Scan' cssClass="cx center"]
@@ -130,6 +137,105 @@
 [/@ww.form]
 
 <script>
+function connectToScaServer() {
+console.log("<<<<<<<<<<  INSIDE connectToScaServer () >>>>>>>>>>>>>  ");
+        document.getElementById("gtestScaConnectionMessage").html = "";
+            restScaRequest();
+    }
+
+        function restScaRequest() {
+
+        if (!validateScaFields()) {
+        	return;
+        }
+        var request = JSON.stringify(getInputScaData());
+
+
+        function createScaRestRequest(method, url) {
+
+            var resolvedUrl = AJS.contextPath() + url;
+
+            var xhr = new XMLHttpRequest();
+            if ("withCredentials" in xhr) {
+                xhr.open(method, resolvedUrl, true);
+
+            } else if (typeof XDomainRequest != "undefined") {
+                xhr = new XDomainRequest();
+                xhr.open(method, resolvedUrl);
+            } else {
+                xhr = null;
+            }
+            return xhr;
+        }
+
+        var xhr = createScaRestRequest("POST", "/rest/checkmarx/1.0/test/scaconnection");
+        if (!xhr) {
+            console.log("Request Failed");
+            return;
+        }
+
+        xhr.onload = function () {
+            var parsed = JSON.parse(xhr.responseText);
+            if (xhr.status == 200) {
+                $('#gtestScaConnectionMessage').css('color', 'green');
+            }
+            else {
+                $('#gtestScaConnectionMessage').css('color', '#d22020');
+            }
+            $('#gtestScaConnectionMessage').html(parsed.loginResponse);
+        };
+
+
+        xhr.onerror = function () {
+            console.log('There was an error!');
+        };
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(request);
+    }
+
+
+    function validateScaFields() {
+
+        var messageElement = $('#gtestScaConnectionMessage');
+
+        if ($('#cxScaGlobalAPIUrl').val().length < 1) {
+            messageElement.text('CxSca API Url must not be empty');
+            messageElement.css('color', '#d22020');
+            return false;
+        } else if ($('#cxGlobalAccessControlServerUrl').val().length < 1) {
+            messageElement.text('CxAccess Control Server Url must not be empty');
+            messageElement.css('color', '#d22020');
+            return false;
+        } else if ($('#cxScaGlobalWebAppUrl').val().length < 1) {
+            messageElement.text('CxSca Web App Url must not be empty');
+            messageElement.css('color', '#d22020');
+            return false;
+        } else if ($('#cxScaGlobalAccountName').val().length < 1) {
+            messageElement.text('CxSca Account Name must not be empty');
+            messageElement.css('color', '#d22020');
+            return false;
+        }else if ($('#cxScaUsername').val().length < 1) {
+            messageElement.text('CxSca Username must not be empty');
+            messageElement.css('color', '#d22020');
+            return false;
+        }else if ($('#cxScaPassword').val().length < 1) {
+            messageElement.text('CxSca Password must not be empty');
+            messageElement.css('color', '#d22020');
+            return false;
+        }
+        return true;
+    }
+
+    function getInputScaData() {
+        return {
+            "scaServerUrl": $("#cxScaGlobalAPIUrl").val(),
+            "scaAccessControlUrl": $('#cxGlobalAccessControlServerUrl').val(),
+            "cxScaWebAppUrl": $('#cxScaGlobalWebAppUrl').val(),
+			"scaAccountName": $("#cxScaGlobalAccountName").val(),
+            "scaUserName": $('#cxScaUsername').val(),
+            "pss": $('#cxScaPassword').val()
+        };
+    }
     function connectToServer() {
         document.getElementById("gtestConnectionMessage").innerHTML = "";
             restRequest();

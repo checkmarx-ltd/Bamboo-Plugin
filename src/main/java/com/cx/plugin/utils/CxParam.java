@@ -73,6 +73,12 @@ public class CxParam {
     public final static String CXSCA_ACCESS_CONTROL_URL = "cxAccessControlServerUrl";
     public final static String CXSCA_WEBAPP_URL = "cxScaWebAppUrl";
     public final static String CXSCA_ACCOUNT_NAME = "cxScaAccountName";
+    
+    public final static String GLOBAL_CXSCA_API_URL = "cxScaGlobalAPIUrl";
+    public final static String GLOBAL_CXSCA_ACCESS_CONTROL_URL = "cxGlobalAccessControlServerUrl";
+    public final static String GLOBAL_CXSCA_WEBAPP_URL = "cxScaGlobalWebAppUrl";
+    public final static String GLOBAL_CXSCA_ACCOUNT_NAME = "cxScaGlobalAccountName";
+    
     public final static String CXSCA_USE_CUSTOME_CREDENTIALS = "cxScaCredentialsCustom";
     public final static String CXSCA_USERNAME = "cxScaUsername";
     public final static String CXSCA_PWD = "cxScaPassword";

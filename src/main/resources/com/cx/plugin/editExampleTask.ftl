@@ -168,12 +168,13 @@
 					source libraries in your applications
 				</small>
 			</p>
+			[@ui.bambooSection dependsOn="cxScaCredentialsCustom" showOn="true"]
 			[@ww.textfield labelKey="cxScaAPIUrl.label" name="cxScaAPIUrl" id="cxScaAPIUrl" descriptionKey="cxScaAPIUrl.description"/]
 			[@ww.textfield labelKey="cxAccessControlServerUrl.label" name="cxAccessControlServerUrl" id="cxAccessControlServerUrl" descriptionKey="cxAccessControlServerUrl.description"/]
 			[@ww.textfield labelKey="cxScaWebAppUrl.label" name="cxScaWebAppUrl" id="cxScaWebAppUrl" descriptionKey="cxScaWebAppUrl.description"/]
 			[@ww.textfield labelKey="cxScaAccountName.label" name="cxScaAccountName" id="cxScaAccountName" descriptionKey="cxScaAccountName.description"/]
 			[@ww.checkbox labelKey="cxScaCredentialsCustom.label" name="cxScaCredentialsCustom" descriptionKey="cxScaCredentialsCustom.description" toggle='true' /]
-			[@ui.bambooSection dependsOn="cxScaCredentialsCustom" showOn="true"]
+			
 				[@ww.textfield labelKey="cxScaUsername.label"  id="cxScaUsername" name="cxScaUsername" required='true'/]
 				[@ww.password labelKey="cxScaPassword.label"  id="cxScaPassword" name="cxScaPassword" showPassword='true' required='true'/]
 				<button type="button" class="aui-button test-cxsca-connection" id="test-cxsca-connection">Connect to Server</button>

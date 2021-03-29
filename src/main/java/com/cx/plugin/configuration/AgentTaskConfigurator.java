@@ -84,6 +84,12 @@ import static com.cx.plugin.utils.CxParam.CXSCA_ACCOUNT_NAME;
 import static com.cx.plugin.utils.CxParam.CXSCA_USE_CUSTOME_CREDENTIALS;
 import static com.cx.plugin.utils.CxParam.CXSCA_USERNAME;
 import static com.cx.plugin.utils.CxParam.CXSCA_PWD;
+
+import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_API_URL;
+import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_ACCESS_CONTROL_URL;
+import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_WEBAPP_URL;
+import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_ACCOUNT_NAME;
+
 import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_USERNAME;
 import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_PWD;
 import static com.cx.plugin.utils.CxParam.DEFAULT_CXSCA_API_URL;
@@ -295,17 +301,20 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         context.put(OSA_FILTER_PATTERNS, configMap.get(OSA_FILTER_PATTERNS));
         context.put(OSA_ARCHIVE_INCLUDE_PATTERNS, configMap.get(OSA_ARCHIVE_INCLUDE_PATTERNS));
 		
-        context.put(CXSCA_API_URL,configMap.get(CXSCA_API_URL));
-        context.put(CXSCA_ACCESS_CONTROL_URL,configMap.get(CXSCA_ACCESS_CONTROL_URL));
-		context.put(CXSCA_WEBAPP_URL,configMap.get(CXSCA_WEBAPP_URL));
-		context.put(CXSCA_ACCOUNT_NAME,configMap.get(CXSCA_ACCOUNT_NAME));
-		
 		context.put(CXSCA_USE_CUSTOME_CREDENTIALS,configMap.get(CXSCA_USE_CUSTOME_CREDENTIALS));
 		String useCustomCredsForSCA = configMap.get(CXSCA_USE_CUSTOME_CREDENTIALS);
 		if(!StringUtils.isEmpty(useCustomCredsForSCA) && useCustomCredsForSCA.equalsIgnoreCase("true")) {
+			context.put(CXSCA_API_URL,configMap.get(CXSCA_API_URL));
+	        context.put(CXSCA_ACCESS_CONTROL_URL,configMap.get(CXSCA_ACCESS_CONTROL_URL));
+			context.put(CXSCA_WEBAPP_URL,configMap.get(CXSCA_WEBAPP_URL));
+			context.put(CXSCA_ACCOUNT_NAME,configMap.get(CXSCA_ACCOUNT_NAME));
 			context.put(CXSCA_USERNAME,configMap.get(CXSCA_USERNAME));
 			context.put(CXSCA_PWD,configMap.get(CXSCA_PWD));        	
 		}else {
+			context.put(CXSCA_API_URL,configMap.get(GLOBAL_CXSCA_API_URL));
+	        context.put(CXSCA_ACCESS_CONTROL_URL,configMap.get(GLOBAL_CXSCA_ACCESS_CONTROL_URL));
+			context.put(CXSCA_WEBAPP_URL,configMap.get(GLOBAL_CXSCA_WEBAPP_URL));
+			context.put(CXSCA_ACCOUNT_NAME,configMap.get(GLOBAL_CXSCA_ACCOUNT_NAME));
 			context.put(CXSCA_USERNAME,getAdminConfig(GLOBAL_CXSCA_USERNAME));
 			context.put(CXSCA_PWD,getAdminConfig(GLOBAL_CXSCA_PWD));
 		}	
@@ -514,19 +523,27 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         config.put(OSA_FILTER_PATTERNS, getDefaultString(params, OSA_FILTER_PATTERNS).trim());
         config.put(OSA_ARCHIVE_INCLUDE_PATTERNS, getDefaultString(params, OSA_ARCHIVE_INCLUDE_PATTERNS).trim());
         		
-        config.put(CXSCA_API_URL,getDefaultString(params, CXSCA_API_URL).trim());
-        config.put(CXSCA_ACCESS_CONTROL_URL,getDefaultString(params, CXSCA_ACCESS_CONTROL_URL).trim());
-        config.put(CXSCA_WEBAPP_URL,getDefaultString(params, CXSCA_WEBAPP_URL).trim());
-        config.put(CXSCA_ACCOUNT_NAME,getDefaultString(params, CXSCA_ACCOUNT_NAME).trim());
-		
         config.put(CXSCA_USE_CUSTOME_CREDENTIALS,getDefaultString(params, CXSCA_USE_CUSTOME_CREDENTIALS).trim());		
 		String useCustomCredsForSCA = getDefaultString(params, CXSCA_USE_CUSTOME_CREDENTIALS).trim();
 		if(!StringUtils.isEmpty(useCustomCredsForSCA) && useCustomCredsForSCA.equalsIgnoreCase("true")) {
+			
+			config.put(CXSCA_API_URL,getDefaultString(params, CXSCA_API_URL).trim());
+	        config.put(CXSCA_ACCESS_CONTROL_URL,getDefaultString(params, CXSCA_ACCESS_CONTROL_URL).trim());
+	        config.put(CXSCA_WEBAPP_URL,getDefaultString(params, CXSCA_WEBAPP_URL).trim());
+	        config.put(CXSCA_ACCOUNT_NAME,getDefaultString(params, CXSCA_ACCOUNT_NAME).trim());
+	        
 			config.put(CXSCA_USERNAME,getDefaultString(params, CXSCA_USERNAME).trim());
-			config.put(CXSCA_PWD,getDefaultString(params, CXSCA_PWD).trim());        	
+			config.put(CXSCA_PWD,getDefaultString(params, CXSCA_PWD).trim());    
+			
 		}else {
+			config.put(CXSCA_API_URL,getDefaultString(params, GLOBAL_CXSCA_API_URL).trim());
+	        config.put(CXSCA_ACCESS_CONTROL_URL,getDefaultString(params, GLOBAL_CXSCA_ACCESS_CONTROL_URL).trim());
+	        config.put(CXSCA_WEBAPP_URL,getDefaultString(params, GLOBAL_CXSCA_WEBAPP_URL).trim());
+	        config.put(CXSCA_ACCOUNT_NAME,getDefaultString(params, GLOBAL_CXSCA_ACCOUNT_NAME).trim());
+			
 			config.put(CXSCA_USERNAME,getAdminConfig(GLOBAL_CXSCA_USERNAME).trim());
 			config.put(CXSCA_PWD,decrypt(getAdminConfig(GLOBAL_CXSCA_PWD).trim()));
+			
 		}	
 		
         return config;

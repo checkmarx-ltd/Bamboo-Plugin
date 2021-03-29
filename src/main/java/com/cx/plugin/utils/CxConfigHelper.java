@@ -107,6 +107,8 @@ public class CxConfigHelper {
     public static final String HTTP_PORT = System.getProperty("http.proxyPort");
     public static final String HTTP_USERNAME = System.getProperty("http.proxyUser");
     public static final String HTTP_PASSWORD = System.getProperty("http.proxyPassword");
+    
+    public static final String NON_PROXY_HOSTS = System.getProperty("http.nonProxyHosts");
 
     public static final String HTTPS_HOST = System.getProperty("https.proxyHost");
     public static final String HTTPS_PORT = System.getProperty("https.proxyPort");
