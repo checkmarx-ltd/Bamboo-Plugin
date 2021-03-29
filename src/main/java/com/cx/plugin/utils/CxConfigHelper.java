@@ -144,6 +144,7 @@ public class CxConfigHelper {
 				log.debug("Proxy user: " + proxyConfig.getUsername());
 				log.debug("Proxy password: *************");
 				log.debug("Proxy Scheme: " + (proxyConfig.isUseHttps() ? "https" : "http"));
+				log.debug("Non Proxy Hosts: " + proxyConfig.getNoproxyHosts());
 
 			}
 		} else {

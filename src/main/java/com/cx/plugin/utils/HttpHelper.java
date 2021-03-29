@@ -31,6 +31,8 @@ public class HttpHelper {
     public static final String HTTPS_PORT = System.getProperty("https.proxyPort");
     public static final String HTTPS_USERNAME = System.getProperty("https.proxyUser");
     public static final String HTTPS_PASSWORD = System.getProperty("https.proxyPassword");
+    public static final String HTTP_NON_PROXY_HOSTS = System.getProperty("http.nonProxyHosts");
+    public static final String HTTPS_NON_PROXY_HOSTS = System.getProperty("https.nonProxyHosts");
 
     public static Proxy getHttpProxy() {
         Proxy proxy = null;
@@ -64,6 +66,7 @@ public class HttpHelper {
 
 		ProxyConfig proxyConfig = null;
 		int port = 0;
+		
 		if (HTTP_HOST != null && !HTTP_HOST.isEmpty()) {
 			port = Integer.parseInt(HTTP_PORT);
 			proxyConfig = new ProxyConfig();
@@ -72,6 +75,9 @@ public class HttpHelper {
 			proxyConfig.setUsername(HTTP_USERNAME);
 			proxyConfig.setPassword(HTTP_PASSWORD);
 			proxyConfig.setUseHttps(false);
+			if(HTTP_NON_PROXY_HOSTS != null && !HTTP_NON_PROXY_HOSTS.isEmpty()) {
+				proxyConfig.setNoproxyHosts(HTTP_NON_PROXY_HOSTS);
+				}
 		} else if (HTTPS_HOST != null && !HTTPS_HOST.isEmpty()) {
 			port = Integer.parseInt(HTTPS_PORT);
 			proxyConfig = new ProxyConfig();
@@ -80,6 +86,9 @@ public class HttpHelper {
 			proxyConfig.setUsername(HTTPS_USERNAME);
 			proxyConfig.setPassword(HTTPS_PASSWORD);
 			proxyConfig.setUseHttps(true);
+			if(HTTPS_NON_PROXY_HOSTS != null && !HTTPS_NON_PROXY_HOSTS.isEmpty()) {
+				proxyConfig.setNoproxyHosts(HTTPS_NON_PROXY_HOSTS);
+				}
 		} 
 		
 		return proxyConfig;
