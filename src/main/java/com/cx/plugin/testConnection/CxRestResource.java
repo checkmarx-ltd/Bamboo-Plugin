@@ -124,14 +124,15 @@ public class CxRestResource {
 				if (proxyConfig != null) {
 					config.setProxy(true);
 					config.setProxyConfig(proxyConfig);
-		            logger.error("Testing login with proxy details:");
+		            logger.debug("Testing login with proxy details:");
 					logger.debug("Proxy host: " + proxyConfig.getHost());
 					logger.debug("Proxy port: " + proxyConfig.getPort());
 					logger.debug("Proxy user: " + proxyConfig.getUsername());
 					logger.debug("Proxy password: *************");
 					logger.debug("Proxy Scheme: " + (proxyConfig.isUseHttps() ? "https" : "http"));
+					logger.debug("Non Proxy Hosts: " + proxyConfig.getNoproxyHosts());
 				}else {
-		            logger.error("Testing login.");
+		            logger.debug("Testing login.");
 				}
 				
 				AstScaConfig scaConfig = new AstScaConfig();
@@ -182,14 +183,15 @@ public class CxRestResource {
 			if (proxyConfig != null) {
 				scanConfig.setProxy(true);
 				scanConfig.setProxyConfig(proxyConfig);
-	            logger.error("Testing login with proxy details:");
+	            logger.debug("Testing login with proxy details:");
 				logger.debug("Proxy host: " + proxyConfig.getHost());
 				logger.debug("Proxy port: " + proxyConfig.getPort());
 				logger.debug("Proxy user: " + proxyConfig.getUsername());
 				logger.debug("Proxy password: *************");
 				logger.debug("Proxy Scheme: " + (proxyConfig.isUseHttps() ? "https" : "http"));
+				logger.debug("Non Proxy Hosts: " + proxyConfig.getNoproxyHosts());
 			}else {
-	            logger.error("Testing login.");
+	            logger.debug("Testing login.");
 			}
 			
             commonClient = CommonClientFactory.getInstance(scanConfig, logger);
