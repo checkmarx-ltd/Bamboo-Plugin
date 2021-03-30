@@ -112,10 +112,11 @@ public class CxRestResource {
 
 				String scaAccessControlUrl = StringUtils.defaultString(data.get("scaAccessControlUrl"));
 				String scaServerUrl = StringUtils.defaultString(data.get("scaServerUrl"));
+				String scaWebAppUrl = StringUtils.defaultString(data.get("scaWebAppUrl"));
 				String scaTenant = StringUtils.defaultString(data.get("scaAccountName"));
 				String username = StringUtils.defaultString(data.get("scaUserName"));
 				String pss = StringUtils.defaultString(data.get("pss"));
-
+				
 				CxScanConfig config = new CxScanConfig();
 				config.setDisableCertificateValidation(true);
 				config.setOsaGenerateJsonReport(false);
@@ -137,6 +138,7 @@ public class CxRestResource {
 				
 				AstScaConfig scaConfig = new AstScaConfig();
 				scaConfig.setAccessControlUrl(scaAccessControlUrl);
+				scaConfig.setWebAppUrl(scaWebAppUrl);
 				scaConfig.setApiUrl(scaServerUrl);
 				scaConfig.setTenant(scaTenant);
 				scaConfig.setUsername(username);

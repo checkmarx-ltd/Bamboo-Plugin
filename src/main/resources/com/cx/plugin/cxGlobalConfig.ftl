@@ -172,12 +172,12 @@ function connectToScaServer() {
         function restScaRequest() {
 			var request;
 			
-			var scaUrl = document.getElementById("checkmarxDefaultConfiguration_globalcxScaAPIUrl").value;
-            var scaAccControlUrl = document.getElementById("checkmarxDefaultConfiguration_globalcxScaAccessControlServerUrl").value;
+			var scaServerUrl = document.getElementById("checkmarxDefaultConfiguration_globalcxScaAPIUrl").value;
+            var scaAccessControlUrl = document.getElementById("checkmarxDefaultConfiguration_globalcxScaAccessControlServerUrl").value;
             var scaWebAppUrl = document.getElementById("checkmarxDefaultConfiguration_globalcxScaWebAppUrl").value;
-			var scaAcctName = document.getElementById("checkmarxDefaultConfiguration_globalcxScaAccountName").value;
+			var scaAccountName = document.getElementById("checkmarxDefaultConfiguration_globalcxScaAccountName").value;
 			var scaUserName = document.getElementById("checkmarxDefaultConfiguration_globalcxScaUsername").value;
-			var scaPass = document.getElementById("checkmarxDefaultConfiguration_globalcxScaPss").value;
+			var pss = document.getElementById("checkmarxDefaultConfiguration_globalcxScaPss").value;
 			
 			
         if (!validateScaFields()) {
@@ -232,12 +232,13 @@ function connectToScaServer() {
 
     function validateScaFields() {
 
-        var messageElement = $('#gtestScaConnectionMessage');
-				if (scaUrl.length < 1) {
+		var messageElement = document.getElementById("gtestScaConnectionMessage");
+        
+				if (scaServerUrl.length < 1) {
                     messageElement.textContent = 'CxSca API Url must not be empty';
                     messageElement.style.color = "#d22020";
                     return false;
-                } else if (scaAccControlUrl.length < 1) {
+                } else if (scaAccessControlUrl.length < 1) {
                     messageElement.textContent = "CxAccess Control Server Url must not be empty";
                     messageElement.style.color = "#d22020";
                     return false;
@@ -246,7 +247,7 @@ function connectToScaServer() {
                     messageElement.style.color = "#d22020";
                     return false;
                 }
-				else if (scaAcctName.length < 1) {
+				else if (scaAccountName.length < 1) {
                     messageElement.textContent = "CxSca Account Name must not be empty";
                     messageElement.style.color = "#d22020";
                     return false;
@@ -256,7 +257,7 @@ function connectToScaServer() {
                     messageElement.style.color = "#d22020";
                     return false;
                 }
-				else if (scaPass.length < 1) {
+				else if (pss.length < 1) {
                     messageElement.textContent = "CxSca Password must not be empty";
                     messageElement.style.color = "#d22020";
                     return false;
@@ -267,12 +268,12 @@ function connectToScaServer() {
 
     function getInputScaData() {
         return {
-            "scaUrl": scaUrl,
-            "scaAccControlUrl": scaAccControlUrl,
+            "scaServerUrl": scaServerUrl,
+            "scaAccessControlUrl": scaAccessControlUrl,
             "scaWebAppUrl": scaWebAppUrl,
-			"scaAcctName": scaAcctName,
+			"scaAccountName": scaAccountName,
             "scaUserName": scaUserName,
-            "scaPass": scaPass
+            "pss": pss
         };
     }
 	}
