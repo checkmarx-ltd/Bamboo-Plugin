@@ -16,7 +16,7 @@
     }
 
     input#radioGroupcustomConfigurationServer, input#radioGroupglobalConfigurationServer, input#radioGroupglobalConfigurationCxSAST, input#radioGroupcustomConfigurationCxSAST, input#radioGroupglobalConfigurationControl, input#radioGroupcustomConfigurationControl, input#radioGroupOSA, input#radioGroupAST_SCA, {
-        width: 14px;
+        width: 20px;
     }
 
     form.aui.top-label .field-group > label {
@@ -99,7 +99,9 @@
 
     [@ui.bambooSection title='Dependency Scan' cssClass="cx center"]
 	[@ww.checkbox labelKey="globalEnableDependencyScan.label" name="globalEnableDependencyScan" toggle='true' /]
-    [@ui.bambooSection dependsOn="globalEnableDependencyScan" showOn="true"]
+	[@ui.bambooSection dependsOn="globalEnableDependencyScan" showOn="true"]
+	[@ww.textarea labelKey="cxGlobalDependencyScanFilterPatterns.label" name="cxGlobalDependencyScanFilterPatterns" descriptionKey="cxGlobalDependencyScanFilterPatterns.description" rows="4" cssClass="long-field"/]
+	[@ww.textfield labelKey="cxGlobalDependencyScanfolderExclusions.label" name="cxGlobalDependencyScanfolderExclusions" descriptionKey="cxGlobalDependencyScanfolderExclusions.description" cssClass="long-field"/]
 		[@ww.radio id = 'radioGroup' name='globalDependencyScanType' listKey='key' listValue='value' toggle='true' list=globalDependencyScanTypeValues /]
 		
 		[@ui.bambooSection title='Checkmarx Scan CxOSA' dependsOn='globalDependencyScanType' showOn='OSA' cssClass="cx center" ]
@@ -109,7 +111,7 @@
 					source libraries in your applications
 				</small>
 			</p>
-			[@ww.textarea labelKey="cxGlobalOsaFilterPatterns.label" name="cxGlobalOsaFilterPatterns" descriptionKey="cxGlobalOsaFilterPatterns.description" rows="4" cssClass="long-field"/]
+			
 			[@ww.textfield labelKey="cxGlobalOsaArchiveIncludePatterns.label" name="cxGlobalOsaArchiveIncludePatterns" descriptionKey="cxGlobalOsaArchiveIncludePatterns.description"/]
 			[@ww.checkbox labelKey="cxGlobalOsaInstallBeforeScan.label" name="cxGlobalOsaInstallBeforeScan" descriptionKey="cxGlobalOsaInstallBeforeScan.description" toggle='true' /]
 		[/@ui.bambooSection]

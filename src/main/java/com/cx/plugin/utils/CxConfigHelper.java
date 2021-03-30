@@ -46,7 +46,8 @@ import static com.cx.plugin.utils.CxParam.LOW_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.MEDIUM_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.OPTION_TRUE;
 import static com.cx.plugin.utils.CxParam.OSA_ARCHIVE_INCLUDE_PATTERNS;
-import static com.cx.plugin.utils.CxParam.OSA_FILTER_PATTERNS;
+import static com.cx.plugin.utils.CxParam.DEPENDENCY_SCAN_FILTER_PATTERNS;
+import static com.cx.plugin.utils.CxParam.DEPENDENCY_SCAN_FOLDER_EXCLUDE;
 import static com.cx.plugin.utils.CxParam.OSA_HIGH_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.OSA_INSTALL_BEFORE_SCAN;
 import static com.cx.plugin.utils.CxParam.OSA_LOW_THRESHOLD;
@@ -209,13 +210,14 @@ public class CxConfigHelper {
         //add AST_SCA or OSA based on what user has selected
         ScannerType scannerType = null;
         if(resolveBool(configMap, ENABLE_DEPENDENCY_SCAN)) {
+        	scanConfig.setOsaFilterPattern(configMap.get(DEPENDENCY_SCAN_FILTER_PATTERNS));
+        	scanConfig.setOsaFolderExclusions(configMap.get(DEPENDENCY_SCAN_FOLDER_EXCLUDE));
         	if(configMap.get(DEPENDENCY_SCAN_TYPE).equalsIgnoreCase(ScannerType.AST_SCA.toString())) {        		
         		scannerType = ScannerType.AST_SCA;
         		scanConfig.setAstScaConfig(getScaConfig(configMap));
         	}else {
         		scannerType = ScannerType.OSA;
                 scanConfig.setOsaArchiveIncludePatterns(configMap.get(OSA_ARCHIVE_INCLUDE_PATTERNS));
-                scanConfig.setOsaFilterPattern(configMap.get(OSA_FILTER_PATTERNS));
                 scanConfig.setOsaRunInstall(resolveBool(configMap, OSA_INSTALL_BEFORE_SCAN));
         	}
         	if (scannerType != null) {

@@ -43,7 +43,9 @@ public class CxParam {
     public static final String LOW_THRESHOLD = "lowThreshold";
     public static final String POLICY_VIOLATION_ENABLED = "enablePolicyViolations";
     public static final String OSA_ENABLED = "osaEnabled";
-    public static final String OSA_FILTER_PATTERNS = "cxOsaFilterPatterns";
+    public static final String DEPENDENCY_SCAN_FILTER_PATTERNS = "cxDependencyScanFilterPatterns";
+    public static final String DEPENDENCY_SCAN_FOLDER_EXCLUDE = "cxDependencyScanfolderExclusions";
+    public static final String GLOBAL_DEPENDENCY_SCAN_FOLDER_EXCLUDE = "cxGlobalDependencyScanfolderExclusions";
     public static final String OSA_ARCHIVE_INCLUDE_PATTERNS = "cxOsaArchiveIncludePatterns";
     public static final String OSA_INSTALL_BEFORE_SCAN = "cxOsaInstallBeforeScan";
     public static final String OSA_THRESHOLDS_ENABLED = "osaThresholdsEnabled";
@@ -72,7 +74,7 @@ public class CxParam {
     
     public final static String GLOBAL_ENABLE_DEPENDENCY_SCAN = "globalEnableDependencyScan";
     public final static String GLOBAL_DEPENDENCY_SCAN_TYPE = "globalDependencyScanType";
-    public static final String GLOBAL_OSA_FILTER_PATTERNS = "cxGlobalOsaFilterPatterns";
+    public static final String GLOBAL_DEPENDENCY_SCAN_FILTER_PATTERNS = "cxGlobalDependencyScanFilterPatterns";
     public static final String GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS = "cxGlobalOsaArchiveIncludePatterns";
     public static final String GLOBAL_OSA_INSTALL_BEFORE_SCAN = "cxGlobalOsaInstallBeforeScan";
     

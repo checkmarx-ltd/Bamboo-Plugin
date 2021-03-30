@@ -54,7 +54,7 @@ import static com.cx.plugin.utils.CxParam.OPTION_FALSE;
 import static com.cx.plugin.utils.CxParam.OPTION_TRUE;
 import static com.cx.plugin.utils.CxParam.OSA_ARCHIVE_INCLUDE_PATTERNS;
 import static com.cx.plugin.utils.CxParam.OSA_ENABLED;
-import static com.cx.plugin.utils.CxParam.OSA_FILTER_PATTERNS;
+import static com.cx.plugin.utils.CxParam.DEPENDENCY_SCAN_FILTER_PATTERNS;
 import static com.cx.plugin.utils.CxParam.OSA_HIGH_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.OSA_INSTALL_BEFORE_SCAN;
 import static com.cx.plugin.utils.CxParam.OSA_LOW_THRESHOLD;
@@ -88,7 +88,9 @@ import static com.cx.plugin.utils.CxParam.CXSCA_PWD;
 import static com.cx.plugin.utils.CxParam.GLOBAL_ENABLE_DEPENDENCY_SCAN;
 import static com.cx.plugin.utils.CxParam.GLOBAL_DEPENDENCY_SCAN_TYPE;
 import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_INSTALL_BEFORE_SCAN;
-import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_FILTER_PATTERNS;
+import static com.cx.plugin.utils.CxParam.GLOBAL_DEPENDENCY_SCAN_FILTER_PATTERNS;
+import static com.cx.plugin.utils.CxParam.DEPENDENCY_SCAN_FOLDER_EXCLUDE;
+import static com.cx.plugin.utils.CxParam.GLOBAL_DEPENDENCY_SCAN_FOLDER_EXCLUDE;
 import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS;
 import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_API_URL;
 import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_ACCESS_CONTROL_URL;
@@ -310,7 +312,9 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 	        
 			context.put(OSA_ENABLED, osaEnabled);
 	        context.put(OSA_INSTALL_BEFORE_SCAN, configMap.get(OSA_INSTALL_BEFORE_SCAN));
-	        context.put(OSA_FILTER_PATTERNS, configMap.get(OSA_FILTER_PATTERNS));
+	        context.put(DEPENDENCY_SCAN_FILTER_PATTERNS, configMap.get(DEPENDENCY_SCAN_FILTER_PATTERNS));
+	        context.put(DEPENDENCY_SCAN_FOLDER_EXCLUDE, configMap.get(DEPENDENCY_SCAN_FOLDER_EXCLUDE));
+	        
 	        context.put(OSA_ARCHIVE_INCLUDE_PATTERNS, configMap.get(OSA_ARCHIVE_INCLUDE_PATTERNS));
 			
 			context.put(CXSCA_API_URL,configMap.get(CXSCA_API_URL));
@@ -333,7 +337,9 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 	        
 			context.put(OSA_ENABLED, osaEnabled);
 	        context.put(OSA_INSTALL_BEFORE_SCAN, configMap.get(GLOBAL_OSA_INSTALL_BEFORE_SCAN));
-	        context.put(OSA_FILTER_PATTERNS, configMap.get(GLOBAL_OSA_FILTER_PATTERNS));
+	        context.put(DEPENDENCY_SCAN_FILTER_PATTERNS, configMap.get(GLOBAL_DEPENDENCY_SCAN_FILTER_PATTERNS));
+	        context.put(DEPENDENCY_SCAN_FOLDER_EXCLUDE, configMap.get(GLOBAL_DEPENDENCY_SCAN_FOLDER_EXCLUDE));
+	        
 	        context.put(OSA_ARCHIVE_INCLUDE_PATTERNS, configMap.get(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS));
 			
 			context.put(CXSCA_API_URL,configMap.get(GLOBAL_CXSCA_API_URL));
@@ -348,7 +354,8 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     private void populateOSA_SCA_FieldsForCreate(Map<String, Object> context) {
     	
     	context.put(ENABLE_DEPENDENCY_SCAN, OPTION_FALSE);        
-        context.put(OSA_FILTER_PATTERNS, "");
+        context.put(DEPENDENCY_SCAN_FILTER_PATTERNS, "");
+        context.put(DEPENDENCY_SCAN_FOLDER_EXCLUDE, "");
         context.put(OSA_ARCHIVE_INCLUDE_PATTERNS, DEFAULT_OSA_ARCHIVE_INCLUDE_PATTERNS);
 		
         context.put(CXSCA_API_URL,DEFAULT_CXSCA_API_URL);
@@ -550,7 +557,8 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 	        config.put(DEPENDENCY_SCAN_TYPE, configType);
 	        
 	        config.put(OSA_INSTALL_BEFORE_SCAN, getDefaultString(params, OSA_INSTALL_BEFORE_SCAN).trim());
-	        config.put(OSA_FILTER_PATTERNS, getDefaultString(params, OSA_FILTER_PATTERNS).trim());
+	        config.put(DEPENDENCY_SCAN_FILTER_PATTERNS, getDefaultString(params, DEPENDENCY_SCAN_FILTER_PATTERNS).trim());
+	        config.put(DEPENDENCY_SCAN_FOLDER_EXCLUDE, getDefaultString(params, DEPENDENCY_SCAN_FOLDER_EXCLUDE).trim());
 	        config.put(OSA_ARCHIVE_INCLUDE_PATTERNS, getDefaultString(params, OSA_ARCHIVE_INCLUDE_PATTERNS).trim());
 			config.put(CXSCA_API_URL,getDefaultString(params, CXSCA_API_URL).trim());
 	        config.put(CXSCA_ACCESS_CONTROL_URL,getDefaultString(params, CXSCA_ACCESS_CONTROL_URL).trim());
@@ -566,7 +574,9 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 	        config.put(DEPENDENCY_SCAN_TYPE, configType);
 	        
 	        config.put(OSA_INSTALL_BEFORE_SCAN, getDefaultString(params, GLOBAL_OSA_INSTALL_BEFORE_SCAN).trim());
-	        config.put(OSA_FILTER_PATTERNS, getDefaultString(params, GLOBAL_OSA_FILTER_PATTERNS).trim());
+	        config.put(DEPENDENCY_SCAN_FILTER_PATTERNS, getDefaultString(params, GLOBAL_DEPENDENCY_SCAN_FILTER_PATTERNS).trim());
+	        config.put(DEPENDENCY_SCAN_FOLDER_EXCLUDE, getDefaultString(params, GLOBAL_DEPENDENCY_SCAN_FOLDER_EXCLUDE).trim());
+	        
 	        config.put(OSA_ARCHIVE_INCLUDE_PATTERNS, getDefaultString(params, GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS).trim());
 	        
 			config.put(CXSCA_API_URL,getDefaultString(params, GLOBAL_CXSCA_API_URL).trim());

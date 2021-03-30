@@ -52,8 +52,11 @@ public class CxGlobalConfig extends GlobalAdminAction {
     
     private String globalEnableDependencyScan = OPTION_FALSE;
 	private String globalDependencyScanType;
-    private String cxGlobalOsaFilterPatterns="";
-    private String cxGlobalOsaArchiveIncludePatterns = DEFAULT_OSA_ARCHIVE_INCLUDE_PATTERNS;
+    private String cxGlobalDependencyScanFilterPatterns="";
+    private String cxGlobalDependencyScanfolderExclusions;
+    
+
+	private String cxGlobalOsaArchiveIncludePatterns = DEFAULT_OSA_ARCHIVE_INCLUDE_PATTERNS;
     private String cxGlobalOsaInstallBeforeScan;
     private String cxScaGlobalAPIUrl = DEFAULT_CXSCA_API_URL;
     private String cxGlobalAccessControlServerUrl = DEFAULT_CXSCA_ACCESS_CONTROL_URL;
@@ -68,15 +71,30 @@ public class CxGlobalConfig extends GlobalAdminAction {
         globalServerUrl = adminConfig.getSystemProperty(GLOBAL_SERVER_URL);
         globalUsername = adminConfig.getSystemProperty(GLOBAL_USER_NAME);
         globalPss = adminConfig.getSystemProperty(GLOBAL_PWD);
-        
+        if (adminConfig.getSystemProperty(GLOBAL_ENABLE_DEPENDENCY_SCAN) != null
+				&& !(adminConfig.getSystemProperty(GLOBAL_ENABLE_DEPENDENCY_SCAN)).isEmpty()) {
         globalEnableDependencyScan = adminConfig.getSystemProperty(GLOBAL_ENABLE_DEPENDENCY_SCAN);
+        }
         globalDependencyScanType = adminConfig.getSystemProperty(GLOBAL_DEPENDENCY_SCAN_TYPE);
-        cxGlobalOsaFilterPatterns = adminConfig.getSystemProperty(GLOBAL_OSA_FILTER_PATTERNS);
+        cxGlobalDependencyScanFilterPatterns = adminConfig.getSystemProperty(GLOBAL_DEPENDENCY_SCAN_FILTER_PATTERNS);
+        cxGlobalDependencyScanfolderExclusions = adminConfig.getSystemProperty(GLOBAL_DEPENDENCY_SCAN_FOLDER_EXCLUDE);
+        if (adminConfig.getSystemProperty(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS) != null
+				&& !(adminConfig.getSystemProperty(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS)).isEmpty()) {
         cxGlobalOsaArchiveIncludePatterns = adminConfig.getSystemProperty(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS);
+        }
         cxGlobalOsaInstallBeforeScan = adminConfig.getSystemProperty(GLOBAL_OSA_INSTALL_BEFORE_SCAN);
-        cxScaGlobalAPIUrl = adminConfig.getSystemProperty(GLOBAL_CXSCA_API_URL);
+		if (adminConfig.getSystemProperty(GLOBAL_CXSCA_API_URL) != null
+				&& !(adminConfig.getSystemProperty(GLOBAL_CXSCA_API_URL)).isEmpty()) {
+			cxScaGlobalAPIUrl = adminConfig.getSystemProperty(GLOBAL_CXSCA_API_URL);
+		}
+		if (adminConfig.getSystemProperty(GLOBAL_CXSCA_ACCESS_CONTROL_URL) != null
+				&& !(adminConfig.getSystemProperty(GLOBAL_CXSCA_ACCESS_CONTROL_URL)).isEmpty()) {
         cxGlobalAccessControlServerUrl = adminConfig.getSystemProperty(GLOBAL_CXSCA_ACCESS_CONTROL_URL);
+		}
+		if (adminConfig.getSystemProperty(GLOBAL_CXSCA_WEBAPP_URL) != null
+				&& !(adminConfig.getSystemProperty(GLOBAL_CXSCA_WEBAPP_URL)).isEmpty()) {
         cxScaGlobalWebAppUrl = adminConfig.getSystemProperty(GLOBAL_CXSCA_WEBAPP_URL);
+		}
         cxScaGlobalAccountName = adminConfig.getSystemProperty(GLOBAL_CXSCA_ACCOUNT_NAME);
         						
         globalcxScaUsername = adminConfig.getSystemProperty(GLOBAL_CXSCA_USERNAME);
@@ -141,7 +159,9 @@ public class CxGlobalConfig extends GlobalAdminAction {
         
         adminConfig.setSystemProperty(GLOBAL_ENABLE_DEPENDENCY_SCAN, globalEnableDependencyScan);
         adminConfig.setSystemProperty(GLOBAL_DEPENDENCY_SCAN_TYPE, globalDependencyScanType);
-        adminConfig.setSystemProperty(GLOBAL_OSA_FILTER_PATTERNS, cxGlobalOsaFilterPatterns);
+        adminConfig.setSystemProperty(GLOBAL_DEPENDENCY_SCAN_FILTER_PATTERNS, cxGlobalDependencyScanFilterPatterns);
+        adminConfig.setSystemProperty(GLOBAL_DEPENDENCY_SCAN_FOLDER_EXCLUDE, cxGlobalDependencyScanfolderExclusions);
+        
         adminConfig.setSystemProperty(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS, cxGlobalOsaArchiveIncludePatterns);
         adminConfig.setSystemProperty(GLOBAL_OSA_INSTALL_BEFORE_SCAN, cxGlobalOsaInstallBeforeScan);
         adminConfig.setSystemProperty(GLOBAL_CXSCA_API_URL, cxScaGlobalAPIUrl);
@@ -423,14 +443,13 @@ public class CxGlobalConfig extends GlobalAdminAction {
 		this.globalDependencyScanType = globalDependencyScanType;
 	}
 
-	public String getCxGlobalOsaFilterPatterns() {
-		return cxGlobalOsaFilterPatterns;
+	public String getCxGlobalDependencyScanFilterPatterns() {
+		return cxGlobalDependencyScanFilterPatterns;
 	}
 
-	public void setCxGlobalOsaFilterPatterns(String cxGlobalOsaFilterPatterns) {
-		this.cxGlobalOsaFilterPatterns = cxGlobalOsaFilterPatterns;
+	public void setCxGlobalDependencyScanFilterPatterns(String cxGlobalDependencyScanFilterPatterns) {
+		this.cxGlobalDependencyScanFilterPatterns = cxGlobalDependencyScanFilterPatterns;
 	}
-
 	public String getCxGlobalOsaArchiveIncludePatterns() {
 		return cxGlobalOsaArchiveIncludePatterns;
 	}
@@ -485,6 +504,13 @@ public class CxGlobalConfig extends GlobalAdminAction {
 
 	public void setGlobalDependencyScanTypeValues(Map<String, String> globalDependencyScanTypeValues) {
 		this.globalDependencyScanTypeValues = globalDependencyScanTypeValues;
+	}
+	public String getCxGlobalDependencyScanfolderExclusions() {
+		return cxGlobalDependencyScanfolderExclusions;
+	}
+
+	public void setCxGlobalDependencyScanfolderExclusions(String cxGlobalDependencyScanfolderExclusions) {
+		this.cxGlobalDependencyScanfolderExclusions = cxGlobalDependencyScanfolderExclusions;
 	}
 
 }

@@ -148,7 +148,10 @@
 	[@ww.checkbox labelKey="enableDependencyScan.label" name="enableDependencyScan" descriptionKey="enableDependencyScan.description" toggle='true' /]
     [@ui.bambooSection dependsOn="enableDependencyScan" showOn="true"]
     [@ww.checkbox labelKey="cxDependencySettingsCustom.label" name="cxDependencySettingsCustom" descriptionKey="cxDependencySettingsCustom.description" toggle='true' /]
-			[@ui.bambooSection dependsOn="cxDependencySettingsCustom" showOn="true"]
+    [@ui.bambooSection dependsOn="cxDependencySettingsCustom" showOn="true"]
+			[@ww.textarea labelKey="cxDependencyScanFilterPatterns.label" name="cxDependencyScanFilterPatterns" descriptionKey="cxDependencyScanFilterPatterns.description" rows="4" cssClass="long-field"/]
+			[@ww.textfield labelKey="cxDependencyScanfolderExclusions.label" name="cxDependencyScanfolderExclusions" descriptionKey="cxDependencyScanfolderExclusions.description" cssClass="long-field"/]
+			
 		[@ww.radio id = 'radioGroup' name='dependencyScanType' listKey='key' listValue='value' toggle='true' list=dependencyScanTypeValues /]
 		
 		[@ui.bambooSection title='Checkmarx Scan CxOSA' dependsOn='dependencyScanType' showOn='OSA' cssClass="cx center" ]
@@ -158,7 +161,7 @@
 					source libraries in your applications
 				</small>
 			</p>
-			[@ww.textarea labelKey="cxOsaFilterPatterns.label" name="cxOsaFilterPatterns" descriptionKey="cxOsaFilterPatterns.description" rows="4" cssClass="long-field"/]
+			
 			[@ww.textfield labelKey="cxOsaArchiveIncludePatterns.label" name="cxOsaArchiveIncludePatterns" descriptionKey="cxOsaArchiveIncludePatterns.description"/]
 			[@ww.checkbox labelKey="cxOsaInstallBeforeScan.label" name="cxOsaInstallBeforeScan" descriptionKey="cxOsaInstallBeforeScan.description" toggle='true' /]
 		[/@ui.bambooSection]
