@@ -45,7 +45,7 @@ public class CxParam {
     public static final String OSA_ENABLED = "osaEnabled";
     public static final String DEPENDENCY_SCAN_FILTER_PATTERNS = "cxDependencyScanFilterPatterns";
     public static final String DEPENDENCY_SCAN_FOLDER_EXCLUDE = "cxDependencyScanfolderExclusions";
-    public static final String GLOBAL_DEPENDENCY_SCAN_FOLDER_EXCLUDE = "cxGlobalDependencyScanfolderExclusions";
+    public static final String GLOBAL_DEPENDENCY_SCAN_FOLDER_EXCLUDE = "globalDependencyScanfolderExclusions";
     public static final String OSA_ARCHIVE_INCLUDE_PATTERNS = "cxOsaArchiveIncludePatterns";
     public static final String OSA_INSTALL_BEFORE_SCAN = "cxOsaInstallBeforeScan";
     public static final String OSA_THRESHOLDS_ENABLED = "osaThresholdsEnabled";
@@ -74,19 +74,19 @@ public class CxParam {
     
     public final static String GLOBAL_ENABLE_DEPENDENCY_SCAN = "globalEnableDependencyScan";
     public final static String GLOBAL_DEPENDENCY_SCAN_TYPE = "globalDependencyScanType";
-    public static final String GLOBAL_DEPENDENCY_SCAN_FILTER_PATTERNS = "cxGlobalDependencyScanFilterPatterns";
-    public static final String GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS = "cxGlobalOsaArchiveIncludePatterns";
-    public static final String GLOBAL_OSA_INSTALL_BEFORE_SCAN = "cxGlobalOsaInstallBeforeScan";
+    public static final String GLOBAL_DEPENDENCY_SCAN_FILTER_PATTERNS = "globalDependencyScanFilterPatterns";
+    public static final String GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS = "globalOsaArchiveIncludePatterns";
+    public static final String GLOBAL_OSA_INSTALL_BEFORE_SCAN = "globalOsaInstallBeforeScan";
     
     public final static String CXSCA_API_URL = "cxScaAPIUrl";
     public final static String CXSCA_ACCESS_CONTROL_URL = "cxAccessControlServerUrl";
     public final static String CXSCA_WEBAPP_URL = "cxScaWebAppUrl";
     public final static String CXSCA_ACCOUNT_NAME = "cxScaAccountName";
     
-    public final static String GLOBAL_CXSCA_API_URL = "cxScaGlobalAPIUrl";
-    public final static String GLOBAL_CXSCA_ACCESS_CONTROL_URL = "cxGlobalAccessControlServerUrl";
-    public final static String GLOBAL_CXSCA_WEBAPP_URL = "cxScaGlobalWebAppUrl";
-    public final static String GLOBAL_CXSCA_ACCOUNT_NAME = "cxScaGlobalAccountName";
+    public final static String GLOBAL_CXSCA_API_URL = "globalcxScaAPIUrl";
+    public final static String GLOBAL_CXSCA_ACCESS_CONTROL_URL = "globalcxScaAccessControlServerUrl";
+    public final static String GLOBAL_CXSCA_WEBAPP_URL = "globalcxScaWebAppUrl";
+    public final static String GLOBAL_CXSCA_ACCOUNT_NAME = "globalcxScaAccountName";
     
     public final static String CX_USE_CUSTOM_DEPENDENCY_SETTINGS = "cxDependencySettingsCustom";
     public final static String CXSCA_USERNAME = "cxScaUsername";

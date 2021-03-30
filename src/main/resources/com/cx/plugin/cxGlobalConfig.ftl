@@ -100,8 +100,8 @@
     [@ui.bambooSection title='Dependency Scan' cssClass="cx center"]
 	[@ww.checkbox labelKey="globalEnableDependencyScan.label" name="globalEnableDependencyScan" toggle='true' /]
 	[@ui.bambooSection dependsOn="globalEnableDependencyScan" showOn="true"]
-	[@ww.textarea labelKey="cxGlobalDependencyScanFilterPatterns.label" name="cxGlobalDependencyScanFilterPatterns" descriptionKey="cxGlobalDependencyScanFilterPatterns.description" rows="4" cssClass="long-field"/]
-	[@ww.textfield labelKey="cxGlobalDependencyScanfolderExclusions.label" name="cxGlobalDependencyScanfolderExclusions" descriptionKey="cxGlobalDependencyScanfolderExclusions.description" cssClass="long-field"/]
+	[@ww.textarea labelKey="globalDependencyScanFilterPatterns.label" name="globalDependencyScanFilterPatterns" descriptionKey="globalDependencyScanFilterPatterns.description" rows="4" cssClass="long-field"/]
+	[@ww.textfield labelKey="globalDependencyScanfolderExclusions.label" name="globalDependencyScanfolderExclusions" descriptionKey="globalDependencyScanfolderExclusions.description" cssClass="long-field"/]
 		[@ww.radio id = 'radioGroup' name='globalDependencyScanType' listKey='key' listValue='value' toggle='true' list=globalDependencyScanTypeValues /]
 		
 		[@ui.bambooSection title='Checkmarx Scan CxOSA' dependsOn='globalDependencyScanType' showOn='OSA' cssClass="cx center" ]
@@ -112,8 +112,8 @@
 				</small>
 			</p>
 			
-			[@ww.textfield labelKey="cxGlobalOsaArchiveIncludePatterns.label" name="cxGlobalOsaArchiveIncludePatterns" descriptionKey="cxGlobalOsaArchiveIncludePatterns.description"/]
-			[@ww.checkbox labelKey="cxGlobalOsaInstallBeforeScan.label" name="cxGlobalOsaInstallBeforeScan" descriptionKey="cxGlobalOsaInstallBeforeScan.description" toggle='true' /]
+			[@ww.textfield labelKey="globalOsaArchiveIncludePatterns.label" name="globalOsaArchiveIncludePatterns" descriptionKey="globalOsaArchiveIncludePatterns.description"/]
+			[@ww.checkbox labelKey="globalOsaInstallBeforeScan.label" name="globalOsaInstallBeforeScan" descriptionKey="globalOsaInstallBeforeScan.description" toggle='true' /]
 		[/@ui.bambooSection]
 		[@ui.bambooSection title='Checkmarx Scan CxSCA' dependsOn='globalDependencyScanType' showOn='AST_SCA' cssClass="cx center"]
 			<p class="description">
@@ -122,10 +122,10 @@
 					source libraries in your applications
 				</small>
 			</p>
-   		[@ww.textfield labelKey="cxScaGlobalAPIUrl.label" name="cxScaGlobalAPIUrl"/]
-		[@ww.textfield labelKey="cxGlobalAccessControlServerUrl.label" name="cxGlobalAccessControlServerUrl"/]
-		[@ww.textfield labelKey="cxScaGlobalWebAppUrl.label" name="cxScaGlobalWebAppUrl"/]
-		[@ww.textfield labelKey="cxScaGlobalAccountName.label" name="cxScaGlobalAccountName"/]
+   		[@ww.textfield labelKey="globalcxScaAPIUrl.label" name="globalcxScaAPIUrl"/]
+		[@ww.textfield labelKey="globalcxScaAccessControlServerUrl.label" name="globalcxScaAccessControlServerUrl"/]
+		[@ww.textfield labelKey="globalcxScaWebAppUrl.label" name="globalcxScaWebAppUrl"/]
+		[@ww.textfield labelKey="globalcxScaAccountName.label" name="globalcxScaAccountName"/]
         
         [@ww.textfield labelKey="cxScaGlobalUsername.label" name="globalcxScaUsername"/]
         [@ww.password labelKey="cxScaGlobalPassword.label" name="globalcxScaPss" showPassword='true' /]
@@ -164,17 +164,26 @@
 
 <script>
 function connectToScaServer() {
-console.log("<<<<<<<<<<  INSIDE connectToScaServer () >>>>>>>>>>>>>  ");
-        document.getElementById("gtestScaConnectionMessage").html = "";
+
+        document.getElementById("gtestScaConnectionMessage").innerHTML = "";
             restScaRequest();
     }
 
         function restScaRequest() {
-
+			var request;
+			
+			var scaUrl = document.getElementById("checkmarxDefaultConfiguration_globalcxScaAPIUrl").value;
+            var scaAccControlUrl = document.getElementById("checkmarxDefaultConfiguration_globalcxScaAccessControlServerUrl").value;
+            var scaWebAppUrl = document.getElementById("checkmarxDefaultConfiguration_globalcxScaWebAppUrl").value;
+			var scaAcctName = document.getElementById("checkmarxDefaultConfiguration_globalcxScaAccountName").value;
+			var scaUserName = document.getElementById("checkmarxDefaultConfiguration_globalcxScaUsername").value;
+			var scaPass = document.getElementById("checkmarxDefaultConfiguration_globalcxScaPss").value;
+			
+			
         if (!validateScaFields()) {
         	return;
         }
-        var request = JSON.stringify(getInputScaData());
+         request = JSON.stringify(getInputScaData());
 
 
         function createScaRestRequest(method, url) {
@@ -201,15 +210,16 @@ console.log("<<<<<<<<<<  INSIDE connectToScaServer () >>>>>>>>>>>>>  ");
         }
 
         xhr.onload = function () {
-            var parsed = JSON.parse(xhr.responseText);
-            if (xhr.status == 200) {
-                $('#gtestScaConnectionMessage').css('color', 'green');
-            }
-            else {
-                $('#gtestScaConnectionMessage').css('color', '#d22020');
-            }
-            $('#gtestScaConnectionMessage').html(parsed.loginResponse);
-        };
+                var parsed = JSON.parse(xhr.responseText);
+                var message = document.getElementById("gtestScaConnectionMessage");
+                if (xhr.status == 200) {
+                    message.style.color = "green";
+                }
+                else {
+                    message.style.color = "#d22020"
+                }
+                message.innerHTML = parsed.loginResponse;
+            };
 
 
         xhr.onerror = function () {
@@ -217,51 +227,55 @@ console.log("<<<<<<<<<<  INSIDE connectToScaServer () >>>>>>>>>>>>>  ");
         };
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.send(request);
-    }
+    
 
 
     function validateScaFields() {
 
         var messageElement = $('#gtestScaConnectionMessage');
-
-        if ($('#cxScaGlobalAPIUrl').val().length < 1) {
-            messageElement.text('CxSca API Url must not be empty');
-            messageElement.css('color', '#d22020');
-            return false;
-        } else if ($('#cxGlobalAccessControlServerUrl').val().length < 1) {
-            messageElement.text('CxAccess Control Server Url must not be empty');
-            messageElement.css('color', '#d22020');
-            return false;
-        } else if ($('#cxScaGlobalWebAppUrl').val().length < 1) {
-            messageElement.text('CxSca Web App Url must not be empty');
-            messageElement.css('color', '#d22020');
-            return false;
-        } else if ($('#cxScaGlobalAccountName').val().length < 1) {
-            messageElement.text('CxSca Account Name must not be empty');
-            messageElement.css('color', '#d22020');
-            return false;
-        }else if ($('#cxScaUsername').val().length < 1) {
-            messageElement.text('CxSca Username must not be empty');
-            messageElement.css('color', '#d22020');
-            return false;
-        }else if ($('#cxScaPassword').val().length < 1) {
-            messageElement.text('CxSca Password must not be empty');
-            messageElement.css('color', '#d22020');
-            return false;
-        }
+				if (scaUrl.length < 1) {
+                    messageElement.textContent = 'CxSca API Url must not be empty';
+                    messageElement.style.color = "#d22020";
+                    return false;
+                } else if (scaAccControlUrl.length < 1) {
+                    messageElement.textContent = "CxAccess Control Server Url must not be empty";
+                    messageElement.style.color = "#d22020";
+                    return false;
+                } else if (scaWebAppUrl.length < 1) {
+                    messageElement.textContent = "CxSca Web App Url must not be empty";
+                    messageElement.style.color = "#d22020";
+                    return false;
+                }
+				else if (scaAcctName.length < 1) {
+                    messageElement.textContent = "CxSca Account Name must not be empty";
+                    messageElement.style.color = "#d22020";
+                    return false;
+                }
+				else if (scaUserName.length < 1) {
+                    messageElement.textContent = "CxSca Username must not be empty";
+                    messageElement.style.color = "#d22020";
+                    return false;
+                }
+				else if (scaPass.length < 1) {
+                    messageElement.textContent = "CxSca Password must not be empty";
+                    messageElement.style.color = "#d22020";
+                    return false;
+                }
+               
         return true;
     }
 
     function getInputScaData() {
         return {
-            "scaServerUrl": $("#cxScaGlobalAPIUrl").val(),
-            "scaAccessControlUrl": $('#cxGlobalAccessControlServerUrl').val(),
-            "cxScaWebAppUrl": $('#cxScaGlobalWebAppUrl').val(),
-			"scaAccountName": $("#cxScaGlobalAccountName").val(),
-            "scaUserName": $('#cxScaUsername').val(),
-            "pss": $('#cxScaPassword').val()
+            "scaUrl": scaUrl,
+            "scaAccControlUrl": scaAccControlUrl,
+            "scaWebAppUrl": scaWebAppUrl,
+			"scaAcctName": scaAcctName,
+            "scaUserName": scaUserName,
+            "scaPass": scaPass
         };
     }
+	}
     function connectToServer() {
         document.getElementById("gtestConnectionMessage").innerHTML = "";
             restRequest();
