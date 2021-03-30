@@ -86,7 +86,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
        
-        <common.client.version>2021.1.146</common.client.version>
+        <common.client.version>mycxclient</common.client.version>
 
 <!--        <sonar.projectKey>checkmarx-ltd_Bamboo-Plugin</sonar.projectKey>
         <sonar.organization>checkmarx-ltd</sonar.organization>

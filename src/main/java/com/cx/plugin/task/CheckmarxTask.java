@@ -140,27 +140,33 @@ public class CheckmarxTask implements TaskType {
             ScanResults finalScanResults = getFinalScanResults(results);
             if (!config.getHideResults()) {
                 SASTResults sastResults = scanResults.getSastResults();
-                String sastPDFLink = sastResults.getSastPDFLink();
-                String pdfName = sastPDFLink.substring(sastPDFLink.lastIndexOf(File.separator) + 1);
-                Key buildKey = buildContext.getParentBuildContext().getResultKey().getEntityKey();
-                int buildNumber = buildContext.getParentBuildContext().getResultKey().getResultNumber();
-                String buildPath = buildContext.getPlanResultKey().getPlanKey().getKey().substring(buildContext.getPlanResultKey().getPlanKey().getKey().lastIndexOf("-") + 1);
-                sastResults.setSastPDFLink("/artifact/" + buildKey + "/" + buildPath + "/build-" + buildNumber + "/Checkmarx-PDF-Report/" + pdfName);
+                
+				if (config.getGeneratePDFReport()) {
+					String sastPDFLink = sastResults.getSastPDFLink();
+					String pdfName = sastPDFLink.substring(sastPDFLink.lastIndexOf(File.separator) + 1);
+					Key buildKey = buildContext.getParentBuildContext().getResultKey().getEntityKey();
+					int buildNumber = buildContext.getParentBuildContext().getResultKey().getResultNumber();
+					String buildPath = buildContext.getPlanResultKey().getPlanKey().getKey()
+							.substring(buildContext.getPlanResultKey().getPlanKey().getKey().lastIndexOf("-") + 1);
+					sastResults.setSastPDFLink("/artifact/" + buildKey + "/" + buildPath + "/build-" + buildNumber
+							+ "/Checkmarx-PDF-Report/" + pdfName);
+					
+	                ArtifactDefinitionContext artifact = new ArtifactDefinitionContextImpl("Checkmarx PDF Report", false, null);
+	                artifact.setCopyPattern("**/" + pdfName);
+
+	                ArtifactPublishingResult result = artifactManager.publish(taskContext.getBuildLogger(),
+	                        buildContext.getPlanResultKey(),
+	                        new File(taskContext.getWorkingDirectory(), CxParam.CX_REPORT_LOCATION),
+	                        artifact,
+	                        new HashMap<>(),
+	                        15);
+	                taskContext.getBuildContext().getArtifactContext().addPublishingResult(result);
+				}
                 
                 String showSummaryStr = delegator.generateHTMLSummary(finalScanResults);
                 ret.getSummary().put(HTML_REPORT, showSummaryStr);
                 buildContext.getBuildResult().getCustomBuildData().putAll(ret.getSummary());
 
-                ArtifactDefinitionContext artifact = new ArtifactDefinitionContextImpl("Checkmarx PDF Report", false, null);
-                artifact.setCopyPattern("**/" + pdfName);
-
-                ArtifactPublishingResult result = artifactManager.publish(taskContext.getBuildLogger(),
-                        buildContext.getPlanResultKey(),
-                        new File(taskContext.getWorkingDirectory(), CxParam.CX_REPORT_LOCATION),
-                        artifact,
-                        new HashMap<>(),
-                        15);
-                taskContext.getBuildContext().getArtifactContext().addPublishingResult(result);
             }
 
             //assert if expected exception is thrown  OR when vulnerabilities under threshold OR when policy violated
