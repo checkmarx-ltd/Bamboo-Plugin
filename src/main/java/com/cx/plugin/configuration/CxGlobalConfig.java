@@ -6,10 +6,13 @@ import com.atlassian.bamboo.configuration.GlobalAdminAction;
 import com.atlassian.spring.container.ContainerManager;
 import com.atlassian.util.concurrent.NotNull;
 import com.cx.plugin.utils.CxParam;
+import com.google.common.collect.ImmutableMap;
+
 import org.codehaus.plexus.util.StringUtils;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Map;
 
 import static com.cx.plugin.utils.CxParam.*;
 import static com.cx.plugin.utils.CxPluginUtils.encrypt;
@@ -56,7 +59,7 @@ public class CxGlobalConfig extends GlobalAdminAction {
     private String cxGlobalAccessControlServerUrl = DEFAULT_CXSCA_ACCESS_CONTROL_URL;
     private String cxScaGlobalWebAppUrl = DEFAULT_CXSCA_WEB_APP_URL;
     private String cxScaGlobalAccountName = "";
-    
+    private Map<String, String> globalDependencyScanTypeValues = ImmutableMap.of("OSA", "Use CxOSA dependency scanner", "AST_SCA", "Use CxSCA dependency scanner");
 
     @Override
     public String execute() {
@@ -100,6 +103,7 @@ public class CxGlobalConfig extends GlobalAdminAction {
         globalOsaLowThreshold = adminConfig.getSystemProperty(GLOBAL_OSA_LOW_THRESHOLD);
         globalDenyProject = adminConfig.getSystemProperty(GLOBAL_DENY_PROJECT);
         globalHideResults = adminConfig.getSystemProperty(GLOBAL_HIDE_RESULTS);
+                
 
         return INPUT;
     }
@@ -473,6 +477,14 @@ public class CxGlobalConfig extends GlobalAdminAction {
 
 	public void setCxScaGlobalAccountName(String cxScaGlobalAccountName) {
 		this.cxScaGlobalAccountName = cxScaGlobalAccountName;
+	}
+
+	public Map<String, String> getGlobalDependencyScanTypeValues() {
+		return globalDependencyScanTypeValues;
+	}
+
+	public void setGlobalDependencyScanTypeValues(Map<String, String> globalDependencyScanTypeValues) {
+		this.globalDependencyScanTypeValues = globalDependencyScanTypeValues;
 	}
 
 }
