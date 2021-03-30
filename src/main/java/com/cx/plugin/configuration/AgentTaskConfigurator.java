@@ -171,7 +171,6 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         context.put("configurationModeTypesCxSAST", CONFIGURATION_MODE_TYPES_MAP_CXSAST);
         context.put("configurationModeTypesControl", CONFIGURATION_MODE_TYPES_MAP_CONTROL);
         context.put("dependencyScanTypeValues", DEPENDENCY_SCAN_TYPES_MAP_DEPENDENCY_SCAN);
-        context.put("globalDependencyScanTypeValues", DEPENDENCY_SCAN_TYPES_MAP_DEPENDENCY_SCAN);
         
         String projectName = resolveProjectName(context);
         context.put(PROJECT_NAME, projectName);
@@ -268,7 +267,6 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         context.put("configurationModeTypesCxSAST", CONFIGURATION_MODE_TYPES_MAP_CXSAST);
         context.put("configurationModeTypesControl", CONFIGURATION_MODE_TYPES_MAP_CONTROL);
         context.put("dependencyScanTypeValues", DEPENDENCY_SCAN_TYPES_MAP_DEPENDENCY_SCAN);
-        context.put("globalDependencyScanTypeValues", DEPENDENCY_SCAN_TYPES_MAP_DEPENDENCY_SCAN);
         
         context.put(PROJECT_NAME, configMap.get(PROJECT_NAME));
 
