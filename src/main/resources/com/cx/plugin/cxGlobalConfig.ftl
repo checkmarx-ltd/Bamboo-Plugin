@@ -14,9 +14,22 @@
         max-width: 820px;
         box-sizing: border-box;
     }
+    
+    .cx.radiogroup {
+        min-width: 139px;
+    	max-width: 656px;
+        left:-85px;
+        text-align: center;
+    	justify-content: space-around;
+    }
 
     input#radioGroupcustomConfigurationServer, input#radioGroupglobalConfigurationServer, input#radioGroupglobalConfigurationCxSAST, input#radioGroupcustomConfigurationCxSAST, input#radioGroupglobalConfigurationControl, input#radioGroupcustomConfigurationControl, input#radioGroupOSA, input#radioGroupAST_SCA, {
         width: 20px;
+    }
+     input#radioGroupOSA, input#radioGroupAST_SCA, {
+        width: 20px;
+        left: -71px;
+        
     }
 
     form.aui.top-label .field-group > label {
@@ -102,7 +115,7 @@
 	[@ui.bambooSection dependsOn="globalEnableDependencyScan" showOn="true"]
 	[@ww.textarea labelKey="globalDependencyScanFilterPatterns.label" name="globalDependencyScanFilterPatterns" descriptionKey="globalDependencyScanFilterPatterns.description" rows="4" cssClass="long-field"/]
 	[@ww.textfield labelKey="globalDependencyScanfolderExclusions.label" name="globalDependencyScanfolderExclusions" descriptionKey="globalDependencyScanfolderExclusions.description" cssClass="long-field"/]
-		[@ww.radio id = 'radioGroup' name='globalDependencyScanType' listKey='key' listValue='value' toggle='true' list=globalDependencyScanTypeValues /]
+		[@ww.radio id = 'radioGroup' name='globalDependencyScanType' listKey='key' listValue='value' toggle='true' list=globalDependencyScanTypeValues  cssClass="cx radiogroup" /]
 		
 		[@ui.bambooSection title='Checkmarx Scan CxOSA' dependsOn='globalDependencyScanType' showOn='OSA' cssClass="cx center" ]
 			<p class="description">

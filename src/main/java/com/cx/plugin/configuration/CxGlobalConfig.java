@@ -62,7 +62,7 @@ public class CxGlobalConfig extends GlobalAdminAction {
     private String globalcxScaAccessControlServerUrl = DEFAULT_CXSCA_ACCESS_CONTROL_URL;
     private String globalcxScaWebAppUrl = DEFAULT_CXSCA_WEB_APP_URL;
     private String globalcxScaAccountName = "";
-    private Map<String, String> globalDependencyScanTypeValues = ImmutableMap.of("OSA", "Use CxOSA dependency scanner", "AST_SCA", "Use CxSCA dependency scanner");
+    private Map<String, String> globalDependencyScanTypeValues = ImmutableMap.of("OSA", "Use CxOSA dependency", "AST_SCA", "Use CxSCA dependency");
 
     @Override
     public String execute() {
