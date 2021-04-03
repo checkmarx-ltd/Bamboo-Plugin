@@ -70,12 +70,13 @@ public class CxRestResource {
 
         String username = StringUtils.defaultString(data.get("username"));
         String pas = StringUtils.defaultString(data.get("pas"));
+        String proxyEnable = StringUtils.defaultString(data.get("proxyEnable"));
 
         try {
             urlToCheck = StringUtils.defaultString(data.get("url"));
             url = new URL(urlToCheck);
             
-        	if (loginToServer(url, username, decrypt(pas))) {
+        	if (loginToServer(url, username, decrypt(pas), proxyEnable)) {
                 try {
                     teams = commonClient.getTeamList();
                 } catch (Exception e) {
@@ -116,13 +117,14 @@ public class CxRestResource {
 				String scaTenant = StringUtils.defaultString(data.get("scaAccountName"));
 				String username = StringUtils.defaultString(data.get("scaUserName"));
 				String pss = StringUtils.defaultString(data.get("pss"));
+				String proxyEnable = StringUtils.defaultString(data.get("proxyEnable"));
 				
 				CxScanConfig config = new CxScanConfig();
 				config.setDisableCertificateValidation(true);
 				config.setOsaGenerateJsonReport(false);
 
 				ProxyConfig proxyConfig = HttpHelper.getProxyConfig();
-				if (proxyConfig != null) {
+				if (proxyEnable != null && proxyEnable.equalsIgnoreCase("true") && proxyConfig != null) {
 					config.setProxy(true);
 					config.setProxyConfig(proxyConfig);
 		            logger.debug("Testing login with proxy details:");
@@ -133,6 +135,7 @@ public class CxRestResource {
 					logger.debug("Proxy Scheme: " + (proxyConfig.isUseHttps() ? "https" : "http"));
 					logger.debug("Non Proxy Hosts: " + proxyConfig.getNoproxyHosts());
 				}else {
+					config.setProxy(false);
 		            logger.debug("Testing login.");
 				}
 				
@@ -177,12 +180,12 @@ public class CxRestResource {
         return new TestConnectionResponse(result, presets, teams);
     }
 
-    private boolean loginToServer(URL url, String username, String password) {
+    private boolean loginToServer(URL url, String username, String password, String proxyEnable) {
         try {
             
         	ProxyConfig proxyConfig = HttpHelper.getProxyConfig();        	
 			CxScanConfig scanConfig = new CxScanConfig(url.toString().trim(), username, password, CX_ORIGIN, true);
-			if (proxyConfig != null) {
+			if (proxyEnable != null && proxyEnable.equalsIgnoreCase("true") && proxyConfig != null) {
 				scanConfig.setProxy(true);
 				scanConfig.setProxyConfig(proxyConfig);
 	            logger.debug("Testing login with proxy details:");
@@ -193,6 +196,7 @@ public class CxRestResource {
 				logger.debug("Proxy Scheme: " + (proxyConfig.isUseHttps() ? "https" : "http"));
 				logger.debug("Non Proxy Hosts: " + proxyConfig.getNoproxyHosts());
 			}else {
+				scanConfig.setProxy(false);
 	            logger.debug("Testing login.");
 			}
 			

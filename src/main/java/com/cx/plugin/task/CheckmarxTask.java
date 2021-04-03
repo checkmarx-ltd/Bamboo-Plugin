@@ -37,12 +37,14 @@ import com.cx.plugin.utils.CxConfigHelper;
 import com.cx.plugin.utils.CxLoggerAdapter;
 import com.cx.plugin.utils.CxParam;
 import com.cx.restclient.CxClientDelegator;
+import com.cx.restclient.ast.dto.sca.AstScaResults;
 import com.cx.restclient.configuration.CxScanConfig;
 import com.cx.restclient.dto.Results;
 import com.cx.restclient.dto.ScanResults;
 import com.cx.restclient.dto.ScannerType;
 import com.cx.restclient.dto.scansummary.ScanSummary;
 import com.cx.restclient.exception.CxClientException;
+import com.cx.restclient.osa.dto.OSAResults;
 import com.cx.restclient.sast.dto.SASTResults;
 import com.cx.restclient.sast.utils.LegacyClient;
 
@@ -112,20 +114,37 @@ public class CheckmarxTask implements TaskType {
             ScanResults createScanResults = delegator.initiateScan();
             results.add(createScanResults);
             ScanResults scanResults = config.getSynchronous() ? delegator.waitForScanResults() : delegator.getLatestScanResults();
-            results.add(scanResults);
+
+            ret.put(ScannerType.SAST,scanResults.getSastResults() );          
+			if (config.isOsaEnabled()) {
+				ret.put(ScannerType.OSA, scanResults.getOsaResults());
+			} else if (config.isAstScaEnabled()) {
+				ret.put(ScannerType.AST_SCA, scanResults.getScaResults());
+			}
+			results.add(scanResults);
+			
+            //assert if expected exception is thrown  OR when vulnerabilities under threshold OR when policy violated
+            ScanSummary scanSummary = new ScanSummary(config, ret.getSastResults(), ret.getOsaResults(), ret.getScaResults());
+            if (scanSummary.hasErrors() || ret.getGeneralException() != null ||
+                    (config.isSastEnabled() && (ret.getSastResults() == null || ret.getSastResults().getException() != null)) ||
+                    (config.isOsaEnabled() && (ret.getOsaResults() == null || ret.getOsaResults().getException() != null)) ||
+                    (config.isAstScaEnabled() && (ret.getScaResults() == null || ret.getScaResults().getException() != null))) {
+            	printBuildFailure(scanSummary.toString(), ret, log);
+            	return taskResultBuilder.failed().build();
+            }
             
             //Asynchronous MODE
             if (!config.getSynchronous()) {
                 log.info("Running in Asynchronous mode. Not waiting for scan to finish");
                 ScanResults finalScanResults = getFinalScanResults(results);
-                String scanSummary = delegator.generateHTMLSummary(finalScanResults);
-                ret.getSummary().put(HTML_REPORT, scanSummary);
+                String scanHTMLSummary = delegator.generateHTMLSummary(finalScanResults);
+                ret.getSummary().put(HTML_REPORT, scanHTMLSummary);
 
                 if (ret.getException() != null || ret.getGeneralException() != null) {
                     printBuildFailure(null, ret, log);
                     return taskResultBuilder.failed().build();
                 }
-
+                buildContext.getBuildResult().getCustomBuildData().putAll(ret.getSummary());
                 return taskResultBuilder.success().build();
             }
             
@@ -168,17 +187,7 @@ public class CheckmarxTask implements TaskType {
                 buildContext.getBuildResult().getCustomBuildData().putAll(ret.getSummary());
 
             }
-
-            //assert if expected exception is thrown  OR when vulnerabilities under threshold OR when policy violated
-            ScanSummary scanSummary = new ScanSummary(config, ret.getSastResults(), ret.getOsaResults(), ret.getScaResults());
-            if (scanSummary.hasErrors() || ret.getGeneralException() != null ||
-                    (ret.getSastResults() != null && ret.getSastResults().getException() != null) ||
-                    (ret.getOsaResults() != null && ret.getOsaResults().getException() != null) ||
-                    (ret.getScaResults() != null && ret.getScaResults().getException() != null)) {
-            	printBuildFailure(scanSummary.toString(), ret, log);
-            	return taskResultBuilder.failed().build();
-            }
-        
+       
             ///////////////
             return taskResultBuilder.success().build();
         } catch (InterruptedException e) {

@@ -81,7 +81,8 @@
         return {
             "url": $("#serverUrl").val(),
             "username": $('#username').val(),
-            "pas": $('#password').val()
+            "pas": $('#password').val(),
+            "proxyEnable": $('#enableProxy').prop('checked')            
         };
     }
 

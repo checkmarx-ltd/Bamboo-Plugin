@@ -89,13 +89,21 @@
     }
 
     function getInputData() {
+    
+    	var enableProxy = "false";
+    	if ($('#enableProxy').is(":checked"))
+		{
+  			enableProxy = "true";
+		}
+    
         return {
             "scaServerUrl": $("#cxScaAPIUrl").val(),
             "scaAccessControlUrl": $('#cxAccessControlServerUrl').val(),
             "cxScaWebAppUrl": $('#cxScaWebAppUrl').val(),
 			"scaAccountName": $("#cxScaAccountName").val(),
             "scaUserName": $('#cxScaUsername').val(),
-            "pss": $('#cxScaPassword').val()
+            "pss": $('#cxScaPassword').val(),
+            "proxyEnable":enableProxy
         };
     }
 })

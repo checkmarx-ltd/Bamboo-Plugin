@@ -162,7 +162,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     private Map<String, String> CONFIGURATION_MODE_TYPES_MAP_SERVER = ImmutableMap.of(GLOBAL_CONFIGURATION_SERVER, DEFAULT_SETTING_LABEL, CUSTOM_CONFIGURATION_SERVER, SPECIFIC_SETTING_LABEL);
     private Map<String, String> CONFIGURATION_MODE_TYPES_MAP_CXSAST = ImmutableMap.of(GLOBAL_CONFIGURATION_CXSAST, DEFAULT_SETTING_LABEL, CUSTOM_CONFIGURATION_CXSAST, SPECIFIC_SETTING_LABEL);
     private Map<String, String> CONFIGURATION_MODE_TYPES_MAP_CONTROL = ImmutableMap.of(GLOBAL_CONFIGURATION_CONTROL, DEFAULT_SETTING_LABEL, CUSTOM_CONFIGURATION_CONTROL, SPECIFIC_SETTING_LABEL);
-    private Map<String, String> DEPENDENCY_SCAN_TYPES_MAP_DEPENDENCY_SCAN = ImmutableMap.of("OSA", "Use CxOSA dependency", "AST_SCA", "Use CxSCA dependency");
+    private Map<String, String> DEPENDENCY_SCAN_TYPES_MAP_DEPENDENCY_SCAN = ImmutableMap.of("OSA", "Use CxOSA dependency scanner", "AST_SCA", "Use CxSCA dependency scanner");
     private final Logger log = LoggerFactory.getLogger(AgentTaskConfigurator.class);
 
     //create task configuration
@@ -211,6 +211,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         String cxServerUrl = getAdminConfig(GLOBAL_SERVER_URL);
         String cxUser = getAdminConfig(GLOBAL_USER_NAME);
         String cxPass = getAdminConfig(GLOBAL_PWD);
+        String proxyEnable = getAdminConfig(GLOBAL_ENABLE_PROXY);
 
         context.put(SERVER_URL, "");
         context.put(USER_NAME, "");
@@ -220,13 +221,13 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         context.put(GLOBAL_PWD, cxPass);
         context.put(SERVER_CREDENTIALS_SECTION, GLOBAL_CONFIGURATION_SERVER);
 
-        populateTeamAndPresetFields(cxServerUrl, cxUser, cxPass, null, null, context);
+        populateTeamAndPresetFields(cxServerUrl, cxUser, cxPass,proxyEnable, null, null, context);
     }
 
-    private void populateTeamAndPresetFields(final String serverUrl, final String username, final String password, String preset, String teamPath, @NotNull final Map<String, Object> context) {
+    private void populateTeamAndPresetFields(final String serverUrl, final String username, final String password, String proxyEnable, String preset, String teamPath, @NotNull final Map<String, Object> context) {
         try {
             //the method initialized the CxClient service
-            if (tryLogin(username, decrypt(password), serverUrl)) {
+            if (tryLogin(username, decrypt(password), serverUrl, proxyEnable)) {
 
                 presetList = convertPresetToMap(commonClient.getPresetList());
                 context.put(PRESET_LIST, presetList);
@@ -373,17 +374,20 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         String cxServerUrl;
         String cxUser;
         String cxPass;
+        String cxProxyEnabled;
         String configType = configMap.get(SERVER_CREDENTIALS_SECTION);
 
         if ((GLOBAL_CONFIGURATION_SERVER.equals(configType))) {
             cxServerUrl = getAdminConfig(GLOBAL_SERVER_URL);
             cxUser = getAdminConfig(GLOBAL_USER_NAME);
             cxPass = getAdminConfig(GLOBAL_PWD);
+            cxProxyEnabled = getAdminConfig(GLOBAL_ENABLE_PROXY);
 
         } else {
             cxServerUrl = configMap.get(SERVER_URL);
             cxUser = configMap.get(USER_NAME);
             cxPass = configMap.get(PASSWORD);
+            cxProxyEnabled = configMap.get(ENABLE_PROXY);
         }
 
         context.put(SERVER_URL, configMap.get(SERVER_URL));
@@ -399,7 +403,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         String cxPreset = configMap.get(PRESET_ID);
         String cxTeam = configMap.get(TEAM_PATH_ID);
 
-        populateTeamAndPresetFields(cxServerUrl, cxUser, cxPass, cxPreset, cxTeam, context);
+        populateTeamAndPresetFields(cxServerUrl, cxUser, cxPass,cxProxyEnabled,  cxPreset, cxTeam, context);
     }
 
     private void populateCxSASTFields(@NotNull final Map<String, Object> context, Map<String, String> configMap, boolean forCreate) {
@@ -483,7 +487,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         if (!(NO_PRESET).equals(presetId)) {
             config.put(PRESET_ID, presetId);
             if (presetList.isEmpty()) {
-                if (commonClient != null || tryLogin(params.getString(USER_NAME), decrypt(params.getString(PASSWORD)), params.getString(SERVER_URL))) {
+                if (commonClient != null || tryLogin(params.getString(USER_NAME), decrypt(params.getString(PASSWORD)), params.getString(SERVER_URL),  params.getString(ENABLE_PROXY))) {
                     try {
                         Preset preset = commonClient.getPresetById(Integer.parseInt(presetId));
                         presetName = preset.getName();
@@ -502,7 +506,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         if (!NO_TEAM_PATH.equals(teamId)) {
             config.put(TEAM_PATH_ID, teamId);
             if (teamPathList.isEmpty()) {
-                if (commonClient != null || tryLogin(params.getString(USER_NAME), decrypt(params.getString(PASSWORD)), params.getString(SERVER_URL))) {
+                if (commonClient != null || tryLogin(params.getString(USER_NAME), decrypt(params.getString(PASSWORD)), params.getString(SERVER_URL), params.getString(ENABLE_PROXY))) {
                     try {
                         teaName = commonClient.getTeamNameById(teamId);
                     } catch (Exception e) {
@@ -625,7 +629,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     }
 
     //the method initialized common client
-    private boolean tryLogin(String username, String cxPass, String serverUrl) {
+    private boolean tryLogin(String username, String cxPass, String serverUrl, String proxyEnable) {
         log.debug("tryLogin: server URL: " + serverUrl + " username" + username);
 
         if (!StringUtils.isEmpty(serverUrl) && !StringUtils.isEmpty(username) && !StringUtils.isEmpty(cxPass)) {
@@ -633,8 +637,8 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
                  try {
 					CxScanConfig scanConfig = new CxScanConfig(serverUrl, username, decrypt(cxPass),
 							CommonClientFactory.SCAN_ORIGIN, true);
-					ProxyConfig proxyConfig = HttpHelper.getProxyConfig();
-					if (proxyConfig != null) {
+					ProxyConfig proxyConfig = HttpHelper.getProxyConfig();					
+					if (proxyEnable != null && proxyEnable.equalsIgnoreCase("true") && proxyConfig != null) {
 						scanConfig.setProxy(true);
 						scanConfig.setProxyConfig(proxyConfig);
 			            log.debug("Testing login with proxy details:");
@@ -645,6 +649,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 						log.debug("Proxy Scheme: " + (proxyConfig.isUseHttps() ? "https" : "http"));
 						log.debug("Non Proxy Hosts: " + proxyConfig.getNoproxyHosts());
 					}else {
+						scanConfig.setProxy(false);
 			            log.debug("Testing login.");
 					}
 					
