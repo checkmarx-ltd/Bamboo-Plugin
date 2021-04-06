@@ -344,7 +344,7 @@ public class CxConfigHelper {
             }
 
             if (dateNow.after(dateBegins) && dateNow.before(dateEnds)) {
-                scanConfig.setForceScan(true);
+                scanConfig.setIncremental(false);
             }
 
         } catch (final ParseException e) {

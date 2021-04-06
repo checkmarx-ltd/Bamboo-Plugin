@@ -148,11 +148,13 @@
                 [@ww.textfield labelKey="sastLowThreshold.label" name="globalLowThreshold" required='false'/]
             [/@ui.bambooSection]
 
+            [@ui.bambooSection dependsOn='globalEnableDependencyScan' showOn='true']
             [@ww.checkbox labelKey="osaThresholdsEnabled.label" name="globalOsaThresholdsEnabled" descriptionKey="thresholdsEnabled.description" toggle='true' /]
             [@ui.bambooSection dependsOn='globalOsaThresholdsEnabled' showOn='true']
                 [@ww.textfield labelKey="osaHighThreshold.label" name="globalOsaHighThreshold" required='false'/]
                 [@ww.textfield labelKey="osaMediumThreshold.label" name="globalOsaMediumThreshold" required='false'/]
                 [@ww.textfield labelKey="osaLowThreshold.label" name="globalOsaLowThreshold" required='false'/]
+            [/@ui.bambooSection]
             [/@ui.bambooSection]
         [/@ui.bambooSection]
 
