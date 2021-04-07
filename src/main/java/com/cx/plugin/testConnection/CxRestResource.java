@@ -116,7 +116,7 @@ public class CxRestResource {
 				String scaWebAppUrl = StringUtils.defaultString(data.get("scaWebAppUrl"));
 				String scaTenant = StringUtils.defaultString(data.get("scaAccountName"));
 				String username = StringUtils.defaultString(data.get("scaUserName"));
-				String pss = StringUtils.defaultString(data.get("pss"));
+				String pss = decrypt(StringUtils.defaultString(data.get("pss")));
 				String proxyEnable = StringUtils.defaultString(data.get("proxyEnable"));
 				
 				CxScanConfig config = new CxScanConfig();
@@ -152,7 +152,7 @@ public class CxRestResource {
 				config.addScannerType(ScannerType.AST_SCA);
 
 				CxClientDelegator commonClient = CommonClientFactory.getClientDelegatorInstance(config, logger);
-				commonClient.getScaClient().testScaConnection();
+				commonClient.getScaClient().login();
 				tcResponse =  new TestScaConnectionResponse("Connection successful.");
 				statusCode=200;
 			} catch (Exception e) {				

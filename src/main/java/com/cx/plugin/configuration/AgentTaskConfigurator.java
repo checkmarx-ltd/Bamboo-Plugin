@@ -178,6 +178,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         context.put(PROJECT_NAME, projectName);
         context.put(SERVER_URL, DEFAULT_SERVER_URL);
         context.put(ENABLE_PROXY,getAdminConfig(GLOBAL_ENABLE_PROXY));
+        context.put(GLOBAL_ENABLE_PROXY,getAdminConfig(GLOBAL_ENABLE_PROXY));
         populateCredentialsFieldsForCreate(context);
 
         populateCxSASTFields(context, null, true);
@@ -348,8 +349,25 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 			context.put(CXSCA_WEBAPP_URL,getAdminConfig(GLOBAL_CXSCA_WEBAPP_URL));
 			context.put(CXSCA_ACCOUNT_NAME,getAdminConfig(GLOBAL_CXSCA_ACCOUNT_NAME));
 			context.put(CXSCA_USERNAME,getAdminConfig(GLOBAL_CXSCA_USERNAME));
-			context.put(CXSCA_PWD,getAdminConfig(GLOBAL_CXSCA_PWD));
+			context.put(CXSCA_PWD,getAdminConfig(GLOBAL_CXSCA_PWD));		
 		}	
+		
+		//These are to show global readonly values when user decide to use global
+		//values on the job. Else they need to browse global section everytime
+    	context.put(GLOBAL_ENABLE_DEPENDENCY_SCAN, getAdminConfig(GLOBAL_ENABLE_DEPENDENCY_SCAN));
+    	context.put(GLOBAL_DEPENDENCY_SCAN_TYPE, getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE));
+        context.put(GLOBAL_DEPENDENCY_SCAN_FILTER_PATTERNS, getAdminConfig(GLOBAL_DEPENDENCY_SCAN_FILTER_PATTERNS));
+        context.put(GLOBAL_DEPENDENCY_SCAN_FOLDER_EXCLUDE, getAdminConfig(GLOBAL_DEPENDENCY_SCAN_FOLDER_EXCLUDE));
+        context.put(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS, getAdminConfig(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS));
+		
+        context.put(GLOBAL_CXSCA_API_URL,getAdminConfig(GLOBAL_CXSCA_API_URL));
+        context.put(GLOBAL_CXSCA_ACCESS_CONTROL_URL,getAdminConfig(GLOBAL_CXSCA_ACCESS_CONTROL_URL));
+		context.put(GLOBAL_CXSCA_WEBAPP_URL,getAdminConfig(GLOBAL_CXSCA_WEBAPP_URL));
+		context.put(GLOBAL_CXSCA_ACCOUNT_NAME,getAdminConfig(GLOBAL_CXSCA_ACCOUNT_NAME));
+		context.put(GLOBAL_CXSCA_USERNAME,getAdminConfig(GLOBAL_CXSCA_USERNAME));
+		context.put(GLOBAL_CXSCA_PWD,getAdminConfig(GLOBAL_CXSCA_PWD));
+        context.put(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS, getAdminConfig(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS));
+        context.put(GLOBAL_OSA_INSTALL_BEFORE_SCAN, getAdminConfig(GLOBAL_OSA_INSTALL_BEFORE_SCAN));
 	}
 
     private void populateOSA_SCA_FieldsForCreate(Map<String, Object> context) {
@@ -358,7 +376,9 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     	context.put(DEPENDENCY_SCAN_TYPE, getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE));
         context.put(DEPENDENCY_SCAN_FILTER_PATTERNS, getAdminConfig(GLOBAL_DEPENDENCY_SCAN_FILTER_PATTERNS));
         context.put(DEPENDENCY_SCAN_FOLDER_EXCLUDE, getAdminConfig(GLOBAL_DEPENDENCY_SCAN_FOLDER_EXCLUDE));
+        
         context.put(OSA_ARCHIVE_INCLUDE_PATTERNS, getAdminConfig(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS));
+        context.put(OSA_INSTALL_BEFORE_SCAN, getAdminConfig(GLOBAL_OSA_INSTALL_BEFORE_SCAN));
 		
         context.put(CXSCA_API_URL,getAdminConfig(GLOBAL_CXSCA_API_URL));
         context.put(CXSCA_ACCESS_CONTROL_URL,getAdminConfig(GLOBAL_CXSCA_ACCESS_CONTROL_URL));
@@ -367,7 +387,24 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 		
 		context.put(CX_USE_CUSTOM_DEPENDENCY_SETTINGS,OPTION_FALSE);		
 		context.put(CXSCA_USERNAME,"");
-		context.put(CXSCA_PWD,"");        	
+		context.put(CXSCA_PWD,"");
+		
+		//These are to show global readonly values when user decide to use global
+		//values on the job. Else they need to browse global section everytime
+    	context.put(GLOBAL_ENABLE_DEPENDENCY_SCAN, getAdminConfig(GLOBAL_ENABLE_DEPENDENCY_SCAN));
+    	context.put(GLOBAL_DEPENDENCY_SCAN_TYPE, getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE));
+        context.put(GLOBAL_DEPENDENCY_SCAN_FILTER_PATTERNS, getAdminConfig(GLOBAL_DEPENDENCY_SCAN_FILTER_PATTERNS));
+        context.put(GLOBAL_DEPENDENCY_SCAN_FOLDER_EXCLUDE, getAdminConfig(GLOBAL_DEPENDENCY_SCAN_FOLDER_EXCLUDE));
+        context.put(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS, getAdminConfig(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS));
+		
+        context.put(GLOBAL_CXSCA_API_URL,getAdminConfig(GLOBAL_CXSCA_API_URL));
+        context.put(GLOBAL_CXSCA_ACCESS_CONTROL_URL,getAdminConfig(GLOBAL_CXSCA_ACCESS_CONTROL_URL));
+		context.put(GLOBAL_CXSCA_WEBAPP_URL,getAdminConfig(GLOBAL_CXSCA_WEBAPP_URL));
+		context.put(GLOBAL_CXSCA_ACCOUNT_NAME,getAdminConfig(GLOBAL_CXSCA_ACCOUNT_NAME));
+		context.put(GLOBAL_CXSCA_USERNAME,getAdminConfig(GLOBAL_CXSCA_USERNAME));
+		context.put(GLOBAL_CXSCA_PWD,getAdminConfig(GLOBAL_CXSCA_PWD));
+        context.put(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS, getAdminConfig(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS));
+        context.put(GLOBAL_OSA_INSTALL_BEFORE_SCAN, getAdminConfig(GLOBAL_OSA_INSTALL_BEFORE_SCAN));
 			
 	}
     
@@ -381,22 +418,29 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         if ((GLOBAL_CONFIGURATION_SERVER.equals(configType))) {
             cxServerUrl = getAdminConfig(GLOBAL_SERVER_URL);
             cxUser = getAdminConfig(GLOBAL_USER_NAME);
-            cxPass = getAdminConfig(GLOBAL_PWD);
+            cxPass = getAdminConfig(GLOBAL_PWD);            
             cxProxyEnabled = getAdminConfig(GLOBAL_ENABLE_PROXY);
+            
+            context.put(SERVER_URL, configMap.get(GLOBAL_SERVER_URL));
+            context.put(USER_NAME, configMap.get(GLOBAL_USER_NAME));
+            context.put(PASSWORD, configMap.get(GLOBAL_PWD));
+            context.put(ENABLE_PROXY, configMap.get(GLOBAL_ENABLE_PROXY));
 
         } else {
             cxServerUrl = configMap.get(SERVER_URL);
             cxUser = configMap.get(USER_NAME);
             cxPass = configMap.get(PASSWORD);
             cxProxyEnabled = configMap.get(ENABLE_PROXY);
+            context.put(SERVER_URL, configMap.get(SERVER_URL));
+            context.put(USER_NAME, configMap.get(USER_NAME));
+            context.put(PASSWORD, configMap.get(PASSWORD));
+            context.put(ENABLE_PROXY, configMap.get(ENABLE_PROXY));
         }
 
-        context.put(SERVER_URL, configMap.get(SERVER_URL));
-        context.put(USER_NAME, configMap.get(USER_NAME));
-        context.put(PASSWORD, configMap.get(PASSWORD));
         context.put(GLOBAL_SERVER_URL, getAdminConfig(GLOBAL_SERVER_URL));
         context.put(GLOBAL_USER_NAME, getAdminConfig(GLOBAL_USER_NAME));
         context.put(GLOBAL_PWD, getAdminConfig(GLOBAL_PWD));
+        context.put(GLOBAL_ENABLE_PROXY, getAdminConfig(GLOBAL_ENABLE_PROXY));
 
 
         context.put(SERVER_CREDENTIALS_SECTION, configType);
@@ -571,7 +615,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 	        config.put(CXSCA_ACCOUNT_NAME,getDefaultString(params, CXSCA_ACCOUNT_NAME).trim());
 	        
 			config.put(CXSCA_USERNAME,getDefaultString(params, CXSCA_USERNAME).trim());
-			config.put(CXSCA_PWD,getDefaultString(params, CXSCA_PWD).trim());    
+			config.put(CXSCA_PWD,encrypt(getDefaultString(params, CXSCA_PWD).trim()));    
 			
 		}else {
 			final String configType = getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE);
@@ -590,7 +634,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 	        config.put(CXSCA_ACCOUNT_NAME,getAdminConfig(GLOBAL_CXSCA_ACCOUNT_NAME).trim());
 			
 			config.put(CXSCA_USERNAME,getAdminConfig(GLOBAL_CXSCA_USERNAME).trim());
-			config.put(CXSCA_PWD,decrypt(getAdminConfig(GLOBAL_CXSCA_PWD).trim()));
+			config.put(CXSCA_PWD,getAdminConfig(GLOBAL_CXSCA_PWD).trim());
 			
 		}	
 		
@@ -631,7 +675,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 
     //the method initialized common client
     private boolean tryLogin(String username, String cxPass, String serverUrl, String proxyEnable) {
-        log.debug("tryLogin: server URL: " + serverUrl + " username" + username);
+        log.debug("Testing login with: server URL: " + serverUrl + " username" + username);
 
         if (!StringUtils.isEmpty(serverUrl) && !StringUtils.isEmpty(username) && !StringUtils.isEmpty(cxPass)) {
             try {
@@ -656,7 +700,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 					
                     commonClient = CommonClientFactory.getInstance(scanConfig, log);
                 } catch (Exception e) {
-                    log.debug("Failed to init cx client " + e.getMessage(), e);
+                    log.debug("Failed to initialize cx client " + e.getMessage(), e);
                     commonClient = null;
                 }
                 commonClient.login();

@@ -39,6 +39,7 @@ import com.cx.plugin.utils.CxParam;
 import com.cx.restclient.CxClientDelegator;
 import com.cx.restclient.ast.dto.sca.AstScaResults;
 import com.cx.restclient.configuration.CxScanConfig;
+import com.cx.restclient.dto.ProxyConfig;
 import com.cx.restclient.dto.Results;
 import com.cx.restclient.dto.ScanResults;
 import com.cx.restclient.dto.ScannerType;
@@ -81,11 +82,20 @@ public class CheckmarxTask implements TaskType {
             //print configuration
             printConfiguration(config, configHelper, log);
 
-            if (!config.isSastEnabled() && !config.isOsaEnabled()) {
-                log.error("Both SAST and OSA are disabled. exiting");
+            //Disable the proxy is it is enabled but proxy settings are not available
+            if(config.isProxy()){
+                ProxyConfig proxy = config.getProxyConfig();
+                String proxyHost =proxy.getHost();                            
+                if(proxyHost==null || proxyHost.isEmpty()){
+                	config.setProxy(false);
+                }
+            }
+            
+            if (!config.isSastEnabled() && !configHelper.isDependencyScanEnabled()) {
+                log.error("Both SAST and Dependency Scan are disabled. Exiting.");
                 taskResultBuilder.failed().build();
             }
-            //create scans and retrieve results (in jenkins agent)
+            //create scans and retrieve results
             BambooScanResults ret = new BambooScanResults();
             List<ScanResults> results = new ArrayList<>();
             //initialize cx client
@@ -129,13 +139,30 @@ public class CheckmarxTask implements TaskType {
                     (config.isSastEnabled() && (ret.getSastResults() == null || ret.getSastResults().getException() != null)) ||
                     (config.isOsaEnabled() && (ret.getOsaResults() == null || ret.getOsaResults().getException() != null)) ||
                     (config.isAstScaEnabled() && (ret.getScaResults() == null || ret.getScaResults().getException() != null))) {
-            	printBuildFailure(scanSummary.toString(), ret, log);
+            	            	
+            	StringBuilder scanFailedAtServer = new StringBuilder();
+            	if (config.isSastEnabled() && (ret.getSastResults() == null || !ret.getSastResults().isSastResultsReady() ))
+            		scanFailedAtServer.append("CxSAST scan results are not found. Scan might have failed at the server or aborted by the server.\n");
+                if (config.isOsaEnabled() && (ret.getOsaResults() == null || !ret.getOsaResults().isOsaResultsReady() ))
+                	scanFailedAtServer.append("CxSAST OSA scan results are not found. Scan might have failed at the server or aborted by the server.\n");
+                if (config.isAstScaEnabled() && (ret.getScaResults() == null || !ret.getScaResults().isScaResultReady())) 
+                	scanFailedAtServer.append("CxAST SCA scan results are not found. Scan might have failed at the server or aborted by the server.\n");
+            	
+            	if(scanSummary.hasErrors() && scanFailedAtServer.toString().isEmpty())
+            		scanFailedAtServer.append(scanSummary.toString());
+            	else if (scanSummary.hasErrors())
+            		scanFailedAtServer.append("\n").append(scanSummary.toString());
+            		
+            		//printBuildFailure(scanSummary.toString(), ret, log);
+            	            	
+            		printBuildFailure(scanFailedAtServer.toString(), ret, log);
+            	
             	return taskResultBuilder.failed().build();
             }
             
             //Asynchronous MODE
             if (!config.getSynchronous()) {
-                log.info("Running in Asynchronous mode. Not waiting for scan to finish");
+                log.info("Running in Asynchronous mode. Not waiting for scan to finish.");
                 ScanResults finalScanResults = getFinalScanResults(results);
                 String scanHTMLSummary = delegator.generateHTMLSummary(finalScanResults);
                 ret.getSummary().put(HTML_REPORT, scanHTMLSummary);

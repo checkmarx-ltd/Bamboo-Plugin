@@ -11,8 +11,16 @@ import static com.cx.plugin.utils.CxParam.CXSCA_API_URL;
 import static com.cx.plugin.utils.CxParam.CXSCA_PWD;
 import static com.cx.plugin.utils.CxParam.CXSCA_USERNAME;
 import static com.cx.plugin.utils.CxParam.CXSCA_WEBAPP_URL;
+import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_ACCESS_CONTROL_URL;
+import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_ACCOUNT_NAME;
+import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_API_URL;
+import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_PWD;
+import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_USERNAME;
+import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_WEBAPP_URL;
 import static com.cx.plugin.utils.CxParam.CX_REPORT_LOCATION;
+import static com.cx.plugin.utils.CxParam.CX_USE_CUSTOM_DEPENDENCY_SETTINGS;
 import static com.cx.plugin.utils.CxParam.DEPENDENCY_SCAN_TYPE;
+import static com.cx.plugin.utils.CxParam.GLOBAL_DEPENDENCY_SCAN_TYPE;
 import static com.cx.plugin.utils.CxParam.ENABLE_DEPENDENCY_SCAN;
 import static com.cx.plugin.utils.CxParam.ENABLE_PROXY;
 import static com.cx.plugin.utils.CxParam.FILTER_PATTERN;
@@ -36,6 +44,7 @@ import static com.cx.plugin.utils.CxParam.GLOBAL_SCAN_TIMEOUT_IN_MINUTES;
 import static com.cx.plugin.utils.CxParam.GLOBAL_SERVER_URL;
 import static com.cx.plugin.utils.CxParam.GLOBAL_THRESHOLDS_ENABLED;
 import static com.cx.plugin.utils.CxParam.GLOBAL_USER_NAME;
+import static com.cx.plugin.utils.CxParam.GLOBAL_ENABLE_PROXY;
 import static com.cx.plugin.utils.CxParam.HIGH_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.INTERVAL_BEGINS;
 import static com.cx.plugin.utils.CxParam.INTERVAL_ENDS;
@@ -48,6 +57,10 @@ import static com.cx.plugin.utils.CxParam.OPTION_TRUE;
 import static com.cx.plugin.utils.CxParam.OSA_ARCHIVE_INCLUDE_PATTERNS;
 import static com.cx.plugin.utils.CxParam.DEPENDENCY_SCAN_FILTER_PATTERNS;
 import static com.cx.plugin.utils.CxParam.DEPENDENCY_SCAN_FOLDER_EXCLUDE;
+import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS;
+import static com.cx.plugin.utils.CxParam.GLOBAL_DEPENDENCY_SCAN_FILTER_PATTERNS;
+import static com.cx.plugin.utils.CxParam.GLOBAL_DEPENDENCY_SCAN_FOLDER_EXCLUDE;
+import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_INSTALL_BEFORE_SCAN;
 import static com.cx.plugin.utils.CxParam.OSA_HIGH_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.OSA_INSTALL_BEFORE_SCAN;
 import static com.cx.plugin.utils.CxParam.OSA_LOW_THRESHOLD;
@@ -103,25 +116,19 @@ public class CxConfigHelper {
     private String intervalBegins;
     private String intervalEnds;
     private CxLoggerAdapter log;
-
-    public static final String HTTP_HOST = System.getProperty("http.proxyHost");
-    public static final String HTTP_PORT = System.getProperty("http.proxyPort");
-    public static final String HTTP_USERNAME = System.getProperty("http.proxyUser");
-    public static final String HTTP_PASSWORD = System.getProperty("http.proxyPassword");
-    
-    public static final String NON_PROXY_HOSTS = System.getProperty("http.nonProxyHosts");
-
-    public static final String HTTPS_HOST = System.getProperty("https.proxyHost");
-    public static final String HTTPS_PORT = System.getProperty("https.proxyPort");
-    public static final String HTTPS_USERNAME = System.getProperty("https.proxyUser");
-    public static final String HTTPS_PASSWORD = System.getProperty("https.proxyPassword");
+    private boolean usingGlobalSASTServer;
+    private boolean usingGlobalSASTSettings;
+    private boolean usingGlobalDependencyScan;
+    private boolean usingGlobalScanControlSettings;
+    private boolean dependencyScanEnabled;
+    private ScannerType dependencyScanType;
 
     public CxConfigHelper(CxLoggerAdapter log) {
         this.log = log;
     }
 
     public CxScanConfig resolveConfigurationMap(ConfigurationMap configMap, File workDir, TaskContext taskContext) throws TaskException {
-        log.info("Resolving Cx configuration");
+        log.info("Reading Scan configuration.");
 
         Object a = ContainerManager.getComponent("administrationConfigurationAccessor");
         try {
@@ -132,20 +139,7 @@ public class CxConfigHelper {
         }
 
         scanConfig = new CxScanConfig();
-		
-        // adding proxy details
-		boolean isProxy = resolveBool(configMap, ENABLE_PROXY);
-		scanConfig.setProxy(isProxy);
-		if (isProxy) {
-			ProxyConfig proxyConfig = HttpHelper.getProxyConfig();
-			if (proxyConfig != null) {
-				scanConfig.setProxyConfig(proxyConfig);
-			}else {
-				ProxyConfig proxy = new ProxyConfig();
-				scanConfig.setProxyConfig(proxy);
-			}
-		}
-	
+
         String originUrl = getCxOriginUrl(adminConfig, taskContext);
         scanConfig.setCxOriginUrl(originUrl);
         String cxOrigin = getOrigin(adminConfig, taskContext);
@@ -158,16 +152,31 @@ public class CxConfigHelper {
         
         scanConfig.setSastEnabled(true);
         scanConfig.setDisableCertificateValidation(true);
+
         if (CUSTOM_CONFIGURATION_SERVER.equals(configMap.get(SERVER_CREDENTIALS_SECTION))) {
             scanConfig.setUrl(configMap.get(SERVER_URL));
             scanConfig.setUsername(configMap.get(USER_NAME));
             scanConfig.setPassword(decrypt(configMap.get(PASSWORD)));
+            scanConfig.setProxy(resolveBool(configMap, ENABLE_PROXY));
+            setUsingGlobalSASTServer(false);
         } else {
             scanConfig.setUrl(getAdminConfig(GLOBAL_SERVER_URL));
             scanConfig.setUsername(getAdminConfig(GLOBAL_USER_NAME));
-            scanConfig.setPassword(decrypt(getAdminConfig(GLOBAL_PWD)));
+            scanConfig.setPassword(decrypt(getAdminConfig(GLOBAL_PWD)));            
+            scanConfig.setProxy(resolveGlobalBool(GLOBAL_ENABLE_PROXY));
+            setUsingGlobalSASTServer(true);
         }
-
+		
+		if (scanConfig.isProxy()) {
+			ProxyConfig proxyConfig = HttpHelper.getProxyConfig();
+			if (proxyConfig != null) {
+				scanConfig.setProxyConfig(proxyConfig);
+			}else {
+				ProxyConfig proxy = new ProxyConfig();
+				scanConfig.setProxyConfig(proxy);
+			}
+		}
+		
         scanConfig.setProjectName(configMap.get(PROJECT_NAME).trim());
 
 		String presetIdStr = configMap.get(PRESET_ID);
@@ -188,11 +197,13 @@ public class CxConfigHelper {
             scanConfig.setSastFolderExclusions(configMap.get(FOLDER_EXCLUSION));
             scanConfig.setSastFilterPattern(configMap.get(FILTER_PATTERN));
             scanConfig.setSastScanTimeoutInMinutes(resolveInt(configMap.get(SCAN_TIMEOUT_IN_MINUTES), log));
+            setUsingGlobalSASTSettings(false);
 
         } else {
             scanConfig.setSastFolderExclusions(getAdminConfig(GLOBAL_FOLDER_EXCLUSION));
             scanConfig.setSastFilterPattern(getAdminConfig(GLOBAL_FILTER_PATTERN));
             scanConfig.setSastScanTimeoutInMinutes(resolveInt(getAdminConfig(GLOBAL_SCAN_TIMEOUT_IN_MINUTES), log));
+            setUsingGlobalSASTSettings(true);
         }
 
         scanConfig.setScanComment(configMap.get(COMMENT));
@@ -210,18 +221,38 @@ public class CxConfigHelper {
         //add AST_SCA or OSA based on what user has selected
         ScannerType scannerType = null;
         if(resolveBool(configMap, ENABLE_DEPENDENCY_SCAN)) {
-        	scanConfig.setOsaFilterPattern(configMap.get(DEPENDENCY_SCAN_FILTER_PATTERNS));
-        	scanConfig.setOsaFolderExclusions(configMap.get(DEPENDENCY_SCAN_FOLDER_EXCLUDE));
-        	if(configMap.get(DEPENDENCY_SCAN_TYPE).equalsIgnoreCase(ScannerType.AST_SCA.toString())) {        		
-        		scannerType = ScannerType.AST_SCA;
-        		scanConfig.setAstScaConfig(getScaConfig(configMap));
-        	}else {
-        		scannerType = ScannerType.OSA;
-                scanConfig.setOsaArchiveIncludePatterns(configMap.get(OSA_ARCHIVE_INCLUDE_PATTERNS));
-                scanConfig.setOsaRunInstall(resolveBool(configMap, OSA_INSTALL_BEFORE_SCAN));
-        	}
+        	setDependencyScanEnabled(true);
+        	String useCustomdependencyScanSettings = configMap.get(CX_USE_CUSTOM_DEPENDENCY_SETTINGS);
+    		if(!StringUtils.isEmpty(useCustomdependencyScanSettings) && useCustomdependencyScanSettings.equalsIgnoreCase("true")) {
+    			setUsingGlobalDependencyScan(false);
+            	scanConfig.setOsaFilterPattern(configMap.get(DEPENDENCY_SCAN_FILTER_PATTERNS));
+            	scanConfig.setOsaFolderExclusions(configMap.get(DEPENDENCY_SCAN_FOLDER_EXCLUDE));
+            	if(configMap.get(DEPENDENCY_SCAN_TYPE).equalsIgnoreCase(ScannerType.AST_SCA.toString())) {        		
+            		scannerType = ScannerType.AST_SCA;
+            		scanConfig.setAstScaConfig(getScaConfig(configMap, false));        		
+            	}else {
+            		scannerType = ScannerType.OSA;
+                    scanConfig.setOsaArchiveIncludePatterns(configMap.get(OSA_ARCHIVE_INCLUDE_PATTERNS));
+                    scanConfig.setOsaRunInstall(resolveBool(configMap, OSA_INSTALL_BEFORE_SCAN));
+            	}
+    		}else {
+    			setUsingGlobalDependencyScan(true);
+            	scanConfig.setOsaFilterPattern(getAdminConfig(GLOBAL_DEPENDENCY_SCAN_FILTER_PATTERNS));
+            	scanConfig.setOsaFolderExclusions(getAdminConfig(GLOBAL_DEPENDENCY_SCAN_FOLDER_EXCLUDE));
+            	if(getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE).equalsIgnoreCase(ScannerType.AST_SCA.toString())) {        		
+            		scannerType = ScannerType.AST_SCA;
+            		scanConfig.setAstScaConfig(getScaConfig(configMap, true));        		
+            	}else {
+            		scannerType = ScannerType.OSA;
+                    scanConfig.setOsaArchiveIncludePatterns(getAdminConfig(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS));
+                    scanConfig.setOsaRunInstall(resolveGlobalBool(GLOBAL_OSA_INSTALL_BEFORE_SCAN));
+            	}
+    		}
+    		
+
         	if (scannerType != null) {
                 scanConfig.addScannerType(scannerType);
+                setDependencyScanType(scannerType);
             }
         }
         scanConfig.setDisableCertificateValidation(true);
@@ -237,6 +268,7 @@ public class CxConfigHelper {
             scanConfig.setOsaHighThreshold(resolveInt(configMap.get(OSA_HIGH_THRESHOLD), log));
             scanConfig.setOsaMediumThreshold(resolveInt(configMap.get(OSA_MEDIUM_THRESHOLD), log));
             scanConfig.setOsaLowThreshold(resolveInt(configMap.get(OSA_LOW_THRESHOLD), log));
+            setUsingGlobalScanControlSettings(false);
         } else {
             scanConfig.setSynchronous(resolveGlobalBool(GLOBAL_IS_SYNCHRONOUS));
             scanConfig.setEnablePolicyViolations(resolveGlobalBool(GLOBAL_POLICY_VIOLATION_ENABLED));
@@ -248,6 +280,7 @@ public class CxConfigHelper {
             scanConfig.setOsaHighThreshold(resolveInt(getAdminConfig(GLOBAL_OSA_HIGH_THRESHOLD), log));
             scanConfig.setOsaMediumThreshold(resolveInt(getAdminConfig(GLOBAL_OSA_MEDIUM_THRESHOLD), log));
             scanConfig.setOsaLowThreshold(resolveInt(getAdminConfig(GLOBAL_OSA_LOW_THRESHOLD), log));
+            setUsingGlobalScanControlSettings(true);
         }
         scanConfig.setDenyProject(resolveGlobalBool(GLOBAL_DENY_PROJECT));
         scanConfig.setHideResults(resolveGlobalBool(GLOBAL_HIDE_RESULTS));
@@ -287,7 +320,7 @@ public class CxConfigHelper {
             	}
             }
         } catch (UnsupportedEncodingException e) {
-            log.error("Failed to get BAMBOO URL of the PLAN: " + e.getMessage());
+            log.error("Failed to get Bamboo Server URL: " + e.getMessage());
         }
         return origin;
     }
@@ -348,7 +381,7 @@ public class CxConfigHelper {
             }
 
         } catch (final ParseException e) {
-            log.error("Full scan interval parse exception");
+            log.error("Full scan interval parse exception.");
         }
         return scanConfig;
     }
@@ -358,16 +391,25 @@ public class CxConfigHelper {
         return StringUtils.defaultString(adminConfig.getSystemProperty(key));
     }
 
-    private AstScaConfig getScaConfig(ConfigurationMap configMap) {
+    private AstScaConfig getScaConfig(ConfigurationMap configMap, boolean fromGlobal) {
 		AstScaConfig result = new AstScaConfig();
-		result.setApiUrl(configMap.get(CXSCA_API_URL));
-		result.setAccessControlUrl(configMap.get(CXSCA_ACCESS_CONTROL_URL));
-		result.setWebAppUrl(configMap.get(CXSCA_WEBAPP_URL));
-		result.setTenant(configMap.get(CXSCA_ACCOUNT_NAME));
+		
+		if(fromGlobal) {
+			result.setApiUrl(getAdminConfig(GLOBAL_CXSCA_API_URL));
+			result.setAccessControlUrl(getAdminConfig(GLOBAL_CXSCA_ACCESS_CONTROL_URL));
+			result.setWebAppUrl(getAdminConfig(GLOBAL_CXSCA_WEBAPP_URL));
+			result.setTenant(getAdminConfig(GLOBAL_CXSCA_ACCOUNT_NAME));
+			result.setUsername(getAdminConfig(GLOBAL_CXSCA_USERNAME));
+			result.setPassword(decrypt(getAdminConfig(GLOBAL_CXSCA_PWD)));
 
-		result.setUsername(configMap.get(CXSCA_USERNAME));
-		result.setPassword(configMap.get(CXSCA_PWD));
-
+		}else {
+			result.setApiUrl(configMap.get(CXSCA_API_URL));
+			result.setAccessControlUrl(configMap.get(CXSCA_ACCESS_CONTROL_URL));
+			result.setWebAppUrl(configMap.get(CXSCA_WEBAPP_URL));
+			result.setTenant(configMap.get(CXSCA_ACCOUNT_NAME));
+			result.setUsername(configMap.get(CXSCA_USERNAME));
+			result.setPassword(decrypt(configMap.get(CXSCA_PWD)));	
+		}
 		return result;
     }
     
@@ -409,4 +451,54 @@ public class CxConfigHelper {
     public void setIntervalEnds(String intervalEnds) {
         this.intervalEnds = intervalEnds;
     }
+
+	public boolean isUsingGlobalSASTServer() {
+		return usingGlobalSASTServer;
+	}
+
+	public void setUsingGlobalSASTServer(boolean usingGlobalSASTServer) {
+		this.usingGlobalSASTServer = usingGlobalSASTServer;
+	}
+
+	public boolean isUsingGlobalSASTSettings() {
+		return usingGlobalSASTSettings;
+	}
+
+	public void setUsingGlobalSASTSettings(boolean usingGlobalSASTSettings) {
+		this.usingGlobalSASTSettings = usingGlobalSASTSettings;
+	}
+
+	public boolean isUsingGlobalDependencyScan() {
+		return usingGlobalDependencyScan;
+	}
+
+	public void setUsingGlobalDependencyScan(boolean usingGlobalDependencyScan) {
+		this.usingGlobalDependencyScan = usingGlobalDependencyScan;
+	}
+
+	public boolean isUsingGlobalScanControlSettings() {
+		return usingGlobalScanControlSettings;
+	}
+
+	public void setUsingGlobalScanControlSettings(boolean usingGlobalScanControlSettings) {
+		this.usingGlobalScanControlSettings = usingGlobalScanControlSettings;
+	}
+
+	public boolean isDependencyScanEnabled() {
+		return dependencyScanEnabled;
+	}
+
+	public void setDependencyScanEnabled(boolean dependencyScanEnabled) {
+		this.dependencyScanEnabled = dependencyScanEnabled;
+	}
+
+	public ScannerType getDependencyScanType() {
+		return dependencyScanType;
+	}
+
+	public void setDependencyScanType(ScannerType dependencyScanType) {
+		this.dependencyScanType = dependencyScanType;
+	}
+    
+       
 }

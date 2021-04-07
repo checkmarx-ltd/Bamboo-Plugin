@@ -91,10 +91,18 @@
     function getInputData() {
     
     	var enableProxy = "false";
-    	if ($('#enableProxy').is(":checked"))
-		{
-  			enableProxy = "true";
-		}
+    	if ( $( "#enableProxy" ).length ) {
+    		if ($('#enableProxy').is(":checked"))
+			{
+  				enableProxy = "true";
+			}
+    	}else {
+    		if ($('#globalEnableProxy').is(":checked"))
+			{
+  				enableProxy = "true";
+			}
+    	}
+    	
     
         return {
             "scaServerUrl": $("#cxScaAPIUrl").val(),
