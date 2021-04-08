@@ -152,7 +152,7 @@ public class CxRestResource {
 				config.addScannerType(ScannerType.AST_SCA);
 
 				CxClientDelegator commonClient = CommonClientFactory.getClientDelegatorInstance(config, logger);
-				commonClient.getScaClient().login();
+				commonClient.getScaClient().testScaConnection();
 				tcResponse =  new TestScaConnectionResponse("Connection successful.");
 				statusCode=200;
 			} catch (Exception e) {				
