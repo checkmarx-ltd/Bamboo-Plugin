@@ -133,6 +133,10 @@ public class CheckmarxTask implements TaskType {
 			}
 			results.add(scanResults);
 			
+            if (config.getEnablePolicyViolations()) {
+                delegator.printIsProjectViolated(scanResults);
+            }
+            
             //assert if expected exception is thrown  OR when vulnerabilities under threshold OR when policy violated
             ScanSummary scanSummary = new ScanSummary(config, ret.getSastResults(), ret.getOsaResults(), ret.getScaResults());
             if (scanSummary.hasErrors() || ret.getGeneralException() != null ||
@@ -180,9 +184,6 @@ public class CheckmarxTask implements TaskType {
                 cancelScan(delegator);
             }
             
-            if (config.getEnablePolicyViolations()) {
-                delegator.printIsProjectViolated(scanResults);
-            }
             ScanResults finalScanResults = getFinalScanResults(results);
             if (!config.getHideResults()) {
                 SASTResults sastResults = scanResults.getSastResults();
