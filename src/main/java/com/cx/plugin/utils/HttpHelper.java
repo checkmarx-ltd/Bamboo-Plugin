@@ -1,5 +1,6 @@
 package com.cx.plugin.utils;
 
+import com.cx.restclient.dto.ProxyConfig;
 import com.cx.restclient.exception.CxClientException;
 import org.apache.http.conn.ssl.TrustAllStrategy;
 import org.apache.http.ssl.SSLContexts;
@@ -30,6 +31,7 @@ public class HttpHelper {
     public static final String HTTPS_PORT = System.getProperty("https.proxyPort");
     public static final String HTTPS_USERNAME = System.getProperty("https.proxyUser");
     public static final String HTTPS_PASSWORD = System.getProperty("https.proxyPassword");
+    public static final String HTTP_NON_PROXY_HOSTS = System.getProperty("http.nonProxyHosts");    
 
     public static Proxy getHttpProxy() {
         Proxy proxy = null;
@@ -58,6 +60,43 @@ public class HttpHelper {
 
         return proxy;
     }
+    
+	public static ProxyConfig getProxyConfig() {
+
+		ProxyConfig proxyConfig = null;
+		int port = 0;
+		
+		if (HTTP_HOST != null && !HTTP_HOST.isEmpty()) {
+			proxyConfig = new ProxyConfig();
+			if (HTTP_PORT != null && !HTTP_PORT.isEmpty()) {
+				port = Integer.parseInt(HTTP_PORT);
+				proxyConfig.setPort(port);
+			}
+			proxyConfig.setHost(HTTP_HOST);			
+			proxyConfig.setUsername(HTTP_USERNAME);
+			proxyConfig.setPassword(HTTP_PASSWORD);
+			proxyConfig.setUseHttps(false);
+			
+		} else if (HTTPS_HOST != null && !HTTPS_HOST.isEmpty()) {			
+			proxyConfig = new ProxyConfig();			
+			proxyConfig.setHost(HTTPS_HOST);
+			
+			if (HTTPS_PORT != null && !HTTPS_PORT.isEmpty()) {
+				port = Integer.parseInt(HTTPS_PORT);			
+				proxyConfig.setPort(port);
+			}
+			proxyConfig.setUsername(HTTPS_USERNAME);
+			proxyConfig.setPassword(HTTPS_PASSWORD);
+			proxyConfig.setUseHttps(true);			
+		} 
+		
+		//http.nonProxyHosts is common variable for both http and https
+		if(proxyConfig != null && HTTP_NON_PROXY_HOSTS != null && !HTTP_NON_PROXY_HOSTS.isEmpty()) {
+			proxyConfig.setNoproxyHosts(HTTP_NON_PROXY_HOSTS);
+		}
+		
+		return proxyConfig;
+	}
 
     public static SSLSocketFactory getSSLSocketFactory() throws CxClientException {
         TrustStrategy acceptingTrustStrategy = new TrustAllStrategy();

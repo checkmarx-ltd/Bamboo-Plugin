@@ -15,8 +15,8 @@
         box-sizing: border-box;
     }
 
-    input#radioGroupcustomConfigurationServer, input#radioGroupglobalConfigurationServer, input#radioGroupglobalConfigurationCxSAST, input#radioGroupcustomConfigurationCxSAST, input#radioGroupglobalConfigurationControl, input#radioGroupcustomConfigurationControl {
-        width: 14px;
+    input#radioGroupcustomConfigurationServer, input#radioGroupglobalConfigurationServer, input#radioGroupglobalConfigurationCxSAST, input#radioGroupcustomConfigurationCxSAST, input#radioGroupglobalConfigurationControl, input#radioGroupcustomConfigurationControl, input#radioGroupOSA, input#radioGroupAST_SCA {
+        width: 20px;
     }
 
     form.aui.top-label .field-group > label {
@@ -86,7 +86,7 @@
         [@ww.textfield labelKey="serverUrl.label" name="globalServerUrl"/]
         [@ww.textfield labelKey="username.label" name="globalUsername"/]
         [@ww.password labelKey="password.label" name="globalPss" showPassword='true' /]
-
+		[@ww.checkbox labelKey="globalEnableProxy.label" name="globalEnableProxy" descriptionKey="globalEnableProxy.description" toggle='true' /]
     <button type="button" class="aui-button test-connection" id="g_test_connection" onclick="connectToServer()">Connect to Server</button>
     <div id="gtestConnectionMessage" class="test-connection-message"></div>
     [/@ui.bambooSection]
@@ -97,6 +97,44 @@
         [@ww.textfield labelKey="scanTimeoutInMinutes.label" name="globalScanTimeoutInMinutes" required='false'/]
     [/@ui.bambooSection]
 
+    [@ui.bambooSection title='Dependency Scan' cssClass="cx center"]
+	[@ww.checkbox labelKey="globalEnableDependencyScan.label" name="globalEnableDependencyScan" toggle='true' /]
+	[@ui.bambooSection dependsOn="globalEnableDependencyScan" showOn="true"]
+	[@ww.textarea labelKey="globalDependencyScanFilterPatterns.label" name="globalDependencyScanFilterPatterns" descriptionKey="globalDependencyScanFilterPatterns.description" rows="4" cssClass="long-field"/]
+	[@ww.textfield labelKey="globalDependencyScanfolderExclusions.label" name="globalDependencyScanfolderExclusions" descriptionKey="globalDependencyScanfolderExclusions.description" cssClass="long-field"/]
+		[@ww.radio id = 'radioGroup' name='globalDependencyScanType' listKey='key' listValue='value' toggle='true' list=globalDependencyScanTypeValues /]
+		
+		[@ui.bambooSection title='Checkmarx Scan CxOSA' dependsOn='globalDependencyScanType' showOn='OSA' cssClass="cx center" ]
+			<p class="description">
+				<small>
+					Open Source Analysis (OSA) helps you manage the security risk involved in using open
+					source libraries in your applications
+				</small>
+			</p>
+			
+			[@ww.textfield labelKey="globalOsaArchiveIncludePatterns.label" name="globalOsaArchiveIncludePatterns" descriptionKey="globalOsaArchiveIncludePatterns.description"/]
+			[@ww.checkbox labelKey="globalOsaInstallBeforeScan.label" name="globalOsaInstallBeforeScan" descriptionKey="globalOsaInstallBeforeScan.description" toggle='true' /]
+		[/@ui.bambooSection]
+		[@ui.bambooSection title='Checkmarx Scan CxSCA' dependsOn='globalDependencyScanType' showOn='AST_SCA' cssClass="cx center"]
+			<p class="description">
+				<small>
+					Software Composition Analysis (SCA) helps you manage the security risk involved in using open
+					source libraries in your applications
+				</small>
+			</p>
+   		[@ww.textfield labelKey="globalcxScaAPIUrl.label" name="globalcxScaAPIUrl"/]
+		[@ww.textfield labelKey="globalcxScaAccessControlServerUrl.label" name="globalcxScaAccessControlServerUrl"/]
+		[@ww.textfield labelKey="globalcxScaWebAppUrl.label" name="globalcxScaWebAppUrl"/]
+		[@ww.textfield labelKey="globalcxScaAccountName.label" name="globalcxScaAccountName"/]
+        
+        [@ww.textfield labelKey="cxScaGlobalUsername.label" name="globalcxScaUsername"/]
+        [@ww.password labelKey="cxScaGlobalPassword.label" name="globalcxScaPss" showPassword='true' /]
+        <button type="button" class="aui-button test-cxsca-connection" id="g_test-cxsca-connection" onclick="connectToScaServer()">Connect to Server</button>
+		<div id="gtestScaConnectionMessage" class="test-cxsca-connection-message"></div>
+		[/@ui.bambooSection]
+	[/@ui.bambooSection]
+[/@ui.bambooSection]
+        
     [@ui.bambooSection title='Control Checkmarx Scan' cssClass="cx center"]
 
         [@ww.checkbox labelKey="isSynchronous.label" name="globalIsSynchronous" descriptionKey="isSynchronous.description" toggle='true' /]
@@ -110,11 +148,13 @@
                 [@ww.textfield labelKey="sastLowThreshold.label" name="globalLowThreshold" required='false'/]
             [/@ui.bambooSection]
 
+            [@ui.bambooSection dependsOn='globalEnableDependencyScan' showOn='true']
             [@ww.checkbox labelKey="osaThresholdsEnabled.label" name="globalOsaThresholdsEnabled" descriptionKey="thresholdsEnabled.description" toggle='true' /]
             [@ui.bambooSection dependsOn='globalOsaThresholdsEnabled' showOn='true']
                 [@ww.textfield labelKey="osaHighThreshold.label" name="globalOsaHighThreshold" required='false'/]
                 [@ww.textfield labelKey="osaMediumThreshold.label" name="globalOsaMediumThreshold" required='false'/]
                 [@ww.textfield labelKey="osaLowThreshold.label" name="globalOsaLowThreshold" required='false'/]
+            [/@ui.bambooSection]
             [/@ui.bambooSection]
         [/@ui.bambooSection]
 
@@ -125,6 +165,123 @@
 [/@ww.form]
 
 <script>
+function connectToScaServer() {
+
+        document.getElementById("gtestScaConnectionMessage").innerHTML = "";
+            restScaRequest();
+    }
+
+        function restScaRequest() {
+			var request;
+			
+			var scaServerUrl = document.getElementById("checkmarxDefaultConfiguration_globalcxScaAPIUrl").value;
+            var scaAccessControlUrl = document.getElementById("checkmarxDefaultConfiguration_globalcxScaAccessControlServerUrl").value;
+            var scaWebAppUrl = document.getElementById("checkmarxDefaultConfiguration_globalcxScaWebAppUrl").value;
+			var scaAccountName = document.getElementById("checkmarxDefaultConfiguration_globalcxScaAccountName").value;
+			var scaUserName = document.getElementById("checkmarxDefaultConfiguration_globalcxScaUsername").value;
+			var pss = document.getElementById("checkmarxDefaultConfiguration_globalcxScaPss").value;
+			var enableProxy = document.getElementById("checkmarxDefaultConfiguration_globalEnableProxy").checked;
+			
+			
+        if (!validateScaFields()) {
+        	return;
+        }
+         request = JSON.stringify(getInputScaData());
+
+
+        function createScaRestRequest(method, url) {
+
+            var resolvedUrl = AJS.contextPath() + url;
+
+            var xhr = new XMLHttpRequest();
+            if ("withCredentials" in xhr) {
+                xhr.open(method, resolvedUrl, true);
+
+            } else if (typeof XDomainRequest != "undefined") {
+                xhr = new XDomainRequest();
+                xhr.open(method, resolvedUrl);
+            } else {
+                xhr = null;
+            }
+            return xhr;
+        }
+
+        var xhr = createScaRestRequest("POST", "/rest/checkmarx/1.0/test/scaconnection");
+        if (!xhr) {
+            console.log("Request Failed");
+            return;
+        }
+
+        xhr.onload = function () {
+                var parsed = JSON.parse(xhr.responseText);
+                var message = document.getElementById("gtestScaConnectionMessage");
+                if (xhr.status == 200) {
+                    message.style.color = "green";
+                }
+                else {
+                    message.style.color = "#d22020"
+                }
+                message.innerHTML = parsed.loginResponse;
+            };
+
+
+        xhr.onerror = function () {
+            console.log('There was an error!');
+        };
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(request);
+    
+
+
+    function validateScaFields() {
+
+		var messageElement = document.getElementById("gtestScaConnectionMessage");
+        
+				if (scaServerUrl.length < 1) {
+                    messageElement.textContent = 'CxSca API Url must not be empty';
+                    messageElement.style.color = "#d22020";
+                    return false;
+                } else if (scaAccessControlUrl.length < 1) {
+                    messageElement.textContent = "CxAccess Control Server Url must not be empty";
+                    messageElement.style.color = "#d22020";
+                    return false;
+                } else if (scaWebAppUrl.length < 1) {
+                    messageElement.textContent = "CxSca Web App Url must not be empty";
+                    messageElement.style.color = "#d22020";
+                    return false;
+                }
+				else if (scaAccountName.length < 1) {
+                    messageElement.textContent = "CxSca Account Name must not be empty";
+                    messageElement.style.color = "#d22020";
+                    return false;
+                }
+				else if (scaUserName.length < 1) {
+                    messageElement.textContent = "CxSca Username must not be empty";
+                    messageElement.style.color = "#d22020";
+                    return false;
+                }
+				else if (pss.length < 1) {
+                    messageElement.textContent = "CxSca Password must not be empty";
+                    messageElement.style.color = "#d22020";
+                    return false;
+                }
+               
+        return true;
+    }
+
+    function getInputScaData() {
+        return {
+            "scaServerUrl": scaServerUrl,
+            "scaAccessControlUrl": scaAccessControlUrl,
+            "scaWebAppUrl": scaWebAppUrl,
+			"scaAccountName": scaAccountName,
+            "scaUserName": scaUserName,
+            "pss": pss,
+            "proxyEnable":enableProxy
+        };
+    }
+	}
+	
     function connectToServer() {
         document.getElementById("gtestConnectionMessage").innerHTML = "";
             restRequest();
@@ -136,6 +293,7 @@
             var url = document.getElementById("checkmarxDefaultConfiguration_globalServerUrl").value;
             var username = document.getElementById("checkmarxDefaultConfiguration_globalUsername").value;
             var pas = document.getElementById("checkmarxDefaultConfiguration_globalPss").value;
+            var enableProxy = document.getElementById("checkmarxDefaultConfiguration_globalEnableProxy").checked;
 
             if (!validateGlobalFields()) {
                 return;
@@ -209,7 +367,8 @@
                 return {
                     "url": url,
                     "username": username,
-                    "pas": pas
+                    "pas": pas,
+                    "proxyEnable": enableProxy
                 };
             }
 

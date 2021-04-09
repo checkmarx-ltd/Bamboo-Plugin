@@ -15,7 +15,7 @@
         box-sizing: border-box;
     }
 
-    input#radioGroupcustomConfigurationServer, input#radioGroupglobalConfigurationServer, input#radioGroupglobalConfigurationCxSAST, input#radioGroupcustomConfigurationCxSAST, input#radioGroupglobalConfigurationControl, input#radioGroupcustomConfigurationControl {
+    input#radioGroupcustomConfigurationServer, input#radioGroupglobalConfigurationServer, input#radioGroupOSA, input#radioGroupAST_SCA, input#radioGroupglobalConfigurationCxSAST, input#radioGroupcustomConfigurationCxSAST, input#radioGroupglobalConfigurationControl, input#radioGroupcustomConfigurationControl {
         width: 14px;
     }
 
@@ -94,6 +94,7 @@
         [@ww.textfield labelKey="serverUrl.label" id="serverUrl" name="serverUrl"  required='true' /]
         [@ww.textfield labelKey="username.label"  id="username" name="username" required='true'/]
         [@ww.password labelKey="password.label"  id="password" name="password" showPassword='true' required='true'/]
+        [@ww.checkbox labelKey="enableProxy.label" name="enableProxy" id="enableProxy" descriptionKey="enableProxy.description" toggle='true' /]
     <button type="button" class="aui-button test-connection" id="test_connection">Connect to Server</button>
     <div id="testConnectionMessage" class="test-connection-message"></div>
 
@@ -103,11 +104,16 @@
         [@ww.label labelKey="serverUrl.label"  id="globalServerUrl" name="globalServerUrl"/]
         [@ww.label labelKey="username.label" id="globalUsername" name="globalUsername" /]
         [@ww.label type="password" labelKey="password.label"/]
+         [#if (globalEnableProxy.attribute)??]
+        	[@ww.checkbox labelKey="enableProxy.label" name="globalEnableProxy" descriptionKey="enableProxy.description" toggle='true' disabled="true" checked="true" /]
+        [#else]
+        	[@ww.checkbox labelKey="enableProxy.label" name="globalEnableProxy" descriptionKey="enableProxy.description" toggle='true' disabled="true" /]
+         [/#if]
     [/@ui.bambooSection]
 
     [@ww.textfield labelKey="projectName.label" name="projectName" required='true' descriptionKey='projectName.description' /]
     [@ww.select labelKey="preset.label" name="presetId" id="presetListId" list="presetList" listKey="key" listValue="value" multiple="false"  cssClass="long-field" descriptionKey="preset.description"/]
-    [@ww.select labelKey="teamPath.label" name="teamPathId" id="teamPathListId" list="teamPathList" listKey="key" listValue="value" multiple="false"  cssClass="long-field" descriptionKey="teamPath.description"/]
+    [@ww.select labelKey="teamPath.label" name="teamPathId" id="teamPathListId" list="teamPathList" listKey="key" listValue="value" multiple="false"  cssClass="long-field" descriptionKey="teamPath.description"/]	
 [/@ui.bambooSection]
 
 
@@ -143,19 +149,82 @@
 [/@ui.bambooSection]
 
 
-[@ui.bambooSection title='Checkmarx Scan CxOSA' cssClass="cx center"]
-<p class="description">
-    <small>
-        Open Source Analysis (OSA) helps you manage the security risk involved in using open
-        source libraries in your applications
-    </small>
-</p>
-    [@ww.checkbox labelKey="osaEnabled.label" name="osaEnabled" descriptionKey="osaEnabled.description" toggle='true' /]
-    [@ui.bambooSection dependsOn="osaEnabled" showOn="true"]
-        [@ww.textarea labelKey="cxOsaFilterPatterns.label" name="cxOsaFilterPatterns" descriptionKey="cxOsaFilterPatterns.description" rows="4" cssClass="long-field"/]
-        [@ww.textfield labelKey="cxOsaArchiveIncludePatterns.label" name="cxOsaArchiveIncludePatterns" descriptionKey="cxOsaArchiveIncludePatterns.description"/]
-        [@ww.checkbox labelKey="cxOsaInstallBeforeScan.label" name="cxOsaInstallBeforeScan" descriptionKey="cxOsaInstallBeforeScan.description" toggle='true' /]
-    [/@ui.bambooSection]
+[@ui.bambooSection title='Dependency Scan' cssClass="cx center"]
+	[@ww.checkbox labelKey="enableDependencyScan.label" name="enableDependencyScan" descriptionKey="enableDependencyScan.description" toggle='true' /]
+    [@ui.bambooSection dependsOn="enableDependencyScan" showOn="true"]
+    [@ww.checkbox labelKey="cxDependencySettingsCustom.label" name="cxDependencySettingsCustom" descriptionKey="cxDependencySettingsCustom.description" toggle='true' /]
+    [@ui.bambooSection dependsOn="cxDependencySettingsCustom" showOn="true"]
+			[@ww.textarea labelKey="cxDependencyScanFilterPatterns.label" name="cxDependencyScanFilterPatterns" descriptionKey="cxDependencyScanFilterPatterns.description" rows="4" cssClass="long-field"/]
+			[@ww.textfield labelKey="cxDependencyScanfolderExclusions.label" name="cxDependencyScanfolderExclusions" descriptionKey="cxDependencyScanfolderExclusions.description" cssClass="long-field"/]
+			
+		[@ww.radio id = 'radioGroup' name='dependencyScanType' listKey='key' listValue='value' toggle='true' list=dependencyScanTypeValues /]
+		
+		[@ui.bambooSection title='Checkmarx Scan CxOSA' dependsOn='dependencyScanType' showOn='OSA' cssClass="cx center" ]
+			<p class="description">
+				<small>
+					Open Source Analysis (OSA) helps you manage the security risk involved in using open
+					source libraries in your applications
+				</small>
+			</p>
+			
+			[@ww.textfield labelKey="cxOsaArchiveIncludePatterns.label" name="cxOsaArchiveIncludePatterns" descriptionKey="cxOsaArchiveIncludePatterns.description"/]
+			[@ww.checkbox labelKey="cxOsaInstallBeforeScan.label" name="cxOsaInstallBeforeScan" descriptionKey="cxOsaInstallBeforeScan.description" toggle='true' /]
+		[/@ui.bambooSection]
+		
+		[@ui.bambooSection title='Checkmarx Scan CxSCA' dependsOn='dependencyScanType' showOn='AST_SCA' cssClass="cx center"]
+			<p class="description">
+				<small>
+					Software Composition Analysis (SCA) helps you manage the security risk involved in using open
+					source libraries in your applications
+				</small>
+			</p>
+			
+			[@ww.textfield labelKey="cxScaAPIUrl.label" name="cxScaAPIUrl" id="cxScaAPIUrl" descriptionKey="cxScaAPIUrl.description"/]
+			[@ww.textfield labelKey="cxAccessControlServerUrl.label" name="cxAccessControlServerUrl" id="cxAccessControlServerUrl" descriptionKey="cxAccessControlServerUrl.description"/]
+			[@ww.textfield labelKey="cxScaWebAppUrl.label" name="cxScaWebAppUrl" id="cxScaWebAppUrl" descriptionKey="cxScaWebAppUrl.description"/]
+			[@ww.textfield labelKey="cxScaAccountName.label" name="cxScaAccountName" id="cxScaAccountName" descriptionKey="cxScaAccountName.description"/]
+			
+			
+				[@ww.textfield labelKey="cxScaUsername.label"  id="cxScaUsername" name="cxScaUsername" required='true'/]
+				[@ww.password labelKey="cxScaPassword.label"  id="cxScaPassword" name="cxScaPassword" showPassword='true' required='true'/]
+				<button type="button" class="aui-button test-cxsca-connection" id="test-cxsca-connection">Connect to Server</button>
+				<div id="test-cxsca-connection-message" class="test-cxsca-connection-message"></div>
+			[/@ui.bambooSection]
+		[/@ui.bambooSection]
+	[@ui.bambooSection dependsOn="cxDependencySettingsCustom" showOn="false"]
+		[@ww.label labelKey="cxDependencyScanFilterPatterns.label" name="globalDependencyScanFilterPatterns" descriptionKey="cxDependencyScanFilterPatterns.description" rows="4" cssClass="long-field"/]
+		[@ww.label labelKey="cxDependencyScanfolderExclusions.label" name="globalDependencyScanfolderExclusions" descriptionKey="cxDependencyScanfolderExclusions.description" cssClass="long-field"/]
+				
+		[@ww.radio id = 'radioGroup' name='globalDependencyScanType' listKey='key' listValue='value' toggle='true' list=dependencyScanTypeValues disabled="true" /]
+		
+		[@ui.bambooSection title='Checkmarx Scan CxOSA' dependsOn='globalDependencyScanType' showOn='OSA' cssClass="cx center" ]
+			<p class="description">
+				<small>
+					Open Source Analysis (OSA) helps you manage the security risk involved in using open
+					source libraries in your applications
+				</small>
+			</p>
+			
+			[@ww.label labelKey="cxOsaArchiveIncludePatterns.label" name="globalOsaArchiveIncludePatterns" descriptionKey="cxOsaArchiveIncludePatterns.description"/]
+			[@ww.label labelKey="cxOsaInstallBeforeScan.label" name="globalOsaInstallBeforeScan" descriptionKey="cxOsaInstallBeforeScan.description" toggle='true' /]
+		[/@ui.bambooSection]
+		[@ui.bambooSection title='Checkmarx Scan CxSCA' dependsOn='globalDependencyScanType' showOn='AST_SCA' cssClass="cx center"]
+			<p class="description">
+				<small>
+					Software Composition Analysis (SCA) helps you manage the security risk involved in using open
+					source libraries in your applications
+				</small>
+			</p>
+	   		[@ww.label labelKey="cxScaAPIUrl.label" name="globalcxScaAPIUrl"/]
+			[@ww.label labelKey="cxAccessControlServerUrl.label" name="globalcxScaAccessControlServerUrl"/]
+			[@ww.label labelKey="cxScaWebAppUrl.label" name="globalcxScaWebAppUrl"/]
+			[@ww.label labelKey="cxScaAccountName.label" name="globalcxScaAccountName"/]
+	        
+	        [@ww.label labelKey="cxScaUsername.label" name="globalcxScaUsername"/]
+	        [@ww.label labelKey="cxScaPassword.label" type="password" /]
+		[/@ui.bambooSection]
+	[/@ui.bambooSection]
+	[/@ui.bambooSection]
 [/@ui.bambooSection]
 
 
@@ -187,7 +256,7 @@
                 [@ww.label labelKey="sastLowThreshold.label"/]
             [/@ui.bambooSection]
 
-            [@ui.bambooSection dependsOn='osaEnabled' showOn='true']
+            [@ui.bambooSection dependsOn='enableDependencyScan' showOn='true']
                 [@ww.checkbox labelKey="osaThresholdsEnabled.label" name="osaThresholdsEnabled"  descriptionKey="thresholdsEnabled.description"toggle='true' /]
 
                 [@ui.bambooSection dependsOn='osaThresholdsEnabled' showOn='true']
@@ -201,15 +270,6 @@
                     [@ww.label labelKey="osaMediumThreshold.label" /]
                     [@ww.label labelKey="osaLowThreshold.label"  /]
                 [/@ui.bambooSection]
-
-            [/@ui.bambooSection]
-
-            [@ui.bambooSection dependsOn='osaEnabled' showOn='false']
-                [@ww.checkbox labelKey="osaThresholdsEnabled.label" name="osaThresholdsEnabled"  descriptionKey="thresholdsEnabled.description"toggle='true' disabled="true" checked='false'  /]
-
-                [@ww.label labelKey="osaHighThreshold.label"/]
-                [@ww.label labelKey="osaMediumThreshold.label"/]
-                [@ww.label labelKey="osaLowThreshold.label"  /]
 
             [/@ui.bambooSection]
 

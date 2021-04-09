@@ -10,6 +10,8 @@ import java.io.File;
 public class CxParam {
     public static final String CX_REPORT_LOCATION = File.separator + "Checkmarx" + File.separator + "Reports";
 
+    public static final String ENABLE_PROXY= "enableProxy";
+    public static final String GLOBAL_ENABLE_PROXY= "globalEnableProxy";
     public static final String CX_ORIGIN = "Bamboo";
     public static final String USER_NAME = "username";
     public static final String PASSWORD = "password";
@@ -19,6 +21,7 @@ public class CxParam {
     public static final String PRESET_NAME = "presetName";
     public static final String PRESET_LIST = "presetList";
     public static final String TEAM_PATH_ID = "teamPathId";
+    
     public static final String TEAM_PATH_NAME = "teamPathName";
     public static final String TEAM_PATH_LIST = "teamPathList";
     public static final String FOLDER_EXCLUSION = "folderExclusions";
@@ -40,7 +43,9 @@ public class CxParam {
     public static final String LOW_THRESHOLD = "lowThreshold";
     public static final String POLICY_VIOLATION_ENABLED = "enablePolicyViolations";
     public static final String OSA_ENABLED = "osaEnabled";
-    public static final String OSA_FILTER_PATTERNS = "cxOsaFilterPatterns";
+    public static final String DEPENDENCY_SCAN_FILTER_PATTERNS = "cxDependencyScanFilterPatterns";
+    public static final String DEPENDENCY_SCAN_FOLDER_EXCLUDE = "cxDependencyScanfolderExclusions";
+    public static final String GLOBAL_DEPENDENCY_SCAN_FOLDER_EXCLUDE = "globalDependencyScanfolderExclusions";
     public static final String OSA_ARCHIVE_INCLUDE_PATTERNS = "cxOsaArchiveIncludePatterns";
     public static final String OSA_INSTALL_BEFORE_SCAN = "cxOsaInstallBeforeScan";
     public static final String OSA_THRESHOLDS_ENABLED = "osaThresholdsEnabled";
@@ -64,6 +69,31 @@ public class CxParam {
     public final static String NO_TEAM_MESSAGE = "Unable to connect to server. Make sure URL and Credentials are valid to see teams list";
     public final static String ERROR_OCCURRED = "errorOccurred";
     public final static String HTML_REPORT = "htmlReport";
+    public final static String ENABLE_DEPENDENCY_SCAN = "enableDependencyScan";
+    public final static String DEPENDENCY_SCAN_TYPE = "dependencyScanType";
+    
+    public final static String GLOBAL_ENABLE_DEPENDENCY_SCAN = "globalEnableDependencyScan";
+    public final static String GLOBAL_DEPENDENCY_SCAN_TYPE = "globalDependencyScanType";
+    public static final String GLOBAL_DEPENDENCY_SCAN_FILTER_PATTERNS = "globalDependencyScanFilterPatterns";
+    public static final String GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS = "globalOsaArchiveIncludePatterns";
+    public static final String GLOBAL_OSA_INSTALL_BEFORE_SCAN = "globalOsaInstallBeforeScan";
+    
+    public final static String CXSCA_API_URL = "cxScaAPIUrl";
+    public final static String CXSCA_ACCESS_CONTROL_URL = "cxAccessControlServerUrl";
+    public final static String CXSCA_WEBAPP_URL = "cxScaWebAppUrl";
+    public final static String CXSCA_ACCOUNT_NAME = "cxScaAccountName";
+    
+    public final static String GLOBAL_CXSCA_API_URL = "globalcxScaAPIUrl";
+    public final static String GLOBAL_CXSCA_ACCESS_CONTROL_URL = "globalcxScaAccessControlServerUrl";
+    public final static String GLOBAL_CXSCA_WEBAPP_URL = "globalcxScaWebAppUrl";
+    public final static String GLOBAL_CXSCA_ACCOUNT_NAME = "globalcxScaAccountName";
+    
+    public final static String CX_USE_CUSTOM_DEPENDENCY_SETTINGS = "cxDependencySettingsCustom";
+    public final static String CXSCA_USERNAME = "cxScaUsername";
+    public final static String CXSCA_PWD = "cxScaPassword";
+    public static final String GLOBAL_CXSCA_USERNAME = "globalcxScaUsername";
+    public static final String GLOBAL_CXSCA_PWD = "globalcxScaPss";
+    
 
     public final static String ERROR_OCCURRED_MESSAGE = "Configuration settings were not saved. Please review your settings and try again";
 
@@ -104,7 +134,10 @@ public class CxParam {
             "!**/*.stml,    !**/*.ttml,      !**/*.txn,      !**/*.xhtm,     !**/*.xhtml,   !**/*.class, !**/*.iml,   !**/Checkmarx/Reports/**/* , !**/node_modules/**/*";
 
     public static final String DEFAULT_OSA_ARCHIVE_INCLUDE_PATTERNS = "*.zip, *.tgz, *.war, *.ear";
-
+    public static final String DEFAULT_CXSCA_API_URL = "https://api-sca.checkmarx.net";
+    public static final String DEFAULT_CXSCA_ACCESS_CONTROL_URL = "https://platform.checkmarx.net";
+    public static final String DEFAULT_CXSCA_WEB_APP_URL = "https://sca.checkmarx.net";
+    
     public static final String CONNECTION_FAILED_COMPATIBILITY = "Connection Failed.\n" +
             "Validate the provided login credentials and server URL are correct.\n" +
             "In addition, make sure the installed plugin version is compatible with the CxSAST version according to CxSAST release notes.";

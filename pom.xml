@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.cx</groupId>
     <artifactId>checkmarx-bamboo-plugin</artifactId>
-    <version>2020.3.2</version>
+    <version>2021.2.31</version>
     <organization>
         <name>Checkmarx LTD</name>
         <url>http://www.checkmarx.com/</url>
@@ -36,6 +36,7 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+        
     </repositories>
 
     <build>
@@ -59,6 +60,11 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>3.7.0.1746</version>
+            </plugin>
+            <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.7.0</version>
                 <configuration>
@@ -79,25 +85,13 @@
         <atlassian.plugin.key>${project.groupId}.${project.artifactId}</atlassian.plugin.key>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <common.client.version>2020.3.10.bamboo</common.client.version>
-
-        <sonar.projectKey>checkmarx-ltd_Bamboo-Plugin</sonar.projectKey>
-        <sonar.organization>checkmarx-ltd</sonar.organization>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.login>f51556a6951f6d0667e68c3521abdc4029777ea5</sonar.login>
+       
+        <common.client.version>2021.1.153</common.client.version>
+        <junit.version>4.12</junit.version>
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpmime</artifactId>
-            <version>4.5.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpcore</artifactId>
-            <version>4.4</version>
-        </dependency>
+     
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
@@ -139,10 +133,7 @@
                     <groupId>log4j</groupId>
                     <artifactId>log4j</artifactId>
                 </exclusion>
-                <exclusion>
-                    <groupId>org.apache.httpcomponents</groupId>
-                    <artifactId>httpcore</artifactId>
-                </exclusion>
+                
                 <exclusion>
                     <groupId>org.apache.commons</groupId>
                     <artifactId>commons-compress</artifactId>
@@ -184,8 +175,17 @@
                     <groupId>com.google.guava</groupId>
                     <artifactId>guava</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+    				<artifactId>log4j-api</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+    		<groupId>org.apache.logging.log4j</groupId>
+    		<artifactId>log4j-api</artifactId>
+    			<version>2.14.0</version>
+		</dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-cbor</artifactId>
@@ -200,18 +200,24 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-            <version>5.2.7.RELEASE</version>
+            <version>5.2.11.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-mqtt</artifactId>
             <version>5.15.9</version>
         </dependency>
-        <dependency>
-            <groupId>xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
-            <version>2.12.0</version>
-        </dependency>
+	    <dependency>
+			<groupId>com.sun.xml.parsers</groupId>
+			<artifactId>jaxp-ri</artifactId>
+			<version>1.4.5</version>			
+			<exclusions>
+				<exclusion>
+					<groupId>javax.xml.parsers</groupId>
+    				<artifactId>jaxp-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
         <dependency>
             <groupId>com.mchange</groupId>
             <artifactId>c3p0</artifactId>
@@ -226,6 +232,12 @@
             <groupId>xalan</groupId>
             <artifactId>xalan</artifactId>
             <version>2.7.2</version>
+                        <exclusions>
+            <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
+            </exclusion>
+            </exclusions>
         </dependency>
         <!--<dependency>-->
         <!--<groupId>commons-fileupload</groupId>-->
@@ -243,11 +255,44 @@
             <version>1.1.1</version>
             <scope>provided</scope>
         </dependency>
+        
+        		<!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
+		<dependency>
+		    <groupId>javax.xml.bind</groupId>
+		    <artifactId>jaxb-api</artifactId>
+		    <version>2.2.11</version>
+		    <scope>provided</scope>
+		</dependency>
+        		    
+        		
+        		 <dependency>
+            		<groupId>org.glassfish.jaxb</groupId>
+            		<artifactId>jaxb-runtime</artifactId>
+            		 <version>2.3.1</version>
+        		</dependency>
+        		
+        		
         <dependency>
             <groupId>com.checkmarx</groupId>
             <artifactId>cx-client-common</artifactId>
             <version>${common.client.version}</version>
             <exclusions>
+                  
+                <exclusion>
+            		<groupId>jakarta.xml.bind</groupId>
+            		<artifactId>jakarta.xml.bind-api</artifactId>
+        		</exclusion>    
+        		
+        		 <exclusion>
+            		<groupId>org.glassfish.jaxb</groupId>
+            		<artifactId>jaxb-runtime</artifactId>
+        		</exclusion>
+        		  
+            <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
+            </exclusion>
+            
                 <exclusion>
                     <artifactId>spring-web</artifactId>
                     <groupId>org.springframework</groupId>

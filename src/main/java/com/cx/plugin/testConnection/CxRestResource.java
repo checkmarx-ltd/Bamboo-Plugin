@@ -1,23 +1,14 @@
 package com.cx.plugin.testConnection;
 
 
-import com.cx.plugin.testConnection.dto.TestConnectionResponse;
-import com.cx.plugin.utils.HttpHelper;
-import com.cx.restclient.CxShragaClient;
-import com.cx.restclient.dto.Team;
-import com.cx.restclient.sast.dto.Preset;
-import org.apache.commons.validator.routines.UrlValidator;
-import org.codehaus.plexus.util.StringUtils;
-import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static com.cx.plugin.utils.CxParam.CONNECTION_FAILED_COMPATIBILITY;
+import static com.cx.plugin.utils.CxParam.CX_ORIGIN;
+import static com.cx.plugin.utils.CxParam.NO_PRESET_ID;
+import static com.cx.plugin.utils.CxParam.NO_PRESET_MESSAGE;
+import static com.cx.plugin.utils.CxParam.NO_TEAM_MESSAGE;
+import static com.cx.plugin.utils.CxParam.NO_TEAM_PATH;
+import static com.cx.plugin.utils.CxPluginUtils.decrypt;
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Response;
 import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
@@ -25,8 +16,32 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.cx.plugin.utils.CxParam.*;
-import static com.cx.plugin.utils.CxPluginUtils.decrypt;
+import javax.net.ssl.HttpsURLConnection;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
+
+import org.apache.commons.validator.routines.UrlValidator;
+import org.codehaus.plexus.util.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.cx.plugin.configuration.CommonClientFactory;
+import com.cx.plugin.testConnection.dto.TestConnectionResponse;
+import com.cx.plugin.testConnection.dto.TestScaConnectionResponse;
+import com.cx.plugin.utils.HttpHelper;
+import com.cx.restclient.CxClientDelegator;
+import com.cx.restclient.ast.dto.sca.AstScaConfig;
+import com.cx.restclient.configuration.CxScanConfig;
+import com.cx.restclient.dto.ProxyConfig;
+import com.cx.restclient.dto.ScannerType;
+import com.cx.restclient.dto.SourceLocationType;
+import com.cx.restclient.dto.Team;
+import com.cx.restclient.sast.dto.Preset;
+import com.cx.restclient.sast.utils.LegacyClient;
 
 /**
  * A resource of message.
@@ -36,7 +51,7 @@ public class CxRestResource {
 
     private List<Preset> presets;
     private List<Team> teams;
-    private CxShragaClient shraga;
+    private LegacyClient commonClient;
     private String result = "";
     private Logger logger = LoggerFactory.getLogger(CxRestResource.class);
 
@@ -53,43 +68,21 @@ public class CxRestResource {
         String urlToCheck;
         int statusCode = 400;
 
-        urlToCheck = StringUtils.defaultString(data.get("url"));
-
-        try {
-            UrlValidator urlValidator = new UrlValidator();
-            if (!urlValidator.isValid(urlToCheck)) {
-                return getInvalidUrlResponse(statusCode);
-            }
-            url = new URL(urlToCheck);
-            URLConnection urlConn;
-
-            Proxy proxy = HttpHelper.getHttpProxy();
-            if (proxy != null) {
-                logger.info("Using proxy to connect to SAST server");
-                urlConn = url.openConnection(proxy);
-            } else {
-                urlConn = url.openConnection();
-            }
-            if (url.getProtocol().equalsIgnoreCase("https")) {
-                ((HttpsURLConnection) urlConn).setSSLSocketFactory(HttpHelper.getSSLSocketFactory());
-                ((HttpsURLConnection) urlConn).setHostnameVerifier(HttpHelper.getHostnameVerifier());
-            }
-            urlConn.connect();
-        } catch (Exception e) {
-            return getInvalidUrlResponse(statusCode);
-        }
-
         String username = StringUtils.defaultString(data.get("username"));
         String pas = StringUtils.defaultString(data.get("pas"));
+        String proxyEnable = StringUtils.defaultString(data.get("proxyEnable"));
 
         try {
-            if (loginToServer(url, username, decrypt(pas))) {
+            urlToCheck = StringUtils.defaultString(data.get("url"));
+            url = new URL(urlToCheck);
+            
+        	if (loginToServer(url, username, decrypt(pas), proxyEnable)) {
                 try {
-                    teams = shraga.getTeamList();
+                    teams = commonClient.getTeamList();
                 } catch (Exception e) {
                     throw new Exception(CONNECTION_FAILED_COMPATIBILITY + "\nError: " + e.getMessage());
                 }
-                presets = shraga.getPresetList();
+                presets = commonClient.getPresetList();
                 if (presets == null || teams == null) {
                     throw new Exception("invalid preset teamPath");
                 }
@@ -107,6 +100,65 @@ public class CxRestResource {
             tcResponse = getTCFailedResponse();
         }
         return Response.status(statusCode).entity(tcResponse).build();
+    }
+    
+    @POST
+    @Path("test/scaconnection")
+    @Consumes({"application/json"})
+    @Produces({"application/json"})
+    public Response testScaConnection(Map<Object, Object> data) {
+    	TestScaConnectionResponse tcResponse;
+    	 int statusCode = 400;
+			try {
+
+				String scaAccessControlUrl = StringUtils.defaultString(data.get("scaAccessControlUrl"));
+				String scaServerUrl = StringUtils.defaultString(data.get("scaServerUrl"));
+				String scaWebAppUrl = StringUtils.defaultString(data.get("scaWebAppUrl"));
+				String scaTenant = StringUtils.defaultString(data.get("scaAccountName"));
+				String username = StringUtils.defaultString(data.get("scaUserName"));
+				String pss = decrypt(StringUtils.defaultString(data.get("pss")));
+				String proxyEnable = StringUtils.defaultString(data.get("proxyEnable"));
+				
+				CxScanConfig config = new CxScanConfig();
+				config.setDisableCertificateValidation(true);
+				config.setOsaGenerateJsonReport(false);
+
+				ProxyConfig proxyConfig = HttpHelper.getProxyConfig();
+				if (proxyEnable != null && proxyEnable.equalsIgnoreCase("true") && proxyConfig != null) {
+					config.setProxy(true);
+					config.setProxyConfig(proxyConfig);
+		            logger.debug("Testing login with proxy details:");
+					logger.debug("Proxy host: " + proxyConfig.getHost());
+					logger.debug("Proxy port: " + proxyConfig.getPort());
+					logger.debug("Proxy user: " + proxyConfig.getUsername());
+					logger.debug("Proxy password: *************");
+					logger.debug("Proxy Scheme: " + (proxyConfig.isUseHttps() ? "https" : "http"));
+					logger.debug("Non Proxy Hosts: " + proxyConfig.getNoproxyHosts());
+				}else {
+					config.setProxy(false);
+		            logger.debug("Testing login.");
+				}
+				
+				AstScaConfig scaConfig = new AstScaConfig();
+				scaConfig.setAccessControlUrl(scaAccessControlUrl);
+				scaConfig.setWebAppUrl(scaWebAppUrl);
+				scaConfig.setApiUrl(scaServerUrl);
+				scaConfig.setTenant(scaTenant);
+				scaConfig.setUsername(username);
+				scaConfig.setPassword(pss);
+				scaConfig.setSourceLocationType(SourceLocationType.LOCAL_DIRECTORY);
+				scaConfig.setRemoteRepositoryInfo(null);
+				config.setAstScaConfig(scaConfig);
+				config.addScannerType(ScannerType.AST_SCA);
+
+				CxClientDelegator commonClient = CommonClientFactory.getClientDelegatorInstance(config, logger);
+				commonClient.getScaClient().testScaConnection();
+				tcResponse =  new TestScaConnectionResponse("Connection successful.");
+				statusCode=200;
+			} catch (Exception e) {				
+				tcResponse =  new TestScaConnectionResponse("Failed to login: " + e.getMessage());
+			}
+    	return Response.status(statusCode).entity(tcResponse).build();
     }
 
     private Response getInvalidUrlResponse(int statusCode) {
@@ -128,10 +180,28 @@ public class CxRestResource {
         return new TestConnectionResponse(result, presets, teams);
     }
 
-    private boolean loginToServer(URL url, String username, String pd) {
+    private boolean loginToServer(URL url, String username, String password, String proxyEnable) {
         try {
-            shraga = new CxShragaClient(url.toString().trim(), username, pd, CX_ORIGIN, true, true, logger);
-            shraga.login();
+            
+        	ProxyConfig proxyConfig = HttpHelper.getProxyConfig();        	
+			CxScanConfig scanConfig = new CxScanConfig(url.toString().trim(), username, password, CX_ORIGIN, true);
+			if (proxyEnable != null && proxyEnable.equalsIgnoreCase("true") && proxyConfig != null) {
+				scanConfig.setProxy(true);
+				scanConfig.setProxyConfig(proxyConfig);
+	            logger.debug("Testing login with proxy details:");
+				logger.debug("Proxy host: " + proxyConfig.getHost());
+				logger.debug("Proxy port: " + proxyConfig.getPort());
+				logger.debug("Proxy user: " + proxyConfig.getUsername());
+				logger.debug("Proxy password: *************");
+				logger.debug("Proxy Scheme: " + (proxyConfig.isUseHttps() ? "https" : "http"));
+				logger.debug("Non Proxy Hosts: " + proxyConfig.getNoproxyHosts());
+			}else {
+				scanConfig.setProxy(false);
+	            logger.debug("Testing login.");
+			}
+			
+            commonClient = CommonClientFactory.getInstance(scanConfig, logger);
+            commonClient.login();
 
             return true;
         } catch (Exception cxClientException) {

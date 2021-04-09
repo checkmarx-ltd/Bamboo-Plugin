@@ -60,6 +60,7 @@
     <web-resource key="test-connection-resources" name="test-connection Web Resources">
         <dependency>com.atlassian.auiplugin:ajs</dependency>
         <resource type="download" name="test-connection.js" location="/js/test-connection.js"/>
+        <resource type="download" name="test-cxsca-connection.js" location="/js/test-cxsca-connection.js"/>
         <resource type="download" name="images/" location="/images"/>
         <context>atl.general</context>
     </web-resource>
