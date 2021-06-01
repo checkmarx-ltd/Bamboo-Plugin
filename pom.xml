@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.cx</groupId>
     <artifactId>checkmarx-bamboo-plugin</artifactId>
-    <version>2021.2.31</version>
+    <version>2021.2.33</version>
     <organization>
         <name>Checkmarx LTD</name>
         <url>http://www.checkmarx.com/</url>
@@ -86,7 +86,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
        
-        <common.client.version>2021.1.153</common.client.version>
+        <common.client.version>2021.2.159</common.client.version>
+
         <junit.version>4.12</junit.version>
     </properties>
 
@@ -95,7 +96,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.4</version>
+            <version>4.5.13</version>
         </dependency>
         <!--  <dependency>
              <groupId>dom4j</groupId>
@@ -120,6 +121,26 @@
                 <exclusion>
                     <groupId>com.fasterxml.jackson.dataformat</groupId>
                     <artifactId>jackson-dataformat-cbor</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>bcprov-jdk15on</artifactId>
+                    <groupId>org.bouncycastle</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-jms</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-fileupload</groupId>
+                    <artifactId>commons-fileupload</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>bcprov-jdk15on</artifactId>
+                    <groupId>org.bouncycastle</groupId>
+                </exclusion>
+                 <exclusion>
+                    <artifactId>commons-collections4</artifactId>
+                    <groupId>org.apache.commons</groupId>
                 </exclusion>
 <!--                <exclusion>-->
 <!--                    <groupId>dom4j</groupId>-->
@@ -147,9 +168,25 @@
                     <artifactId>bcprov-jdk14</artifactId>
                 </exclusion>
                 <exclusion>
+                    <groupId>org.yaml</groupId>
+                    <artifactId>snakeyaml</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>com.thoughtworks.xstream</groupId>
                     <artifactId>xstream</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>com.jcraft</groupId>
+                    <artifactId>jsch</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.igniterealtime.smack</groupId>
+                    <artifactId>smack-core</artifactId>
+                </exclusion>
+                <exclusion>
+                	<groupId>org.igniterealtime.smack</groupId>
+            		<artifactId>smack-tcp</artifactId>
+            	</exclusion>
                 <!--<exclusion>-->
                 <!--<groupId>commons-fileupload</groupId>-->
                 <!--<artifactId>commons-fileupload</artifactId>-->
@@ -179,8 +216,73 @@
                     <groupId>org.apache.logging.log4j</groupId>
     				<artifactId>log4j-api</artifactId>
                 </exclusion>
+                <!-- exclusion>
+                    <groupId>org.acegisecurity</groupId>
+    				<artifactId>acegi-security</artifactId>
+                </exclusion-->
             </exclusions>
         </dependency>
+        <!-- dependency>
+           <groupId>org.acegisecurity</groupId>
+    	   <artifactId>acegi-security</artifactId>
+    	   <version>1.0.7</version>
+        </dependency-->
+        <dependency>
+         <groupId>com.jcraft</groupId>
+         <artifactId>jsch</artifactId>
+         <version>0.1.55</version>
+        </dependency>
+         <dependency>
+           <groupId>org.apache.activemq</groupId>
+           <artifactId>activemq-broker</artifactId>
+           <version>5.16.1</version>
+         </dependency>
+         <dependency>
+            <groupId>org.igniterealtime.smack</groupId>
+            <artifactId>smack-core</artifactId>
+            <version>4.4.2</version>
+         </dependency>
+         <dependency>
+            <groupId>org.igniterealtime.smack</groupId>
+            <artifactId>smack-tcp</artifactId>
+            <version>4.4.2</version>
+         </dependency>
+        <dependency>
+           <artifactId>commons-collections4</artifactId>
+           <groupId>org.apache.commons</groupId>
+           <version>4.4</version>
+        </dependency>
+         <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.28</version>
+         </dependency>
+         <dependency>
+              <groupId>org.quartz-scheduler</groupId>
+              <artifactId>quartz</artifactId>
+              <version>2.3.2</version>
+         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jms</artifactId>
+            <version>5.3.5</version>
+        </dependency>
+         <dependency>
+              <groupId>commons-fileupload</groupId>
+              <artifactId>commons-fileupload</artifactId>
+              <version>1.4</version>
+              <exclusions>
+              <exclusion>
+              	<groupId>commons-io</groupId>
+            	<artifactId>commons-io</artifactId>
+            	</exclusion>
+              </exclusions>
+         </dependency>
+         <dependency>
+         	<groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.8.0</version>
+         </dependency>
         <dependency>
     		<groupId>org.apache.logging.log4j</groupId>
     		<artifactId>log4j-api</artifactId>
@@ -200,12 +302,27 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-            <version>5.2.11.RELEASE</version>
+            <version>5.3.5</version>
         </dependency>
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-mqtt</artifactId>
             <version>5.15.9</version>
+            <exclusions>
+            <exclusion>
+	      		<groupId>com.fasterxml.jackson.core</groupId>
+            	<artifactId>jackson-databind</artifactId>
+	     	</exclusion>
+	     	<exclusion>
+               <groupId>org.apache.activemq</groupId>
+               <artifactId>activemq-broker</artifactId>
+            </exclusion>
+	     	</exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.12.3	</version>
         </dependency>
 	    <dependency>
 			<groupId>com.sun.xml.parsers</groupId>
@@ -226,7 +343,7 @@
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk14</artifactId>
-            <version>1.65</version>
+            <version>1.68</version>
         </dependency>
         <dependency>
             <groupId>xalan</groupId>
@@ -293,6 +410,14 @@
                     <artifactId>xml-apis</artifactId>
             </exclusion>
             
+            <exclusion>
+                    <groupId>io.netty</groupId>
+                    <artifactId>netty-codec-http</artifactId>
+            </exclusion>
+            <exclusion>
+                    <groupId>io.vertx</groupId>
+                    <artifactId>vertx-web</artifactId>
+            </exclusion>
                 <exclusion>
                     <artifactId>spring-web</artifactId>
                     <groupId>org.springframework</groupId>
@@ -314,16 +439,34 @@
                     <groupId>com.sun.jersey</groupId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>bcprov-jdk15on</artifactId>
-                    <groupId>org.bouncycastle</groupId>
-                </exclusion>
-                <exclusion>
                     <groupId>com.google.code.gson</groupId>
                     <artifactId>gson</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
+        
         <dependency>
+             <groupId>io.netty</groupId>
+             <artifactId>netty-codec-http</artifactId>
+             <version>4.1.60.Final</version>
+        </dependency>
+        <dependency>
+             <groupId>io.netty</groupId>
+             <artifactId>netty-codec-http2</artifactId>
+             <version>4.1.63.Final</version>
+        </dependency>
+        <dependency>
+          <groupId>io.vertx</groupId>
+          <artifactId>vertx-web</artifactId>
+          <version>4.1.0.Beta1</version>
+          <exclusions>
+	          <exclusion>
+	            <groupId>io.netty</groupId>
+	            <artifactId>netty-codec-http2</artifactId>
+	          </exclusion>
+          </exclusions>
+         </dependency>
+         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.2.2</version>
