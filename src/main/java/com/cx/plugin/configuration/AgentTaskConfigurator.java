@@ -596,13 +596,11 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 
     private Map<String, String> generateCxOSAAndSCAFields(@NotNull final ActionParametersMap params, Map<String, String> config) {
         
-    	
-        		
-        config.put(CX_USE_CUSTOM_DEPENDENCY_SETTINGS,getDefaultString(params, CX_USE_CUSTOM_DEPENDENCY_SETTINGS).trim());		
+    	config.put(CX_USE_CUSTOM_DEPENDENCY_SETTINGS,getDefaultString(params, CX_USE_CUSTOM_DEPENDENCY_SETTINGS).trim());
+        config.put(ENABLE_DEPENDENCY_SCAN, getDefaultString(params, ENABLE_DEPENDENCY_SCAN).trim());
 		String useCustomdependencyScanSettings = getDefaultString(params, CX_USE_CUSTOM_DEPENDENCY_SETTINGS).trim();
 		if(!StringUtils.isEmpty(useCustomdependencyScanSettings) && useCustomdependencyScanSettings.equalsIgnoreCase("true")) {
-			final String configType = getDefaultString(params, DEPENDENCY_SCAN_TYPE);
-	    	config.put(ENABLE_DEPENDENCY_SCAN, getDefaultString(params, ENABLE_DEPENDENCY_SCAN).trim());
+			final String configType = getDefaultString(params, DEPENDENCY_SCAN_TYPE);	    	
 	        config.put(DEPENDENCY_SCAN_TYPE, configType);
 	        
 	        config.put(OSA_INSTALL_BEFORE_SCAN, getDefaultString(params, OSA_INSTALL_BEFORE_SCAN).trim());
@@ -618,8 +616,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 			config.put(CXSCA_PWD,encrypt(getDefaultString(params, CXSCA_PWD).trim()));    
 			
 		}else {
-			final String configType = getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE);
-	    	config.put(ENABLE_DEPENDENCY_SCAN, getAdminConfig(GLOBAL_ENABLE_DEPENDENCY_SCAN).trim());
+			final String configType = getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE);	    	
 	        config.put(DEPENDENCY_SCAN_TYPE, configType);
 	        
 	        config.put(OSA_INSTALL_BEFORE_SCAN, getAdminConfig(GLOBAL_OSA_INSTALL_BEFORE_SCAN).trim());

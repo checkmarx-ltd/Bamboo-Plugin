@@ -137,8 +137,9 @@ public class CheckmarxTask implements TaskType {
                 delegator.printIsProjectViolated(scanResults);
             }
             
-            //assert if expected exception is thrown  OR when vulnerabilities under threshold OR when policy violated
+            //assert if expected exception is thrown  
             ScanSummary scanSummary = new ScanSummary(config, ret.getSastResults(), ret.getOsaResults(), ret.getScaResults());
+        
             if (scanSummary.hasErrors() || ret.getGeneralException() != null ||
                     (config.isSastEnabled() && (ret.getSastResults() == null || ret.getSastResults().getException() != null)) ||
                     (config.isOsaEnabled() && (ret.getOsaResults() == null || ret.getOsaResults().getException() != null)) ||
@@ -151,18 +152,19 @@ public class CheckmarxTask implements TaskType {
                 	scanFailedAtServer.append("CxSAST OSA scan results are not found. Scan might have failed at the server or aborted by the server.\n");
                 if (config.isAstScaEnabled() && (ret.getScaResults() == null || !ret.getScaResults().isScaResultReady())) 
                 	scanFailedAtServer.append("CxAST SCA scan results are not found. Scan might have failed at the server or aborted by the server.\n");
-            	
-            	if(scanSummary.hasErrors() && scanFailedAtServer.toString().isEmpty())
-            		scanFailedAtServer.append(scanSummary.toString());
-            	else if (scanSummary.hasErrors())
-            		scanFailedAtServer.append("\n").append(scanSummary.toString());
-            		
-            		//printBuildFailure(scanSummary.toString(), ret, log);
+            					
+				if (scanSummary.hasErrors() && scanFailedAtServer.toString().isEmpty())
+					scanFailedAtServer.append(scanSummary.toString());
+				else if (scanSummary.hasErrors())
+					scanFailedAtServer.append("\n").append(scanSummary.toString());				 
             	            	
-            		printBuildFailure(scanFailedAtServer.toString(), ret, log);
+            	printBuildFailure(scanFailedAtServer.toString(), ret, log);
             	
-            	return taskResultBuilder.failed().build();
-            }
+                //handle hard failures. In case of threshold or policy failure, we still need to generate report before returning.
+            	//Hence, cannot return yet
+            	if(!scanSummary.hasErrors()) 
+            		return taskResultBuilder.failed().build();
+            }            
             
             //Asynchronous MODE
             if (!config.getSynchronous()) {
@@ -170,12 +172,12 @@ public class CheckmarxTask implements TaskType {
                 ScanResults finalScanResults = getFinalScanResults(results);
                 String scanHTMLSummary = delegator.generateHTMLSummary(finalScanResults);
                 ret.getSummary().put(HTML_REPORT, scanHTMLSummary);
-
+                buildContext.getBuildResult().getCustomBuildData().putAll(ret.getSummary());
+                
                 if (ret.getException() != null || ret.getGeneralException() != null) {
                     printBuildFailure(null, ret, log);
                     return taskResultBuilder.failed().build();
-                }
-                buildContext.getBuildResult().getCustomBuildData().putAll(ret.getSummary());
+                }                
                 return taskResultBuilder.success().build();
             }
             
@@ -216,6 +218,9 @@ public class CheckmarxTask implements TaskType {
 
             }
        
+            if(scanSummary.hasErrors()) {
+            	return taskResultBuilder.failed().build();
+            }
             ///////////////
             return taskResultBuilder.success().build();
         } catch (InterruptedException e) {
