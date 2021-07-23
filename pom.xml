@@ -85,10 +85,9 @@
         <atlassian.plugin.key>${project.groupId}.${project.artifactId}</atlassian.plugin.key>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-       
-        <common.client.version>2021.2.159</common.client.version>
-
-        <junit.version>4.12</junit.version>
+        <common.client.version>2021.3.164</common.client.version>
+        <slf4jVersion>1.6.1</slf4jVersion>
+        
     </properties>
 
     <dependencies>
@@ -113,7 +112,7 @@
             <artifactId>atlassian-bamboo-web</artifactId>
             <version>${bamboo.version}</version>
             <scope>provided</scope>
-            <exclusions>
+            <exclusions> 
                 <exclusion>
                     <groupId>com.opensymphony.propertyset.providers</groupId>
                     <artifactId>hibernate4</artifactId>
@@ -284,11 +283,6 @@
             <version>2.8.0</version>
          </dependency>
         <dependency>
-    		<groupId>org.apache.logging.log4j</groupId>
-    		<artifactId>log4j-api</artifactId>
-    			<version>2.14.0</version>
-		</dependency>
-        <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-cbor</artifactId>
             <version>2.6.7</version>
@@ -363,9 +357,11 @@
         <!--</dependency>-->
         <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>1.6.1</version>
-        </dependency>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4jVersion}</version>
+            <scope>compile</scope>
+        </dependency>  
+           
         <dependency>
             <groupId>com.atlassian.templaterenderer</groupId>
             <artifactId>atlassian-template-renderer-api</artifactId>
@@ -494,12 +490,17 @@
             <version>1.0.2</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
-            <scope>provided</scope>
-        </dependency>
+		<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-log4j12</artifactId>
+		<version>${slf4jVersion}</version>
+		</dependency>
+		<dependency>
+		<groupId>log4j</groupId>
+		<artifactId>log4j</artifactId>
+		<version>1.2.16</version>
+		<scope>compile</scope>
+		</dependency>        
     </dependencies>
 
 </project>
