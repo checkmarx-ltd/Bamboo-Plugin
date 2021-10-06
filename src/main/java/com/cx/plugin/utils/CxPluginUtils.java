@@ -98,8 +98,8 @@ public abstract class CxPluginUtils {
         if (configBFF.isIntervals()) {
             log.info("Interval- begins: " + configBFF.getIntervalBegins());
             log.info("Interval- ends: " + configBFF.getIntervalEnds());
-            String fullScan = config.getIncremental() ? "" : "NOT ";
-            log.info("Override full scan: " + config.getIncremental() + " (Interval based full scan " + fullScan + "activated.)");
+            String fullScan = config.getIncremental() ? "NOT" : " ";
+            log.info("Override full scan: " + !config.getIncremental() + " (Interval based full scan " + fullScan + "activated.)");
         }
         
         log.info("Dependency Scan enabled : " + configBFF.isDependencyScanEnabled());        
