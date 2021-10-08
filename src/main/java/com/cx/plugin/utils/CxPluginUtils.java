@@ -81,7 +81,7 @@ public abstract class CxPluginUtils {
             log.info("SAST filter pattern: " + config.getSastFilterPattern());
             log.info("SAST timeout: " + config.getSastScanTimeoutInMinutes());
             log.info("SAST scan comment: " + config.getScanComment());
-            log.info("Is incremental scan: " + config.getIncremental());
+            log.info("Is incremental scan(Effective): " + configBFF.isEffectiveIncrementalScan());
             log.info("Is generate full XML report: " + config.getGenerateXmlReport());
             log.info("Is generate PDF report: " + config.getGeneratePDFReport());
             log.info("Policy violations enabled: " + config.getEnablePolicyViolations());
@@ -98,8 +98,8 @@ public abstract class CxPluginUtils {
         if (configBFF.isIntervals()) {
             log.info("Interval- begins: " + configBFF.getIntervalBegins());
             log.info("Interval- ends: " + configBFF.getIntervalEnds());
-            String fullScan = config.getIncremental() ? "" : "NOT ";
-            log.info("Override full scan: " + config.getIncremental() + " (Interval based full scan " + fullScan + "activated.)");
+            String fullScan = configBFF.isEffectiveIncrementalScan() ? "NOT " : "";
+            log.info("Override full scan: " + !configBFF.isEffectiveIncrementalScan() + " (Interval based full scan " + fullScan + "activated.)");
         }
         
         log.info("Dependency Scan enabled : " + configBFF.isDependencyScanEnabled());        

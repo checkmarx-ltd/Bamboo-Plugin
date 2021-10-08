@@ -122,8 +122,17 @@ public class CxConfigHelper {
     private boolean usingGlobalScanControlSettings;
     private boolean dependencyScanEnabled;
     private ScannerType dependencyScanType;
+    private boolean effectiveIncrementalScan;
 
-    public CxConfigHelper(CxLoggerAdapter log) {
+    public boolean isEffectiveIncrementalScan() {
+		return effectiveIncrementalScan;
+	}
+
+	public void setEffectiveIncrementalScan(boolean effectiveIncrementalScan) {
+		this.effectiveIncrementalScan = effectiveIncrementalScan;
+	}
+
+	public CxConfigHelper(CxLoggerAdapter log) {
         this.log = log;
     }
 
@@ -208,13 +217,20 @@ public class CxConfigHelper {
 
         scanConfig.setScanComment(configMap.get(COMMENT));
         scanConfig.setIncremental(resolveBool(configMap, IS_INCREMENTAL));
-
+        log.info("Is incremental scan: "+ scanConfig.getIncremental());
         if (scanConfig.getIncremental()) {
             isIntervals = resolveBool(configMap, IS_INTERVALS);
+            setEffectiveIncrementalScan(scanConfig.getIncremental());
             if (isIntervals) {
                 intervalBegins = configMap.get(INTERVAL_BEGINS);
                 intervalEnds = configMap.get(INTERVAL_ENDS);
                 scanConfig = resolveIntervalFullScan(scanConfig);
+                if(!scanConfig.getIncremental()) {
+                	// i.e.Interval based full scan activated. Make effective incremental scan flag to false
+                	setEffectiveIncrementalScan(false);
+                } else {
+                	setEffectiveIncrementalScan(true);
+                }
             }
         }
         scanConfig.setGeneratePDFReport(resolveBool(configMap, GENERATE_PDF_REPORT));
