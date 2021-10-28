@@ -5,7 +5,7 @@
     <groupId>com.cx</groupId>
     <artifactId>checkmarx-bamboo-plugin</artifactId>
 
-    <version>2021.4.34</version>
+    <version>2021.4.35</version>
 
     <organization>
         <name>Checkmarx LTD</name>
