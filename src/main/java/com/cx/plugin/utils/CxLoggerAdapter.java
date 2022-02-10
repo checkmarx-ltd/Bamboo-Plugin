@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.FormattingTuple;
 import org.slf4j.helpers.MarkerIgnoringBase;
 import org.slf4j.helpers.MessageFormatter;
+import org.slf4j.impl.MyLoggerFactory;
 
 /**
  * Created by: Dorg.
@@ -14,13 +15,16 @@ import org.slf4j.helpers.MessageFormatter;
  */
 public class CxLoggerAdapter extends MarkerIgnoringBase {
 
-    private final Logger log = LoggerFactory.getLogger("Checkmarx Build Logger");
+	private MyLoggerFactory logfactory ;
+    private final Logger log;
 
     private BuildLogger buildLogger;
 
-    public CxLoggerAdapter(BuildLogger log) {
+    public CxLoggerAdapter(BuildLogger logger) {
         this.name = "Build Logger";
-        this.buildLogger = log;
+        this.buildLogger = logger;
+        logfactory =  new MyLoggerFactory(this.buildLogger);
+        log = logfactory.getLogger("Checkmarx Build Logger");
     }
 
     public boolean isTraceEnabled() {
