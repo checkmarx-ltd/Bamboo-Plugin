@@ -4,10 +4,12 @@ import java.io.Serializable;
 
 import org.slf4j.Logger;
 import org.slf4j.Marker;
+import org.slf4j.helpers.MessageFormatter;
+import org.slf4j.helpers.FormattingTuple;
 
 import com.atlassian.bamboo.build.logger.BuildLogger;
 
-public class MyLoggerAdapter implements Logger, Serializable {
+public class CheckmarxLoggerAdapter implements Logger, Serializable {
 	/**
 	 * 
 	 */
@@ -18,12 +20,12 @@ public class MyLoggerAdapter implements Logger, Serializable {
 	
 	protected final String FQCN = getClass().getName();
 	 
-	MyLoggerAdapter(String name){
+	CheckmarxLoggerAdapter(String name){
 		this.name = name;
 		traceCapable = this.isTraceEnabled();
 	}
 
-	MyLoggerAdapter(String name, BuildLogger logger){
+	CheckmarxLoggerAdapter(String name, BuildLogger logger){
 		this.name = name;
 		this.logger = logger;
 		 traceCapable = this.isTraceEnabled();
@@ -55,21 +57,24 @@ public class MyLoggerAdapter implements Logger, Serializable {
 	public void trace(String format, Object arg) {
 		if(logger == null)
 			return ;
-		logger.addBuildLogEntry(String.format(format,arg));		
+		FormattingTuple ft = MessageFormatter.format(format,arg);
+		logger.addBuildLogEntry(ft.getMessage());		
 	}
 
 	@Override
 	public void trace(String format, Object arg1, Object arg2) {
 		if(logger == null)
 			return ;
-		logger.addBuildLogEntry(String.format(format,arg1, arg2));		
+		FormattingTuple ft = MessageFormatter.format(format,arg1,arg2);
+		logger.addBuildLogEntry(ft.getMessage());			
 	}
 
 	@Override
 	public void trace(String format, Object[] argArray) {
 		if(logger == null)
 			return ;
-		logger.addBuildLogEntry(String.format(format,argArray));		
+		FormattingTuple ft = MessageFormatter.format(format,argArray);
+		logger.addBuildLogEntry(ft.getMessage());	
 	}
 
 	@Override
@@ -132,21 +137,24 @@ public class MyLoggerAdapter implements Logger, Serializable {
 	public void debug(String format, Object arg) {
 		if(logger == null)
 			return ;
-		logger.addBuildLogEntry(String.format(format,arg));		
+		FormattingTuple ft = MessageFormatter.format(format,arg);
+		logger.addBuildLogEntry(ft.getMessage());	
 	}
 
 	@Override
 	public void debug(String format, Object arg1, Object arg2) {
 		if(logger == null)
 			return ;
-		logger.addBuildLogEntry(String.format(format,arg1, arg2));		
+		FormattingTuple ft = MessageFormatter.format(format,arg1,arg2);
+		logger.addBuildLogEntry(ft.getMessage());			
 	}
 
 	@Override
 	public void debug(String format, Object[] argArray) {
 		if(logger == null)
 			return ;
-		logger.addBuildLogEntry(String.format(format,argArray));		
+		FormattingTuple ft = MessageFormatter.format(format,argArray);
+		logger.addBuildLogEntry(ft.getMessage());			
 	}
 
 	@Override
@@ -210,21 +218,24 @@ public class MyLoggerAdapter implements Logger, Serializable {
 	public void info(String format, Object arg) {
 		if(logger == null)
 			return ;
-		logger.addBuildLogEntry(String.format(format,arg));		
+		FormattingTuple ft = MessageFormatter.format(format,arg);
+		logger.addBuildLogEntry(ft.getMessage());		
 	}
 
 	@Override
 	public void info(String format, Object arg1, Object arg2) {
 		if(logger == null)
 			return ;
-		logger.addBuildLogEntry(String.format(format,arg1, arg2));		
+		FormattingTuple ft = MessageFormatter.format(format,arg1,arg2);
+		logger.addBuildLogEntry(ft.getMessage());		
 	}
 
 	@Override
 	public void info(String format, Object[] argArray) {
 		if(logger == null)
 			return ;
-		logger.addBuildLogEntry(String.format(format,argArray));		
+		FormattingTuple ft = MessageFormatter.format(format,argArray);
+		logger.addBuildLogEntry(ft.getMessage());			
 	}
 
 	@Override
@@ -288,21 +299,24 @@ public class MyLoggerAdapter implements Logger, Serializable {
 	public void warn(String format, Object arg) {
 		if(logger == null)
 			return ;
-		logger.addBuildLogEntry(String.format(format,arg));		
+		FormattingTuple ft = MessageFormatter.format(format,arg);
+		logger.addBuildLogEntry(ft.getMessage());		
 	}
 
 	@Override
 	public void warn(String format, Object arg1, Object arg2) {
 		if(logger == null)
 			return ;
-		logger.addBuildLogEntry(String.format(format,arg1, arg2));		
+		FormattingTuple ft = MessageFormatter.format(format,arg1,arg2);
+		logger.addBuildLogEntry(ft.getMessage());			
 	}
 
 	@Override
 	public void warn(String format, Object[] argArray) {
 		if(logger == null)
 			return ;
-		logger.addBuildLogEntry(String.format(format,argArray));		
+		FormattingTuple ft = MessageFormatter.format(format,argArray);
+		logger.addBuildLogEntry(ft.getMessage());		
 	}
 
 	@Override
@@ -402,21 +416,24 @@ return this.isErrorEnabled();
 	public void error(String format, Object arg) {
 		if(logger == null)
 			return ;
-		logger.addBuildLogEntry(String.format(format,arg));		
+		FormattingTuple ft = MessageFormatter.format(format,arg);
+		logger.addBuildLogEntry(ft.getMessage());		
 	}
 
 	@Override
 	public void error(String format, Object arg1, Object arg2) {
 		if(logger == null)
 			return ;
-		logger.addBuildLogEntry(String.format(format,arg1, arg2));		
+		FormattingTuple ft = MessageFormatter.format(format,arg1,arg2);
+		logger.addBuildLogEntry(ft.getMessage());		
 	}
 
 	@Override
 	public void error(String format, Object[] argArray) {
 		if(logger == null)
 			return ;
-		logger.addBuildLogEntry(String.format(format,argArray));		
+		FormattingTuple ft = MessageFormatter.format(format,argArray);
+		logger.addBuildLogEntry(ft.getMessage());			
 	}
 
 	@Override

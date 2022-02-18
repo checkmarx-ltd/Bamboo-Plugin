@@ -110,6 +110,7 @@ public class CheckmarxTask implements TaskType {
             if (config.isOsaEnabled()) {
                 //we do this in order to redirect the logs from the filesystem agent component to the build console
                 String appenderName = "cxAppender_" + buildContext.getBuildKey().getKey();
+              //We have removed log4j support and added custom sl4j which will use CxLoggerAdapter class instead of CxAppender class.
                 //Logger.getRootLogger().addAppender(new CxAppender(taskContext.getBuildLogger(), appenderName));                
             }
 

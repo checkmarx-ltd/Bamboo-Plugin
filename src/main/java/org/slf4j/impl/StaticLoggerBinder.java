@@ -18,7 +18,7 @@ public class StaticLoggerBinder implements LoggerFactoryBinder {
     
     private StaticLoggerBinder(BuildLogger logger) {
     	_logger = logger;
-    	loggerFactory = new MyLoggerFactory(logger);
+    	loggerFactory = new CxLoggerFactory(logger);
     }
     
 
@@ -57,7 +57,7 @@ public class StaticLoggerBinder implements LoggerFactoryBinder {
     public static String REQUESTED_API_VERSION = "1.6.1";  // !final
 
     private static final String loggerFactoryClassStr
-        = MyLoggerFactory.class.getName();
+        = CxLoggerFactory.class.getName();
 
     /**
      * The ILoggerFactory instance returned by the
@@ -67,7 +67,7 @@ public class StaticLoggerBinder implements LoggerFactoryBinder {
     private final ILoggerFactory loggerFactory;
 
     private StaticLoggerBinder() {
-        loggerFactory = new MyLoggerFactory();
+        loggerFactory = new CxLoggerFactory();
     }
 
     public ILoggerFactory getLoggerFactory() {
