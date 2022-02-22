@@ -11,7 +11,7 @@ import com.atlassian.bamboo.v2.build.BuildContext;
 import com.atlassian.bamboo.variable.VariableDefinitionContext;
 import com.cx.plugin.configuration.CommonClientFactory;
 import com.cx.plugin.dto.BambooScanResults;
-import com.cx.plugin.utils.CxAppender;
+//import com.cx.plugin.utils.CxAppender;
 import com.cx.plugin.utils.CxConfigHelper;
 import com.cx.plugin.utils.CxLoggerAdapter;
 import com.cx.plugin.utils.CxParam;
