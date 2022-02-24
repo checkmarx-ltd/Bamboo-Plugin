@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.FormattingTuple;
 import org.slf4j.helpers.MarkerIgnoringBase;
 import org.slf4j.helpers.MessageFormatter;
-import org.slf4j.impl.CxLoggerFactory;
 
 /**
  * Created by: Dorg.
@@ -15,16 +14,13 @@ import org.slf4j.impl.CxLoggerFactory;
  */
 public class CxLoggerAdapter extends MarkerIgnoringBase {
 
-	private CxLoggerFactory logfactory ;
-    private final Logger log;
+    private final Logger log = LoggerFactory.getLogger("Checkmarx Build Logger");
 
     private BuildLogger buildLogger;
 
-    public CxLoggerAdapter(BuildLogger logger) {
+    public CxLoggerAdapter(BuildLogger log) {
         this.name = "Build Logger";
-        this.buildLogger = logger;
-        logfactory =  new CxLoggerFactory(this.buildLogger);
-        log = logfactory.getLogger("Checkmarx Build Logger");
+        this.buildLogger = log;
     }
 
     public boolean isTraceEnabled() {
@@ -52,23 +48,31 @@ public class CxLoggerAdapter extends MarkerIgnoringBase {
     }
 
     public void debug(String s) {
-        log.debug(s);
+        buildLogger.addBuildLogEntry(s);
+        
     }
 
     public void debug(String s, Object o) {
-        log.debug(s, o);
+        FormattingTuple ft = MessageFormatter.format(s, o);
+        buildLogger.addBuildLogEntry(ft.getMessage());
+        
     }
 
     public void debug(String s, Object o, Object o1) {
-        log.debug(s, o, o1);
+        FormattingTuple ft = MessageFormatter.format(s, o, o1);
+        buildLogger.addBuildLogEntry(ft.getMessage());
+        
     }
 
     public void debug(String s, Object... objects) {
-        log.debug(s, objects);
+        FormattingTuple ft = MessageFormatter.format(s, objects);
+        buildLogger.addBuildLogEntry(ft.getMessage());
+        
     }
 
     public void debug(String s, Throwable throwable) {
-        log.debug(s, throwable);
+        buildLogger.addBuildLogEntry(s);
+        
     }
 
     /****************************************************************/
@@ -79,23 +83,31 @@ public class CxLoggerAdapter extends MarkerIgnoringBase {
     }
 
     public void info(String s) {
-        log.info(s);
+        buildLogger.addBuildLogEntry(s);
+        
     }
 
     public void info(String s, Object o) {
-        log.info(s, o);
+        FormattingTuple ft = MessageFormatter.format(s, o);
+        buildLogger.addBuildLogEntry(ft.getMessage());
+        
     }
 
     public void info(String s, Object o, Object o1) {
-        log.info(s, o, o1);
+        FormattingTuple ft = MessageFormatter.format(s, o, o1);
+        buildLogger.addBuildLogEntry(ft.getMessage());
+        
     }
 
     public void info(String s, Object... objects) {
-        log.info(s, objects);
+        FormattingTuple ft = MessageFormatter.format(s, objects);
+        buildLogger.addBuildLogEntry(ft.getMessage());
+        
     }
 
     public void info(String s, Throwable throwable) {
-        log.info(s, throwable);
+        buildLogger.addBuildLogEntry(s);
+        
     }
 
 
@@ -104,24 +116,31 @@ public class CxLoggerAdapter extends MarkerIgnoringBase {
     }
 
     public void warn(String s) {
-        log.warn(s);
+        buildLogger.addBuildLogEntry(s);
+        
     }
 
     public void warn(String s, Object o) {
-        log.warn(s, o);
+        FormattingTuple ft = MessageFormatter.format(s, o);
+        buildLogger.addBuildLogEntry(ft.getMessage());
+        
     }
 
     public void warn(String s, Object... objects) {
-        log.warn(s, objects);
+        FormattingTuple ft = MessageFormatter.format(s, objects);
+        buildLogger.addBuildLogEntry(ft.getMessage());
+        
     }
 
     public void warn(String s, Object o, Object o1) {
-        log.warn(s, o, o1);
+        FormattingTuple ft = MessageFormatter.format(s, o, o1);
+        buildLogger.addBuildLogEntry(ft.getMessage());
+        
     }
 
     public void warn(String s, Throwable throwable) {
         buildLogger.addBuildLogEntry(s);
-        log.warn(s, throwable);
+        
     }
 
     public boolean isErrorEnabled() {
@@ -130,23 +149,30 @@ public class CxLoggerAdapter extends MarkerIgnoringBase {
 
     public void error(String s) {
         buildLogger.addErrorLogEntry(s);
-        log.error(s);
+
     }
 
     public void error(String s, Object o) {
-        log.error(s, o);
+        FormattingTuple ft = MessageFormatter.format(s, o);
+        buildLogger.addErrorLogEntry(ft.getMessage(), ft.getThrowable());
+
     }
 
     public void error(String s, Object o, Object o1) {
-        log.error(s, o, o1);
+        FormattingTuple ft = MessageFormatter.format(s, o, o1);
+        buildLogger.addErrorLogEntry(ft.getMessage(), ft.getThrowable());
+
     }
 
     public void error(String s, Object... objects) {
-        log.error(s, objects);
+        FormattingTuple ft = MessageFormatter.format(s, objects);
+        buildLogger.addErrorLogEntry(ft.getMessage(), ft.getThrowable());
+
     }
 
     public void error(String s, Throwable throwable) {
-        log.error(s, throwable);
+        buildLogger.addErrorLogEntry(s, throwable);
+
 
     }
 }

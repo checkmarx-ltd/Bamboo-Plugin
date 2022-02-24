@@ -2,6 +2,7 @@ package org.slf4j.impl;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.helpers.MessageFormatter;
@@ -16,21 +17,38 @@ public class CheckmarxLoggerAdapter implements Logger, Serializable {
 	private static final long serialVersionUID = 1L;
 	private String name;
 	private BuildLogger logger;
-	protected final boolean traceCapable;
+	protected boolean infoCapable = true;
+	protected boolean errorCapable = true;
+	protected boolean warnCapable = true;
+	protected boolean debugCapable = false;
+	protected boolean traceCapable = false;
 	
 	protected final String FQCN = getClass().getName();
 	 
 	CheckmarxLoggerAdapter(String name){
 		this.name = name;
-		traceCapable = this.isTraceEnabled();
+		setLogLevel();
 	}
-
+	
 	CheckmarxLoggerAdapter(String name, BuildLogger logger){
 		this.name = name;
 		this.logger = logger;
-		 traceCapable = this.isTraceEnabled();
+		setLogLevel();
+		 
 	}
 
+	protected void setLogLevel() {
+		String level  = System.getProperty("cx.bamboo.log_level");
+		if(!StringUtils.isEmpty(level)) {
+			if(level.equalsIgnoreCase("DEBUG"))
+				debugCapable = true;
+			else if(level.equalsIgnoreCase("TRACE")) {
+				debugCapable = true;
+				traceCapable = true;
+			}
+		}
+	}
+	
 	
 	@Override
 	public String getName() {
@@ -43,35 +61,36 @@ public class CheckmarxLoggerAdapter implements Logger, Serializable {
 		if(logger == null)
 			return false;
 			else
-		 return true;
+		 return traceCapable;
 	}
 
 	@Override
 	public void trace(String msg) {
-		if(logger == null)
-			return ;
+		if(!isTraceEnabled())
+			return;
+		
 		logger.addBuildLogEntry(msg);		
 	}
 
 	@Override
 	public void trace(String format, Object arg) {
-		if(logger == null)
-			return ;
+		if(!isTraceEnabled())
+			return;
 		FormattingTuple ft = MessageFormatter.format(format,arg);
 		logger.addBuildLogEntry(ft.getMessage());		
 	}
 
 	@Override
 	public void trace(String format, Object arg1, Object arg2) {
-		if(logger == null)
-			return ;
+		if(!isTraceEnabled())
+			return;
 		FormattingTuple ft = MessageFormatter.format(format,arg1,arg2);
 		logger.addBuildLogEntry(ft.getMessage());			
 	}
 
 	@Override
 	public void trace(String format, Object[] argArray) {
-		if(logger == null)
+		if(!isTraceEnabled())
 			return ;
 		FormattingTuple ft = MessageFormatter.format(format,argArray);
 		logger.addBuildLogEntry(ft.getMessage());	
@@ -79,14 +98,14 @@ public class CheckmarxLoggerAdapter implements Logger, Serializable {
 
 	@Override
 	public void trace(String msg, Throwable t) {
-		if(logger == null)
+		if(!isTraceEnabled())
 			return ;
 		logger.addErrorLogEntry(msg, t);
 	}
 
 	@Override
 	public boolean isTraceEnabled(Marker marker) {
-		return this.isTraceEnabled(marker);
+		return this.isTraceEnabled();
 	}
 
 	@Override
@@ -123,19 +142,19 @@ public class CheckmarxLoggerAdapter implements Logger, Serializable {
 		if(logger == null)
 			return false;
 			else
-		return true;
+		return debugCapable;
 	}
 
 	@Override
 	public void debug(String msg) {
-		if(logger == null)
+		if(!isDebugEnabled())
 			return ;
 		logger.addBuildLogEntry(msg);		
 	}
 
 	@Override
 	public void debug(String format, Object arg) {
-		if(logger == null)
+		if(!isDebugEnabled())
 			return ;
 		FormattingTuple ft = MessageFormatter.format(format,arg);
 		logger.addBuildLogEntry(ft.getMessage());	
@@ -143,7 +162,7 @@ public class CheckmarxLoggerAdapter implements Logger, Serializable {
 
 	@Override
 	public void debug(String format, Object arg1, Object arg2) {
-		if(logger == null)
+		if(!isDebugEnabled())
 			return ;
 		FormattingTuple ft = MessageFormatter.format(format,arg1,arg2);
 		logger.addBuildLogEntry(ft.getMessage());			
@@ -151,7 +170,7 @@ public class CheckmarxLoggerAdapter implements Logger, Serializable {
 
 	@Override
 	public void debug(String format, Object[] argArray) {
-		if(logger == null)
+		if(!isDebugEnabled())
 			return ;
 		FormattingTuple ft = MessageFormatter.format(format,argArray);
 		logger.addBuildLogEntry(ft.getMessage());			
@@ -159,14 +178,14 @@ public class CheckmarxLoggerAdapter implements Logger, Serializable {
 
 	@Override
 	public void debug(String msg, Throwable t) {
-		if(logger == null)
+		if(!isDebugEnabled())
 			return ;
 		logger.addErrorLogEntry(msg, t);
 	}
 
 	@Override
 	public boolean isDebugEnabled(Marker marker) {
-		return this.isDebugEnabled(marker);
+		return this.isDebugEnabled();
 	}
 
 	@Override
@@ -204,7 +223,7 @@ public class CheckmarxLoggerAdapter implements Logger, Serializable {
 		if(logger == null)
 			return false;
 			else
-		return true;
+		return infoCapable;
 	}
 
 	@Override
@@ -247,7 +266,7 @@ public class CheckmarxLoggerAdapter implements Logger, Serializable {
 
 	@Override
 	public boolean isInfoEnabled(Marker marker) {
-		return this.isInfoEnabled(marker);
+		return this.isInfoEnabled();
 	}
 
 	@Override
@@ -285,7 +304,7 @@ public class CheckmarxLoggerAdapter implements Logger, Serializable {
 		if(logger == null)
 			return false;
 		else
-		return true;
+		return warnCapable;
 	}
 
 	@Override
@@ -328,7 +347,7 @@ public class CheckmarxLoggerAdapter implements Logger, Serializable {
 
 	@Override
 	public boolean isWarnEnabled(Marker marker) {
-		return this.isWarnEnabled(marker);
+		return this.isWarnEnabled();
 	}
 
 	@Override
@@ -363,14 +382,17 @@ public class CheckmarxLoggerAdapter implements Logger, Serializable {
 
 	@Override
 	public boolean isErrorEnabled() {
-return this.isErrorEnabled();
+		if(logger == null)
+			return false;
+			else
+		 return errorCapable;
 	}
 
 	
 
 	@Override
 	public boolean isErrorEnabled(Marker marker) {
-		return this.isErrorEnabled(marker);
+		return this.isErrorEnabled();
 	}
 
 	@Override

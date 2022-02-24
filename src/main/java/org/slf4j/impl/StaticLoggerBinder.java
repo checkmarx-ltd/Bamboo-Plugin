@@ -40,7 +40,7 @@ public class StaticLoggerBinder implements LoggerFactoryBinder {
      * @return the StaticLoggerBinder singleton
      */
     public static final StaticLoggerBinder getSingleton(BuildLogger logger) {
-    	if(SINGLETON == null) {
+    	if(SINGLETON == null || SINGLETON._logger == null ) {
     		SINGLETON = new StaticLoggerBinder(logger);
     	}
         return SINGLETON;
