@@ -1,5 +1,6 @@
 package com.cx.plugin.task;
 
+import org.slf4j.impl.StaticLoggerBinder;
 import com.atlassian.bamboo.Key;
 import com.atlassian.bamboo.build.artifact.ArtifactManager;
 import com.atlassian.bamboo.plan.artifact.ArtifactDefinitionContext;
@@ -10,7 +11,7 @@ import com.atlassian.bamboo.v2.build.BuildContext;
 import com.atlassian.bamboo.variable.VariableDefinitionContext;
 import com.cx.plugin.configuration.CommonClientFactory;
 import com.cx.plugin.dto.BambooScanResults;
-import com.cx.plugin.utils.CxAppender;
+//import com.cx.plugin.utils.CxAppender;
 import com.cx.plugin.utils.CxConfigHelper;
 import com.cx.plugin.utils.CxLoggerAdapter;
 import com.cx.plugin.utils.CxParam;
@@ -25,7 +26,6 @@ import com.cx.restclient.exception.CxClientException;
 import com.cx.restclient.sast.dto.SASTResults;
 import com.cx.restclient.sast.utils.LegacyClient;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -39,16 +39,18 @@ import static com.cx.plugin.utils.CxParam.HTML_REPORT;
 import static com.cx.plugin.utils.CxPluginUtils.printBuildFailure;
 import static com.cx.plugin.utils.CxPluginUtils.printConfiguration;
 
+
 public class CheckmarxTask implements TaskType {
 
     private final ArtifactManager artifactManager;
-
+   	   
     public CheckmarxTask(final ArtifactManager artifactManager) {
         this.artifactManager = artifactManager;
     }
 
     @NotNull
     public TaskResult execute(@NotNull final TaskContext taskContext) throws TaskException {
+    	StaticLoggerBinder binder = StaticLoggerBinder.getSingleton(taskContext.getBuildLogger());    	
         CxLoggerAdapter log;
         LegacyClient commonClient = null;
         BuildContext buildContext = taskContext.getBuildContext();
@@ -108,7 +110,8 @@ public class CheckmarxTask implements TaskType {
             if (config.isOsaEnabled()) {
                 //we do this in order to redirect the logs from the filesystem agent component to the build console
                 String appenderName = "cxAppender_" + buildContext.getBuildKey().getKey();
-                Logger.getRootLogger().addAppender(new CxAppender(taskContext.getBuildLogger(), appenderName));
+              //We have removed log4j support and added custom sl4j which will use CxLoggerAdapter class instead of CxAppender class.
+                //Logger.getRootLogger().addAppender(new CxAppender(taskContext.getBuildLogger(), appenderName));                
             }
 
             ScanResults createScanResults = delegator.initiateScan();
