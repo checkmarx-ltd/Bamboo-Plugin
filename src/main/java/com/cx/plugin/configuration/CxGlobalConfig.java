@@ -6,12 +6,16 @@ import com.atlassian.bamboo.configuration.GlobalAdminAction;
 import com.atlassian.spring.container.ContainerManager;
 import com.atlassian.util.concurrent.NotNull;
 import com.cx.plugin.utils.CxParam;
+import com.cx.restclient.exception.CxClientException;
 import com.google.common.collect.ImmutableMap;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.codehaus.plexus.util.StringUtils;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.cx.plugin.utils.CxParam.*;
@@ -62,7 +66,10 @@ public class CxGlobalConfig extends GlobalAdminAction {
     private String globalcxScaAccessControlServerUrl = DEFAULT_CXSCA_ACCESS_CONTROL_URL;
     private String globalcxScaWebAppUrl = DEFAULT_CXSCA_WEB_APP_URL;
     private String globalcxScaAccountName = "";
-    private Map<String, String> globalDependencyScanTypeValues = ImmutableMap.of("OSA", "Use CxOSA dependency scanner", "AST_SCA", "Use CxSCA dependency scanner");
+    private String globalcxScaResolverEnabled = OPTION_FALSE;
+    private String globalcxScaResolverPath;
+    private String globalcxScaResolverAddParam;
+	private Map<String, String> globalDependencyScanTypeValues = ImmutableMap.of("OSA", "Use CxOSA dependency scanner", "AST_SCA", "Use CxSCA dependency scanner");
 
     @Override
     public String execute() {
@@ -99,6 +106,13 @@ public class CxGlobalConfig extends GlobalAdminAction {
         						
         globalcxScaUsername = adminConfig.getSystemProperty(GLOBAL_CXSCA_USERNAME);
         globalcxScaPss = adminConfig.getSystemProperty(GLOBAL_CXSCA_PWD);
+
+        globalcxScaResolverEnabled = adminConfig.getSystemProperty(GLOBAL_CXSCA_RESOLVER_ENABLED);
+		
+        globalcxScaResolverPath = adminConfig.getSystemProperty(GLOBAL_CXSCA_RESOLVER_PATH);
+		
+        globalcxScaResolverAddParam = adminConfig.getSystemProperty(GLOBAL_CXSCA_RESOLVER_ADD_PARAM);
+		
         
         globalFolderExclusions = adminConfig.getSystemProperty(GLOBAL_FOLDER_EXCLUSION);
         String filterProperty = adminConfig.getSystemProperty(GLOBAL_FILTER_PATTERN);
@@ -172,6 +186,10 @@ public class CxGlobalConfig extends GlobalAdminAction {
         adminConfig.setSystemProperty(GLOBAL_CXSCA_USERNAME, globalcxScaUsername);
         adminConfig.setSystemProperty(GLOBAL_CXSCA_PWD, encrypt(globalcxScaPss));
 
+        adminConfig.setSystemProperty(GLOBAL_CXSCA_RESOLVER_ENABLED, globalcxScaResolverEnabled);
+        adminConfig.setSystemProperty(GLOBAL_CXSCA_RESOLVER_PATH, globalcxScaResolverPath);
+        adminConfig.setSystemProperty(GLOBAL_CXSCA_RESOLVER_ADD_PARAM, globalcxScaResolverAddParam);
+
         adminConfig.setSystemProperty(GLOBAL_FOLDER_EXCLUSION, globalFolderExclusions);
         adminConfig.setSystemProperty(GLOBAL_FILTER_PATTERN, globalFilterPatterns);
         adminConfig.setSystemProperty(GLOBAL_SCAN_TIMEOUT_IN_MINUTES, globalScanTimeoutInMinutes);
@@ -200,7 +218,6 @@ public class CxGlobalConfig extends GlobalAdminAction {
         addActionMessage(getText("cxDefaultConfigSuccess.label"));
         return SUCCESS;
     }
-
 
     private boolean isURLInvalid(final String value, final String fieldName) {
         boolean ret = false;
@@ -427,7 +444,31 @@ public class CxGlobalConfig extends GlobalAdminAction {
     public void setGlobalHideResults(String globalHideResults) {
         this.globalHideResults = globalHideResults;
     }
-    public String getGlobalEnableDependencyScan() {
+    public String getGlobalcxScaResolverEnabled() {
+		return globalcxScaResolverEnabled;
+	}
+
+	public void setGlobalcxScaResolverEnabled(String globalcxScaResolverEnabled) {
+		this.globalcxScaResolverEnabled = globalcxScaResolverEnabled;
+	}
+
+	public String getGlobalcxScaResolverPath() {
+		return globalcxScaResolverPath;
+	}
+
+	public void setGlobalcxScaResolverPath(String globalcxScaResolverPath) {
+		this.globalcxScaResolverPath = globalcxScaResolverPath;
+	}
+
+	public String getGlobalcxScaResolverAddParam() {
+		return globalcxScaResolverAddParam;
+	}
+
+	public void setGlobalcxScaResolverAddParam(String globalcxScaResolverAddParam) {
+		this.globalcxScaResolverAddParam = globalcxScaResolverAddParam;
+	}
+
+	public String getGlobalEnableDependencyScan() {
 		return globalEnableDependencyScan;
 	}
 

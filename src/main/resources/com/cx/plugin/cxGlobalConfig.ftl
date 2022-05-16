@@ -131,6 +131,12 @@
         [@ww.password labelKey="cxScaGlobalPassword.label" name="globalcxScaPss" showPassword='true' /]
         <button type="button" class="aui-button test-cxsca-connection" id="g_test-cxsca-connection" onclick="connectToScaServer()">Connect to Server</button>
 		<div id="gtestScaConnectionMessage" class="test-cxsca-connection-message"></div>
+		
+			[@ww.checkbox labelKey="cxScaResolverEnabled.label" name="globalcxScaResolverEnabled" toggle='true'/]
+	        [@ui.bambooSection dependsOn="globalcxScaResolverEnabled" showOn="true"]
+	        	[@ww.textfield labelKey="cxScaResolverPath.label" name="globalcxScaResolverPath" /]
+	        	[@ww.textarea labelKey="cxScaResolverAddParam.label" name="globalcxScaResolverAddParam" rows="2"/]
+			[/@ui.bambooSection]
 		[/@ui.bambooSection]
 	[/@ui.bambooSection]
 [/@ui.bambooSection]
@@ -181,6 +187,9 @@ function connectToScaServer() {
 			var scaUserName = document.getElementById("checkmarxDefaultConfiguration_globalcxScaUsername").value;
 			var pss = document.getElementById("checkmarxDefaultConfiguration_globalcxScaPss").value;
 			var enableProxy = document.getElementById("checkmarxDefaultConfiguration_globalEnableProxy").checked;
+			var cxScaResolverEnabled = document.getElementById("checkmarxDefaultConfiguration_globalcxScaResolverEnabled").checked;
+			var cxScaResolverPath = document.getElementById("checkmarxDefaultConfiguration_globalcxScaResolverPath").checked;
+			var cxScaResolverAddParam = document.getElementById("checkmarxDefaultConfiguration_globalcxScaResolverAddParam").checked;
 			
 			
         if (!validateScaFields()) {
@@ -265,6 +274,16 @@ function connectToScaServer() {
                     messageElement.style.color = "#d22020";
                     return false;
                 }
+                else if (cxScaResolverPath.length < 1) {
+                    messageElement.textContent = "CxSca Resolver Path Password must not be empty";
+                    messageElement.style.color = "#d22020";
+                    return false;
+                }
+                else if (cxScaResolverAddParam.length < 1) {
+                    messageElement.textContent = "CxSca Resolver Additional Parameters must not be empty";
+                    messageElement.style.color = "#d22020";
+                    return false;
+                }
                
         return true;
     }
@@ -277,6 +296,9 @@ function connectToScaServer() {
 			"scaAccountName": scaAccountName,
             "scaUserName": scaUserName,
             "pss": pss,
+            "cxScaResolverEnabled": cxScaResolverEnabled,
+            "cxScaResolverPath": cxScaResolverPath,
+            "cxScaResolverAddParam": cxScaResolverAddParam,
             "proxyEnable":enableProxy
         };
     }

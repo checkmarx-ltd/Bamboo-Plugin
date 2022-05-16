@@ -189,6 +189,12 @@
 				[@ww.password labelKey="cxScaPassword.label"  id="cxScaPassword" name="cxScaPassword" showPassword='true' required='true'/]
 				<button type="button" class="aui-button test-cxsca-connection" id="test-cxsca-connection">Connect to Server</button>
 				<div id="test-cxsca-connection-message" class="test-cxsca-connection-message"></div>
+				
+				[@ww.checkbox labelKey="cxScaResolverEnabled.label" name="cxScaResolverEnabled" id="cxScaResolverEnabled" descriptionKey="cxScaResolverEnabled.description" toggle='true' /]
+		        [@ui.bambooSection title='SCA Resolver' dependsOn='cxScaResolverEnabled' showOn='true' cssClass="cx center"]
+		        	[@ww.textfield labelKey="cxScaResolverPath.label" name="cxScaResolverPath" id="cxScaResolverPath" descriptionKey="cxScaResolverPath.description" /]
+			        [@ww.textarea labelKey="cxScaResolverAddParam.label" name="cxScaResolverAddParam" id="cxScaResolverAddParam" cxScaResolverAddParam="cxScaWebAppUrl.description" /]
+			    [/@ui.bambooSection]
 			[/@ui.bambooSection]
 		[/@ui.bambooSection]
 	[@ui.bambooSection dependsOn="cxDependencySettingsCustom" showOn="false"]
@@ -222,6 +228,11 @@
 	        
 	        [@ww.label labelKey="cxScaUsername.label" name="globalcxScaUsername"/]
 	        [@ww.label labelKey="cxScaPassword.label" type="password" /]
+	        
+	        [@ww.label labelKey="cxScaResolverEnabled.label" type="globalcxScaResEnabled" /]
+	        [@ww.label labelKey="cxScaResolverPath.label" type="globalcxScaResPath" /]
+	        [@ww.label labelKey="cxScaResolverAddParam.label" type="globalcxScaResAddParam" /]
+	        [@ww.label labelKey="cxScaResolverManifest.label" type="globalcxScaResManifest" /]
 		[/@ui.bambooSection]
 	[/@ui.bambooSection]
 	[/@ui.bambooSection]
