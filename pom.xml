@@ -88,9 +88,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     
-        <common.client.version>2021.4.9</common.client.version>
+        <common.client.version>2022.2.11</common.client.version>
 
-         <slf4jVersion>1.6.1</slf4jVersion>
+         <slf4jVersion>1.7.16</slf4jVersion>
 
     </properties>
 
@@ -482,6 +482,10 @@
 				<exclusion>
                     <groupId>com.github.junrar</groupId>
 					<artifactId>junrar</artifactId>
+                </exclusion>
+                <exclusion>
+				    <groupId>ch.qos.logback</groupId>
+				    <artifactId>logback-classic</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
