@@ -492,6 +492,10 @@ public class CxConfigHelper {
         String projectName = params.get("-n");
         if(StringUtils.isEmpty(projectName))
             throw new CxClientException("Project name parameter (-n <project name>) must be provided to ScaResolver.");
+        
+        String resultParam = params.get("-r");
+        if(StringUtils.isEmpty(resultParam))
+            throw new CxClientException("Result path parameter (-r <project name>) must be provided to ScaResolver.");
 
     }
 
