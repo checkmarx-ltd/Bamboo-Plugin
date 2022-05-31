@@ -188,9 +188,9 @@ function connectToScaServer() {
 			var pss = document.getElementById("checkmarxDefaultConfiguration_globalcxScaPss").value;
 			var enableProxy = document.getElementById("checkmarxDefaultConfiguration_globalEnableProxy").checked;
 			var cxScaResolverEnabled = document.getElementById("checkmarxDefaultConfiguration_globalcxScaResolverEnabled").checked;
-			var cxScaResolverPath = document.getElementById("checkmarxDefaultConfiguration_globalcxScaResolverPath").checked;
-			var cxScaResolverAddParam = document.getElementById("checkmarxDefaultConfiguration_globalcxScaResolverAddParam").checked;
-			
+			var cxScaResolverPath = document.getElementById("checkmarxDefaultConfiguration_globalcxScaResolverPath").value;
+			var cxScaResolverAddParam = document.getElementById("checkmarxDefaultConfiguration_globalcxScaResolverAddParam").value;
+			var globalcxScaResolverEnabled = document.getElementById("checkmarxDefaultConfiguration_globalcxScaResolverEnabled").checked;
 			
         if (!validateScaFields()) {
         	return;
@@ -274,12 +274,12 @@ function connectToScaServer() {
                     messageElement.style.color = "#d22020";
                     return false;
                 }
-                else if (cxScaResolverPath.length < 1) {
+                else if (cxScaResolverPath.length < 1 && globalcxScaResolverEnabled) {
                     messageElement.textContent = "CxSca Resolver Path Password must not be empty";
                     messageElement.style.color = "#d22020";
                     return false;
                 }
-                else if (cxScaResolverAddParam.length < 1) {
+                else if (cxScaResolverAddParam.length < 1 && globalcxScaResolverEnabled) {
                     messageElement.textContent = "CxSca Resolver Additional Parameters must not be empty";
                     messageElement.style.color = "#d22020";
                     return false;

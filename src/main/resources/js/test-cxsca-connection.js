@@ -84,11 +84,11 @@
             messageElement.text('CxSca Password must not be empty');
             messageElement.css('color', '#d22020');
             return false;
-        }else if ($('#cxScaResolverPath').val().length < 1) {
+        }else if ($('#cxScaResolverPath').val().length < 1 && $('#cxScaResolverEnabled').is(":checked")) {
             messageElement.text('CxSca Resolver Path must not be empty');
             messageElement.css('color', '#d22020');
             return false;
-        }else if ($('#cxScaResolverAddParam').val().length < 1) {
+        }else if ($('#cxScaResolverAddParam').val().length < 1 && $('#cxScaResolverEnabled').is(":checked")) {
             messageElement.text('CxSca Resolver Additional Parameters must not be empty');
             messageElement.css('color', '#d22020');
             return false;
