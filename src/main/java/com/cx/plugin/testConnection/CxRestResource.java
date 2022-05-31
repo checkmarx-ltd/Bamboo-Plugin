@@ -119,9 +119,6 @@ public class CxRestResource {
 				String username = StringUtils.defaultString(data.get("scaUserName"));
 				String pss = decrypt(StringUtils.defaultString(data.get("pss")));
 				String proxyEnable = StringUtils.defaultString(data.get("proxyEnable"));
-				String cxScaResolverEnabled = StringUtils.defaultString(data.get("cxScaResolverEnabled"));
-				String cxScaResolverPath = StringUtils.defaultString(data.get("cxScaResolverPath"));
-				String cxScaResolverAddParam = StringUtils.defaultString(data.get("cxScaResolverAddParam"));
 				
 				CxScanConfig config = new CxScanConfig();
 				config.setDisableCertificateValidation(true);
@@ -152,13 +149,6 @@ public class CxRestResource {
 				scaConfig.setPassword(pss);
 				scaConfig.setSourceLocationType(SourceLocationType.LOCAL_DIRECTORY);
 				scaConfig.setRemoteRepositoryInfo(null);
-				if(OPTION_TRUE.equals(cxScaResolverEnabled)) {
-					scaResolverPathExist(cxScaResolverPath);
-		            validateScaResolverParams(cxScaResolverAddParam);
-		            scaConfig.setPathToScaResolver(cxScaResolverPath);
-		            scaConfig.setScaResolverAddParameters(cxScaResolverAddParam);
-		            scaConfig.setEnableScaResolver(true);
-				}
 				config.setAstScaConfig(scaConfig);
 				config.addScannerType(ScannerType.AST_SCA);
 
@@ -172,53 +162,6 @@ public class CxRestResource {
     	return Response.status(statusCode).entity(tcResponse).build();
     }
 
-    private static boolean scaResolverPathExist(String pathToResolver) {
-        pathToResolver = pathToResolver + File.separator + "ScaResolver";
-        if(!SystemUtils.IS_OS_UNIX)
-            pathToResolver = pathToResolver + ".exe";
-
-        File file = new File(pathToResolver);
-        if(!file.exists())
-        {
-            throw new CxClientException("SCA Resolver path does not exist. Path="+file.getAbsolutePath());
-        }
-        return true;
-    }
-
-    private static void validateScaResolverParams(String additionalParams) {
-
-        String[] arguments = additionalParams.split(" ");
-        Map<String, String> params = new HashMap<>();
-
-        for (int i = 0; i <  arguments.length ; i++) {
-            if(arguments[i].startsWith("-") && (i+1 != arguments.length && !arguments[i+1].startsWith("-")))
-                params.put(arguments[i], arguments[i+1]);
-            else
-                params.put(arguments[i], "");
-        }
-
-        String dirPath = params.get("-s");
-        if(StringUtils.isEmpty(dirPath))
-            throw new CxClientException("Source code path (-s <source code path>) is not provided.");
-        fileExists(dirPath);
-
-        String projectName = params.get("-n");
-        if(StringUtils.isEmpty(projectName))
-            throw new CxClientException("Project name parameter (-n <project name>) must be provided to ScaResolver.");
-
-        String resultParam = params.get("-r");
-        if(StringUtils.isEmpty(resultParam))
-            throw new CxClientException("Result path parameter (-r <project name>) must be provided to ScaResolver.");
-
-    }
-
-    private static void fileExists(String file) {
-
-        File resultPath = new File(file);
-        if (!resultPath.exists()) {
-            throw new CxClientException("Path does not exist. Path= " + resultPath.getAbsolutePath());
-        }
-    }
     private Response getInvalidUrlResponse(int statusCode) {
         TestConnectionResponse tcResponse;
         result = "Invalid URL";

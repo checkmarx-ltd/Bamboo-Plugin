@@ -250,9 +250,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 			context.put(CXSCA_ACCOUNT_NAME,getAdminConfig(GLOBAL_CXSCA_ACCOUNT_NAME));
 			context.put(CXSCA_USERNAME,getAdminConfig(GLOBAL_CXSCA_USERNAME));
 			context.put(CXSCA_PWD,getAdminConfig(GLOBAL_CXSCA_PWD));		
-			context.put(CXSCA_RESOLVER_PATH,getAdminConfig(GLOBAL_CXSCA_RESOLVER_PATH));
-            context.put(CXSCA_RESOLVER_ADD_PARAM,getAdminConfig(CXSCA_RESOLVER_ADD_PARAM));       
-            context.put(CXSCA_RESOLVER_ENABLED,getAdminConfig(CXSCA_RESOLVER_ENABLED)); 
+			
 		}	
 		
 		//These are to show global readonly values when user decide to use global
@@ -271,9 +269,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 		context.put(GLOBAL_CXSCA_PWD,getAdminConfig(GLOBAL_CXSCA_PWD));
         context.put(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS, getAdminConfig(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS));
         context.put(GLOBAL_OSA_INSTALL_BEFORE_SCAN, getAdminConfig(GLOBAL_OSA_INSTALL_BEFORE_SCAN));
-        context.put(GLOBAL_CXSCA_RESOLVER_PATH,getAdminConfig(GLOBAL_CXSCA_RESOLVER_PATH));
-        context.put(GLOBAL_CXSCA_RESOLVER_ADD_PARAM,getAdminConfig(GLOBAL_CXSCA_RESOLVER_ADD_PARAM));       
-        context.put(GLOBAL_CXSCA_RESOLVER_ENABLED,getAdminConfig(GLOBAL_CXSCA_RESOLVER_ENABLED)); 
+       
 	}
 
     private void populateOSA_SCA_FieldsForCreate(Map<String, Object> context) {
@@ -295,9 +291,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 		context.put(CXSCA_USERNAME,"");
 		context.put(CXSCA_PWD,"");
 		
-		context.put(CXSCA_RESOLVER_ENABLED,getAdminConfig(GLOBAL_CXSCA_RESOLVER_ENABLED));
-		context.put(CXSCA_RESOLVER_ADD_PARAM,getAdminConfig(GLOBAL_CXSCA_RESOLVER_ADD_PARAM));
-		context.put(CXSCA_RESOLVER_PATH,getAdminConfig(GLOBAL_CXSCA_RESOLVER_PATH));
+		
         
 		//These are to show global readonly values when user decide to use global
 		//values on the job. Else they need to browse global section everytime
@@ -313,9 +307,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 		context.put(GLOBAL_CXSCA_ACCOUNT_NAME,getAdminConfig(GLOBAL_CXSCA_ACCOUNT_NAME));
 		context.put(GLOBAL_CXSCA_USERNAME,getAdminConfig(GLOBAL_CXSCA_USERNAME));
 		context.put(GLOBAL_CXSCA_PWD,getAdminConfig(GLOBAL_CXSCA_PWD));
-		context.put(GLOBAL_CXSCA_RESOLVER_ENABLED,getAdminConfig(GLOBAL_CXSCA_RESOLVER_ENABLED));
-		context.put(GLOBAL_CXSCA_RESOLVER_ADD_PARAM,getAdminConfig(GLOBAL_CXSCA_RESOLVER_ADD_PARAM));
-		context.put(GLOBAL_CXSCA_RESOLVER_PATH,getAdminConfig(GLOBAL_CXSCA_RESOLVER_PATH));
+	
         
         context.put(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS, getAdminConfig(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS));
         context.put(GLOBAL_OSA_INSTALL_BEFORE_SCAN, getAdminConfig(GLOBAL_OSA_INSTALL_BEFORE_SCAN));
@@ -552,9 +544,6 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 			config.put(CXSCA_USERNAME,getAdminConfig(GLOBAL_CXSCA_USERNAME).trim());
 			config.put(CXSCA_PWD,getAdminConfig(GLOBAL_CXSCA_PWD).trim());
 			
-			config.put(CXSCA_RESOLVER_ENABLED,getAdminConfig(GLOBAL_CXSCA_RESOLVER_ENABLED).trim());
-			config.put(CXSCA_RESOLVER_PATH,getAdminConfig(GLOBAL_CXSCA_RESOLVER_PATH).trim());
-			config.put(CXSCA_RESOLVER_ADD_PARAM,getAdminConfig(GLOBAL_CXSCA_RESOLVER_ADD_PARAM).trim());
 			
 		}	
 		
@@ -654,6 +643,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     public void validate(@NotNull final ActionParametersMap params, @NotNull final ErrorCollection errorCollection) {
         super.validate(params, errorCollection);
         String useSpecific = params.getString(SERVER_CREDENTIALS_SECTION);
+        boolean scaResolverEnabled =  params.getBoolean(CXSCA_RESOLVER_ENABLED);
         if (CUSTOM_CONFIGURATION_SERVER.equals(useSpecific)) {
             validateNotEmpty(params, errorCollection, USER_NAME);
             validateNotEmpty(params, errorCollection, PASSWORD);
@@ -661,6 +651,10 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
             validateUrl(params, errorCollection, SERVER_URL);
         }
         validateNotEmpty(params, errorCollection, PROJECT_NAME);
+        if(scaResolverEnabled){
+        validateNotEmpty(params, errorCollection, CXSCA_RESOLVER_PATH);
+        validateNotEmpty(params, errorCollection, CXSCA_RESOLVER_ADD_PARAM);
+        }
         containsIllegals(params, errorCollection, PROJECT_NAME);
         validateProjectNameLength(params, errorCollection, PROJECT_NAME);
 

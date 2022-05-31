@@ -27,9 +27,6 @@ import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_ACCESS_CONTROL_URL;
 import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_ACCOUNT_NAME;
 import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_API_URL;
 import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_PWD;
-import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_RESOLVER_ADD_PARAM;
-import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_RESOLVER_ENABLED;
-import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_RESOLVER_PATH;
 import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_USERNAME;
 import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_WEBAPP_URL;
 import static com.cx.plugin.utils.CxParam.GLOBAL_DENY_PROJECT;
@@ -426,14 +423,7 @@ public class CxConfigHelper {
 			result.setTenant(getAdminConfig(GLOBAL_CXSCA_ACCOUNT_NAME));
 			result.setUsername(getAdminConfig(GLOBAL_CXSCA_USERNAME));
 			result.setPassword(decrypt(getAdminConfig(GLOBAL_CXSCA_PWD)));
-			if(OPTION_TRUE.equalsIgnoreCase(getAdminConfig(GLOBAL_CXSCA_RESOLVER_ENABLED))) {
-				scaResolverPathExist(getAdminConfig(GLOBAL_CXSCA_RESOLVER_PATH));
-	            validateScaResolverParams(getAdminConfig(GLOBAL_CXSCA_RESOLVER_ADD_PARAM));
-	            result.setPathToScaResolver(getAdminConfig(GLOBAL_CXSCA_RESOLVER_PATH));
-	    		result.setScaResolverAddParameters(getAdminConfig(GLOBAL_CXSCA_RESOLVER_ADD_PARAM));
-	    		log.debug("SCA Resolver enabled");
-				log.debug("Additional Parameters " + getAdminConfig(GLOBAL_CXSCA_RESOLVER_ADD_PARAM));
-			}
+			
 			
 		}else {
 			result.setApiUrl(configMap.get(CXSCA_API_URL));
@@ -444,7 +434,6 @@ public class CxConfigHelper {
 			result.setPassword(decrypt(configMap.get(CXSCA_PWD)));
 			
 			if(OPTION_TRUE.equalsIgnoreCase(configMap.get(CXSCA_RESOLVER_ENABLED))) {
-				scaResolverPathExist(configMap.get(CXSCA_RESOLVER_PATH));
 	            validateScaResolverParams(configMap.get(CXSCA_RESOLVER_ADD_PARAM));
 	            result.setPathToScaResolver(configMap.get(CXSCA_RESOLVER_PATH));
 	    		result.setScaResolverAddParameters(configMap.get(CXSCA_RESOLVER_ADD_PARAM));
@@ -458,19 +447,6 @@ public class CxConfigHelper {
 		return result;
     }
     
-
-    private static boolean scaResolverPathExist(String pathToResolver) {
-        pathToResolver = pathToResolver + File.separator + "ScaResolver";
-        if(!SystemUtils.IS_OS_UNIX)
-            pathToResolver = pathToResolver + ".exe";
-
-        File file = new File(pathToResolver);
-        if(!file.exists())
-        {
-            throw new CxClientException("SCA Resolver path does not exist. Path="+file.getAbsolutePath());
-        }
-        return true;
-    }
 
     private static void validateScaResolverParams(String additionalParams) {
 
@@ -487,7 +463,6 @@ public class CxConfigHelper {
         String dirPath = params.get("-s");
         if(StringUtils.isEmpty(dirPath))
             throw new CxClientException("Source code path (-s <source code path>) is not provided.");
-        fileExists(dirPath);
 
         String projectName = params.get("-n");
         if(StringUtils.isEmpty(projectName))
