@@ -228,11 +228,13 @@
 	        
 	        [@ww.label labelKey="cxScaUsername.label" name="globalcxScaUsername"/]
 	        [@ww.label labelKey="cxScaPassword.label" type="password" /]
-	        
-	        [@ww.label labelKey="cxScaResolverEnabled.label" type="globalcxScaResEnabled" /]
-	        [@ww.label labelKey="cxScaResolverPath.label" type="globalcxScaResPath" /]
-	        [@ww.label labelKey="cxScaResolverAddParam.label" type="globalcxScaResAddParam" /]
+	       
 	        [@ww.label labelKey="cxScaResolverManifest.label" type="globalcxScaResManifest" /]
+	        [@ww.checkbox labelKey="cxScaResolverEnabled.label" name="cxScaResolverEnabled" id="cxScaResolverEnabled" descriptionKey="cxScaResolverEnabled.description" toggle='true' /]
+		        [@ui.bambooSection title='SCA Resolver' dependsOn='cxScaResolverEnabled' showOn='true' cssClass="cx"]
+		        	[@ww.textfield labelKey="cxScaResolverPath.label" name="cxScaResolverPath" id="cxScaResolverPath" descriptionKey="cxScaResolverPath.description"  required='true'/]
+			        [@ww.textarea labelKey="cxScaResolverAddParam.label" name="cxScaResolverAddParam" id="cxScaResolverAddParam" cxScaResolverAddParam="cxScaWebAppUrl.description"  required='true'/]
+			    [/@ui.bambooSection]
 		[/@ui.bambooSection]
 	[/@ui.bambooSection]
 	[/@ui.bambooSection]
