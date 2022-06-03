@@ -655,6 +655,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         boolean scaResolverEnabled =  params.getBoolean(CXSCA_RESOLVER_ENABLED);
         boolean scaResolverEnabledGlobal = params.getBoolean(CXSCA_RESOLVER_ENABLED_GLOBAL);
         boolean useGlobalSettings = params.getBoolean(CX_USE_CUSTOM_DEPENDENCY_SETTINGS);
+        boolean enableDependancyScan = params.getBoolean(ENABLE_DEPENDENCY_SCAN);
         if (CUSTOM_CONFIGURATION_SERVER.equals(useSpecific)) {
             validateNotEmpty(params, errorCollection, USER_NAME);
             validateNotEmpty(params, errorCollection, PASSWORD);
@@ -662,11 +663,11 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
             validateUrl(params, errorCollection, SERVER_URL);
         }
         validateNotEmpty(params, errorCollection, PROJECT_NAME);
-        if(scaResolverEnabled && useGlobalSettings){
+        if(scaResolverEnabled && useGlobalSettings && enableDependancyScan){
         validateNotEmpty(params, errorCollection, CXSCA_RESOLVER_PATH);
         validateNotEmpty(params, errorCollection, CXSCA_RESOLVER_ADD_PARAM);
         }
-        if(scaResolverEnabledGlobal && !useGlobalSettings){
+        if(scaResolverEnabledGlobal && !useGlobalSettings && enableDependancyScan){
             validateNotEmpty(params, errorCollection, CXSCA_RESOLVER_PATH_GLOBAL);
             validateNotEmpty(params, errorCollection, CXSCA_RESOLVER_ADD_PARAM_GLOBAL);
         }
