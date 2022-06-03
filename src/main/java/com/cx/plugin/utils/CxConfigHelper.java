@@ -10,8 +10,11 @@ import static com.cx.plugin.utils.CxParam.CXSCA_ACCOUNT_NAME;
 import static com.cx.plugin.utils.CxParam.CXSCA_API_URL;
 import static com.cx.plugin.utils.CxParam.CXSCA_PWD;
 import static com.cx.plugin.utils.CxParam.CXSCA_RESOLVER_ADD_PARAM;
+import static com.cx.plugin.utils.CxParam.CXSCA_RESOLVER_ADD_PARAM_GLOBAL;
 import static com.cx.plugin.utils.CxParam.CXSCA_RESOLVER_ENABLED;
+import static com.cx.plugin.utils.CxParam.CXSCA_RESOLVER_ENABLED_GLOBAL;
 import static com.cx.plugin.utils.CxParam.CXSCA_RESOLVER_PATH;
+import static com.cx.plugin.utils.CxParam.CXSCA_RESOLVER_PATH_GLOBAL;
 import static com.cx.plugin.utils.CxParam.CXSCA_USERNAME;
 import static com.cx.plugin.utils.CxParam.CXSCA_WEBAPP_URL;
 import static com.cx.plugin.utils.CxParam.CX_USE_CUSTOM_DEPENDENCY_SETTINGS;
@@ -423,6 +426,13 @@ public class CxConfigHelper {
 			result.setTenant(getAdminConfig(GLOBAL_CXSCA_ACCOUNT_NAME));
 			result.setUsername(getAdminConfig(GLOBAL_CXSCA_USERNAME));
 			result.setPassword(decrypt(getAdminConfig(GLOBAL_CXSCA_PWD)));
+			if(OPTION_TRUE.equalsIgnoreCase(configMap.get(CXSCA_RESOLVER_ENABLED_GLOBAL))) {
+	            validateScaResolverParams(configMap.get(CXSCA_RESOLVER_ADD_PARAM_GLOBAL));
+	            result.setPathToScaResolver(configMap.get(CXSCA_RESOLVER_PATH_GLOBAL));
+	    		result.setScaResolverAddParameters(configMap.get(CXSCA_RESOLVER_ADD_PARAM_GLOBAL));
+	    		result.setEnableScaResolver(true);
+	    		
+			}
 			
 			
 		}else {

@@ -227,6 +227,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 			context.put(CXSCA_RESOLVER_PATH,configMap.get(CXSCA_RESOLVER_PATH));
             context.put(CXSCA_RESOLVER_ADD_PARAM,configMap.get(CXSCA_RESOLVER_ADD_PARAM));       
             context.put(CXSCA_RESOLVER_ENABLED,configMap.get(CXSCA_RESOLVER_ENABLED)); 
+            
 		}else {
 						
 	        String dependencyScanType = getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE);
@@ -249,7 +250,10 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 			context.put(CXSCA_WEBAPP_URL,getAdminConfig(GLOBAL_CXSCA_WEBAPP_URL));
 			context.put(CXSCA_ACCOUNT_NAME,getAdminConfig(GLOBAL_CXSCA_ACCOUNT_NAME));
 			context.put(CXSCA_USERNAME,getAdminConfig(GLOBAL_CXSCA_USERNAME));
-			context.put(CXSCA_PWD,getAdminConfig(GLOBAL_CXSCA_PWD));		
+			context.put(CXSCA_PWD,getAdminConfig(GLOBAL_CXSCA_PWD));	
+			context.put(CXSCA_RESOLVER_PATH_GLOBAL,configMap.get(CXSCA_RESOLVER_PATH_GLOBAL));
+            context.put(CXSCA_RESOLVER_ADD_PARAM_GLOBAL,configMap.get(CXSCA_RESOLVER_ADD_PARAM_GLOBAL));       
+            context.put(CXSCA_RESOLVER_ENABLED_GLOBAL,configMap.get(CXSCA_RESOLVER_ENABLED_GLOBAL)); 
 			
 		}	
 		
@@ -267,6 +271,9 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 		context.put(GLOBAL_CXSCA_ACCOUNT_NAME,getAdminConfig(GLOBAL_CXSCA_ACCOUNT_NAME));
 		context.put(GLOBAL_CXSCA_USERNAME,getAdminConfig(GLOBAL_CXSCA_USERNAME));
 		context.put(GLOBAL_CXSCA_PWD,getAdminConfig(GLOBAL_CXSCA_PWD));
+		context.put(CXSCA_RESOLVER_PATH_GLOBAL,configMap.get(CXSCA_RESOLVER_PATH_GLOBAL));
+        context.put(CXSCA_RESOLVER_ADD_PARAM_GLOBAL,configMap.get(CXSCA_RESOLVER_ADD_PARAM_GLOBAL));       
+        context.put(CXSCA_RESOLVER_ENABLED_GLOBAL,configMap.get(CXSCA_RESOLVER_ENABLED_GLOBAL)); 
         context.put(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS, getAdminConfig(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS));
         context.put(GLOBAL_OSA_INSTALL_BEFORE_SCAN, getAdminConfig(GLOBAL_OSA_INSTALL_BEFORE_SCAN));
        
@@ -307,8 +314,8 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 		context.put(GLOBAL_CXSCA_ACCOUNT_NAME,getAdminConfig(GLOBAL_CXSCA_ACCOUNT_NAME));
 		context.put(GLOBAL_CXSCA_USERNAME,getAdminConfig(GLOBAL_CXSCA_USERNAME));
 		context.put(GLOBAL_CXSCA_PWD,getAdminConfig(GLOBAL_CXSCA_PWD));
-	
-        
+		
+
         context.put(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS, getAdminConfig(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS));
         context.put(GLOBAL_OSA_INSTALL_BEFORE_SCAN, getAdminConfig(GLOBAL_OSA_INSTALL_BEFORE_SCAN));
 			
@@ -543,7 +550,9 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 			
 			config.put(CXSCA_USERNAME,getAdminConfig(GLOBAL_CXSCA_USERNAME).trim());
 			config.put(CXSCA_PWD,getAdminConfig(GLOBAL_CXSCA_PWD).trim());
-			
+			config.put(CXSCA_RESOLVER_ENABLED_GLOBAL,getDefaultString(params, CXSCA_RESOLVER_ENABLED_GLOBAL).trim());
+			config.put(CXSCA_RESOLVER_PATH_GLOBAL,getDefaultString(params, CXSCA_RESOLVER_PATH_GLOBAL).trim());
+			config.put(CXSCA_RESOLVER_ADD_PARAM_GLOBAL,getDefaultString(params, CXSCA_RESOLVER_ADD_PARAM_GLOBAL).trim());
 			
 		}	
 		
@@ -644,6 +653,8 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         super.validate(params, errorCollection);
         String useSpecific = params.getString(SERVER_CREDENTIALS_SECTION);
         boolean scaResolverEnabled =  params.getBoolean(CXSCA_RESOLVER_ENABLED);
+        boolean scaResolverEnabledGlobal = params.getBoolean(CXSCA_RESOLVER_ENABLED_GLOBAL);
+        boolean useGlobalSettings = params.getBoolean(CX_USE_CUSTOM_DEPENDENCY_SETTINGS);
         if (CUSTOM_CONFIGURATION_SERVER.equals(useSpecific)) {
             validateNotEmpty(params, errorCollection, USER_NAME);
             validateNotEmpty(params, errorCollection, PASSWORD);
@@ -651,9 +662,13 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
             validateUrl(params, errorCollection, SERVER_URL);
         }
         validateNotEmpty(params, errorCollection, PROJECT_NAME);
-        if(scaResolverEnabled){
+        if(scaResolverEnabled && useGlobalSettings){
         validateNotEmpty(params, errorCollection, CXSCA_RESOLVER_PATH);
         validateNotEmpty(params, errorCollection, CXSCA_RESOLVER_ADD_PARAM);
+        }
+        if(scaResolverEnabledGlobal && !useGlobalSettings){
+            validateNotEmpty(params, errorCollection, CXSCA_RESOLVER_PATH_GLOBAL);
+            validateNotEmpty(params, errorCollection, CXSCA_RESOLVER_ADD_PARAM_GLOBAL);
         }
         containsIllegals(params, errorCollection, PROJECT_NAME);
         validateProjectNameLength(params, errorCollection, PROJECT_NAME);

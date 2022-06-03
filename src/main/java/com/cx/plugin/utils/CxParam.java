@@ -95,9 +95,11 @@ public class CxParam {
     public static final String GLOBAL_CXSCA_PWD = "globalcxScaPss";
     
     public static final String CXSCA_RESOLVER_ENABLED = "cxScaResolverEnabled";
+    public static final String CXSCA_RESOLVER_ENABLED_GLOBAL = "globalCxScaResolverEnabled";
     public static final String CXSCA_RESOLVER_PATH = "cxScaResolverPath";
+    public static final String CXSCA_RESOLVER_PATH_GLOBAL="globalCxScaResolverPath";
     public static final String CXSCA_RESOLVER_ADD_PARAM = "cxScaResolverAddParam";
-
+    public static final String CXSCA_RESOLVER_ADD_PARAM_GLOBAL = "globalCxScaResolverAddParam";
     public final static String ERROR_OCCURRED_MESSAGE = "Configuration settings were not saved. Please review your settings and try again";
 
     public static final String OPTION_TRUE = "true";
