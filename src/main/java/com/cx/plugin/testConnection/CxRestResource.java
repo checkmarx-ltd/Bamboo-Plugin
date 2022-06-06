@@ -7,23 +7,23 @@ import static com.cx.plugin.utils.CxParam.NO_PRESET_ID;
 import static com.cx.plugin.utils.CxParam.NO_PRESET_MESSAGE;
 import static com.cx.plugin.utils.CxParam.NO_TEAM_MESSAGE;
 import static com.cx.plugin.utils.CxParam.NO_TEAM_PATH;
+import static com.cx.plugin.utils.CxParam.OPTION_TRUE;
 import static com.cx.plugin.utils.CxPluginUtils.decrypt;
 
-import java.net.Proxy;
+import java.io.File;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.net.ssl.HttpsURLConnection;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.validator.routines.UrlValidator;
+import org.apache.commons.lang3.SystemUtils;
 import org.codehaus.plexus.util.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -40,6 +40,7 @@ import com.cx.restclient.dto.ProxyConfig;
 import com.cx.restclient.dto.ScannerType;
 import com.cx.restclient.dto.SourceLocationType;
 import com.cx.restclient.dto.Team;
+import com.cx.restclient.exception.CxClientException;
 import com.cx.restclient.sast.dto.Preset;
 import com.cx.restclient.sast.utils.LegacyClient;
 

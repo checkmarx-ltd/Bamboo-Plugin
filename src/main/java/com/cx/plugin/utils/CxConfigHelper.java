@@ -9,24 +9,34 @@ import static com.cx.plugin.utils.CxParam.CXSCA_ACCESS_CONTROL_URL;
 import static com.cx.plugin.utils.CxParam.CXSCA_ACCOUNT_NAME;
 import static com.cx.plugin.utils.CxParam.CXSCA_API_URL;
 import static com.cx.plugin.utils.CxParam.CXSCA_PWD;
+import static com.cx.plugin.utils.CxParam.CXSCA_RESOLVER_ADD_PARAM;
+import static com.cx.plugin.utils.CxParam.CXSCA_RESOLVER_ADD_PARAM_GLOBAL;
+import static com.cx.plugin.utils.CxParam.CXSCA_RESOLVER_ENABLED;
+import static com.cx.plugin.utils.CxParam.CXSCA_RESOLVER_ENABLED_GLOBAL;
+import static com.cx.plugin.utils.CxParam.CXSCA_RESOLVER_PATH;
+import static com.cx.plugin.utils.CxParam.CXSCA_RESOLVER_PATH_GLOBAL;
 import static com.cx.plugin.utils.CxParam.CXSCA_USERNAME;
 import static com.cx.plugin.utils.CxParam.CXSCA_WEBAPP_URL;
+import static com.cx.plugin.utils.CxParam.CX_USE_CUSTOM_DEPENDENCY_SETTINGS;
+import static com.cx.plugin.utils.CxParam.DEPENDENCY_SCAN_FILTER_PATTERNS;
+import static com.cx.plugin.utils.CxParam.DEPENDENCY_SCAN_FOLDER_EXCLUDE;
+import static com.cx.plugin.utils.CxParam.DEPENDENCY_SCAN_TYPE;
+import static com.cx.plugin.utils.CxParam.ENABLE_DEPENDENCY_SCAN;
+import static com.cx.plugin.utils.CxParam.ENABLE_PROXY;
+import static com.cx.plugin.utils.CxParam.FILTER_PATTERN;
+import static com.cx.plugin.utils.CxParam.FOLDER_EXCLUSION;
+import static com.cx.plugin.utils.CxParam.GENERATE_PDF_REPORT;
 import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_ACCESS_CONTROL_URL;
 import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_ACCOUNT_NAME;
 import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_API_URL;
 import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_PWD;
 import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_USERNAME;
 import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_WEBAPP_URL;
-import static com.cx.plugin.utils.CxParam.CX_REPORT_LOCATION;
-import static com.cx.plugin.utils.CxParam.CX_USE_CUSTOM_DEPENDENCY_SETTINGS;
-import static com.cx.plugin.utils.CxParam.DEPENDENCY_SCAN_TYPE;
-import static com.cx.plugin.utils.CxParam.GLOBAL_DEPENDENCY_SCAN_TYPE;
-import static com.cx.plugin.utils.CxParam.ENABLE_DEPENDENCY_SCAN;
-import static com.cx.plugin.utils.CxParam.ENABLE_PROXY;
-import static com.cx.plugin.utils.CxParam.FILTER_PATTERN;
-import static com.cx.plugin.utils.CxParam.FOLDER_EXCLUSION;
-import static com.cx.plugin.utils.CxParam.GENERATE_PDF_REPORT;
 import static com.cx.plugin.utils.CxParam.GLOBAL_DENY_PROJECT;
+import static com.cx.plugin.utils.CxParam.GLOBAL_DEPENDENCY_SCAN_FILTER_PATTERNS;
+import static com.cx.plugin.utils.CxParam.GLOBAL_DEPENDENCY_SCAN_FOLDER_EXCLUDE;
+import static com.cx.plugin.utils.CxParam.GLOBAL_DEPENDENCY_SCAN_TYPE;
+import static com.cx.plugin.utils.CxParam.GLOBAL_ENABLE_PROXY;
 import static com.cx.plugin.utils.CxParam.GLOBAL_FILTER_PATTERN;
 import static com.cx.plugin.utils.CxParam.GLOBAL_FOLDER_EXCLUSION;
 import static com.cx.plugin.utils.CxParam.GLOBAL_HIDE_RESULTS;
@@ -34,7 +44,9 @@ import static com.cx.plugin.utils.CxParam.GLOBAL_HIGH_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.GLOBAL_IS_SYNCHRONOUS;
 import static com.cx.plugin.utils.CxParam.GLOBAL_LOW_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.GLOBAL_MEDIUM_THRESHOLD;
+import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS;
 import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_HIGH_THRESHOLD;
+import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_INSTALL_BEFORE_SCAN;
 import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_LOW_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_MEDIUM_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_THRESHOLDS_ENABLED;
@@ -44,7 +56,6 @@ import static com.cx.plugin.utils.CxParam.GLOBAL_SCAN_TIMEOUT_IN_MINUTES;
 import static com.cx.plugin.utils.CxParam.GLOBAL_SERVER_URL;
 import static com.cx.plugin.utils.CxParam.GLOBAL_THRESHOLDS_ENABLED;
 import static com.cx.plugin.utils.CxParam.GLOBAL_USER_NAME;
-import static com.cx.plugin.utils.CxParam.GLOBAL_ENABLE_PROXY;
 import static com.cx.plugin.utils.CxParam.HIGH_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.INTERVAL_BEGINS;
 import static com.cx.plugin.utils.CxParam.INTERVAL_ENDS;
@@ -55,12 +66,6 @@ import static com.cx.plugin.utils.CxParam.LOW_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.MEDIUM_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.OPTION_TRUE;
 import static com.cx.plugin.utils.CxParam.OSA_ARCHIVE_INCLUDE_PATTERNS;
-import static com.cx.plugin.utils.CxParam.DEPENDENCY_SCAN_FILTER_PATTERNS;
-import static com.cx.plugin.utils.CxParam.DEPENDENCY_SCAN_FOLDER_EXCLUDE;
-import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS;
-import static com.cx.plugin.utils.CxParam.GLOBAL_DEPENDENCY_SCAN_FILTER_PATTERNS;
-import static com.cx.plugin.utils.CxParam.GLOBAL_DEPENDENCY_SCAN_FOLDER_EXCLUDE;
-import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_INSTALL_BEFORE_SCAN;
 import static com.cx.plugin.utils.CxParam.OSA_HIGH_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.OSA_INSTALL_BEFORE_SCAN;
 import static com.cx.plugin.utils.CxParam.OSA_LOW_THRESHOLD;
@@ -90,9 +95,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 
 import com.atlassian.bamboo.configuration.AdministrationConfiguration;
 import com.atlassian.bamboo.configuration.ConfigurationMap;
@@ -104,6 +112,7 @@ import com.cx.restclient.ast.dto.sca.AstScaConfig;
 import com.cx.restclient.configuration.CxScanConfig;
 import com.cx.restclient.dto.ProxyConfig;
 import com.cx.restclient.dto.ScannerType;
+import com.cx.restclient.exception.CxClientException;
 
 /**
  * Created by Galn on 25/10/2017.
@@ -417,18 +426,72 @@ public class CxConfigHelper {
 			result.setTenant(getAdminConfig(GLOBAL_CXSCA_ACCOUNT_NAME));
 			result.setUsername(getAdminConfig(GLOBAL_CXSCA_USERNAME));
 			result.setPassword(decrypt(getAdminConfig(GLOBAL_CXSCA_PWD)));
-
+			if(OPTION_TRUE.equalsIgnoreCase(configMap.get(CXSCA_RESOLVER_ENABLED_GLOBAL))) {
+	            validateScaResolverParams(configMap.get(CXSCA_RESOLVER_ADD_PARAM_GLOBAL));
+	            result.setPathToScaResolver(configMap.get(CXSCA_RESOLVER_PATH_GLOBAL));
+	    		result.setScaResolverAddParameters(configMap.get(CXSCA_RESOLVER_ADD_PARAM_GLOBAL));
+	    		result.setEnableScaResolver(true);
+	    		
+			}
+			
+			
 		}else {
 			result.setApiUrl(configMap.get(CXSCA_API_URL));
 			result.setAccessControlUrl(configMap.get(CXSCA_ACCESS_CONTROL_URL));
 			result.setWebAppUrl(configMap.get(CXSCA_WEBAPP_URL));
 			result.setTenant(configMap.get(CXSCA_ACCOUNT_NAME));
 			result.setUsername(configMap.get(CXSCA_USERNAME));
-			result.setPassword(decrypt(configMap.get(CXSCA_PWD)));	
+			result.setPassword(decrypt(configMap.get(CXSCA_PWD)));
+			
+			if(OPTION_TRUE.equalsIgnoreCase(configMap.get(CXSCA_RESOLVER_ENABLED))) {
+	            validateScaResolverParams(configMap.get(CXSCA_RESOLVER_ADD_PARAM));
+	            result.setPathToScaResolver(configMap.get(CXSCA_RESOLVER_PATH));
+	    		result.setScaResolverAddParameters(configMap.get(CXSCA_RESOLVER_ADD_PARAM));
+	    		result.setEnableScaResolver(true);
+	    		
+			}
+					
+			
 		}
+		
 		return result;
     }
     
+
+    private static void validateScaResolverParams(String additionalParams) {
+
+        String[] arguments = additionalParams.split(" ");
+        Map<String, String> params = new HashMap<>();
+
+        for (int i = 0; i <  arguments.length ; i++) {
+            if(arguments[i].startsWith("-") && (i+1 != arguments.length && !arguments[i+1].startsWith("-")))
+                params.put(arguments[i], arguments[i+1]);
+            else
+                params.put(arguments[i], "");
+        }
+
+        String dirPath = params.get("-s");
+        if(StringUtils.isEmpty(dirPath))
+            throw new CxClientException("Source code path (-s <source code path>) is not provided.");
+
+        String projectName = params.get("-n");
+        if(StringUtils.isEmpty(projectName))
+            throw new CxClientException("Project name parameter (-n <project name>) must be provided to ScaResolver.");
+        
+        String resultParam = params.get("-r");
+        if(StringUtils.isEmpty(resultParam))
+            throw new CxClientException("Result path parameter (-r <project name>) must be provided to ScaResolver.");
+
+    }
+
+    private static void fileExists(String file) {
+
+        File resultPath = new File(file);
+        if (!resultPath.exists()) {
+            throw new CxClientException("Path does not exist. Path= " + resultPath.getAbsolutePath());
+        }
+    }
+
     public String getPluginVersion() {
         String version = "";
         try {

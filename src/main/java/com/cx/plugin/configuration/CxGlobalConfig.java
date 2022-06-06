@@ -6,12 +6,16 @@ import com.atlassian.bamboo.configuration.GlobalAdminAction;
 import com.atlassian.spring.container.ContainerManager;
 import com.atlassian.util.concurrent.NotNull;
 import com.cx.plugin.utils.CxParam;
+import com.cx.restclient.exception.CxClientException;
 import com.google.common.collect.ImmutableMap;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.codehaus.plexus.util.StringUtils;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.cx.plugin.utils.CxParam.*;
@@ -62,7 +66,8 @@ public class CxGlobalConfig extends GlobalAdminAction {
     private String globalcxScaAccessControlServerUrl = DEFAULT_CXSCA_ACCESS_CONTROL_URL;
     private String globalcxScaWebAppUrl = DEFAULT_CXSCA_WEB_APP_URL;
     private String globalcxScaAccountName = "";
-    private Map<String, String> globalDependencyScanTypeValues = ImmutableMap.of("OSA", "Use CxOSA dependency scanner", "AST_SCA", "Use CxSCA dependency scanner");
+  
+	private Map<String, String> globalDependencyScanTypeValues = ImmutableMap.of("OSA", "Use CxOSA dependency scanner", "AST_SCA", "Use CxSCA dependency scanner");
 
     @Override
     public String execute() {
@@ -200,7 +205,6 @@ public class CxGlobalConfig extends GlobalAdminAction {
         addActionMessage(getText("cxDefaultConfigSuccess.label"));
         return SUCCESS;
     }
-
 
     private boolean isURLInvalid(final String value, final String fieldName) {
         boolean ret = false;
@@ -427,7 +431,9 @@ public class CxGlobalConfig extends GlobalAdminAction {
     public void setGlobalHideResults(String globalHideResults) {
         this.globalHideResults = globalHideResults;
     }
-    public String getGlobalEnableDependencyScan() {
+    
+
+	public String getGlobalEnableDependencyScan() {
 		return globalEnableDependencyScan;
 	}
 

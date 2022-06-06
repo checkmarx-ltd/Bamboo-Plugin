@@ -1,110 +1,7 @@
 package com.cx.plugin.configuration;
 
-import static com.cx.plugin.utils.CxParam.ADMINISTRATION_CONFIGURATION;
-import static com.cx.plugin.utils.CxParam.COMMENT;
-import static com.cx.plugin.utils.CxParam.ENABLE_PROXY;
-import static com.cx.plugin.utils.CxParam.CUSTOM_CONFIGURATION_CONTROL;
-import static com.cx.plugin.utils.CxParam.CUSTOM_CONFIGURATION_CXSAST;
-import static com.cx.plugin.utils.CxParam.CUSTOM_CONFIGURATION_SERVER;
-import static com.cx.plugin.utils.CxParam.CXSAST_SECTION;
-import static com.cx.plugin.utils.CxParam.DEFAULT_FILTER_PATTERNS;
-import static com.cx.plugin.utils.CxParam.DEFAULT_OSA_ARCHIVE_INCLUDE_PATTERNS;
-import static com.cx.plugin.utils.CxParam.ERROR_OCCURRED;
-import static com.cx.plugin.utils.CxParam.ERROR_OCCURRED_MESSAGE;
-import static com.cx.plugin.utils.CxParam.FILTER_PATTERN;
-import static com.cx.plugin.utils.CxParam.FOLDER_EXCLUSION;
-import static com.cx.plugin.utils.CxParam.GENERATE_PDF_REPORT;
-import static com.cx.plugin.utils.CxParam.GLOBAL_CONFIGURATION_CONTROL;
-import static com.cx.plugin.utils.CxParam.GLOBAL_CONFIGURATION_CXSAST;
-import static com.cx.plugin.utils.CxParam.GLOBAL_CONFIGURATION_SERVER;
-import static com.cx.plugin.utils.CxParam.GLOBAL_DENY_PROJECT;
-import static com.cx.plugin.utils.CxParam.GLOBAL_FILTER_PATTERN;
-import static com.cx.plugin.utils.CxParam.GLOBAL_FOLDER_EXCLUSION;
-import static com.cx.plugin.utils.CxParam.GLOBAL_HIDE_RESULTS;
-import static com.cx.plugin.utils.CxParam.GLOBAL_ENABLE_PROXY;
-import static com.cx.plugin.utils.CxParam.GLOBAL_HIGH_THRESHOLD;
-import static com.cx.plugin.utils.CxParam.GLOBAL_IS_SYNCHRONOUS;
-import static com.cx.plugin.utils.CxParam.GLOBAL_LOW_THRESHOLD;
-import static com.cx.plugin.utils.CxParam.GLOBAL_MEDIUM_THRESHOLD;
-import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_HIGH_THRESHOLD;
-import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_LOW_THRESHOLD;
-import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_MEDIUM_THRESHOLD;
-import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_THRESHOLDS_ENABLED;
-import static com.cx.plugin.utils.CxParam.GLOBAL_POLICY_VIOLATION_ENABLED;
-import static com.cx.plugin.utils.CxParam.GLOBAL_PWD;
-import static com.cx.plugin.utils.CxParam.GLOBAL_SCAN_TIMEOUT_IN_MINUTES;
-import static com.cx.plugin.utils.CxParam.GLOBAL_SERVER_URL;
-import static com.cx.plugin.utils.CxParam.GLOBAL_THRESHOLDS_ENABLED;
-import static com.cx.plugin.utils.CxParam.GLOBAL_USER_NAME;
-import static com.cx.plugin.utils.CxParam.HIGH_THRESHOLD;
-import static com.cx.plugin.utils.CxParam.INTERVAL_BEGINS;
-import static com.cx.plugin.utils.CxParam.INTERVAL_BEGINS_LIST;
-import static com.cx.plugin.utils.CxParam.INTERVAL_ENDS;
-import static com.cx.plugin.utils.CxParam.INTERVAL_ENDS_LIST;
-import static com.cx.plugin.utils.CxParam.IS_INCREMENTAL;
-import static com.cx.plugin.utils.CxParam.IS_INTERVALS;
-import static com.cx.plugin.utils.CxParam.IS_SYNCHRONOUS;
-import static com.cx.plugin.utils.CxParam.LOW_THRESHOLD;
-import static com.cx.plugin.utils.CxParam.MEDIUM_THRESHOLD;
-import static com.cx.plugin.utils.CxParam.NO_PRESET;
-import static com.cx.plugin.utils.CxParam.NO_PRESET_MESSAGE;
-import static com.cx.plugin.utils.CxParam.NO_TEAM_MESSAGE;
-import static com.cx.plugin.utils.CxParam.NO_TEAM_PATH;
-import static com.cx.plugin.utils.CxParam.OPTION_FALSE;
-import static com.cx.plugin.utils.CxParam.OPTION_TRUE;
-import static com.cx.plugin.utils.CxParam.OSA_ARCHIVE_INCLUDE_PATTERNS;
-import static com.cx.plugin.utils.CxParam.OSA_ENABLED;
-import static com.cx.plugin.utils.CxParam.DEPENDENCY_SCAN_FILTER_PATTERNS;
-import static com.cx.plugin.utils.CxParam.OSA_HIGH_THRESHOLD;
-import static com.cx.plugin.utils.CxParam.OSA_INSTALL_BEFORE_SCAN;
-import static com.cx.plugin.utils.CxParam.OSA_LOW_THRESHOLD;
-import static com.cx.plugin.utils.CxParam.OSA_MEDIUM_THRESHOLD;
-import static com.cx.plugin.utils.CxParam.OSA_THRESHOLDS_ENABLED;
-import static com.cx.plugin.utils.CxParam.PASSWORD;
-import static com.cx.plugin.utils.CxParam.POLICY_VIOLATION_ENABLED;
-import static com.cx.plugin.utils.CxParam.PRESET_ID;
-import static com.cx.plugin.utils.CxParam.PRESET_LIST;
-import static com.cx.plugin.utils.CxParam.PRESET_NAME;
-import static com.cx.plugin.utils.CxParam.PROJECT_NAME;
-import static com.cx.plugin.utils.CxParam.SCAN_CONTROL_SECTION;
-import static com.cx.plugin.utils.CxParam.SCAN_TIMEOUT_IN_MINUTES;
-import static com.cx.plugin.utils.CxParam.SERVER_CREDENTIALS_SECTION;
-import static com.cx.plugin.utils.CxParam.SERVER_URL;
-import static com.cx.plugin.utils.CxParam.TEAM_PATH_ID;
-import static com.cx.plugin.utils.CxParam.TEAM_PATH_LIST;
-import static com.cx.plugin.utils.CxParam.TEAM_PATH_NAME;
-import static com.cx.plugin.utils.CxParam.THRESHOLDS_ENABLED;
-import static com.cx.plugin.utils.CxParam.USER_NAME;
-import static com.cx.plugin.utils.CxParam.ENABLE_DEPENDENCY_SCAN;
-import static com.cx.plugin.utils.CxParam.DEPENDENCY_SCAN_TYPE;
-import static com.cx.plugin.utils.CxParam.CXSCA_API_URL;
-import static com.cx.plugin.utils.CxParam.CXSCA_ACCESS_CONTROL_URL;
-import static com.cx.plugin.utils.CxParam.CXSCA_WEBAPP_URL;
-import static com.cx.plugin.utils.CxParam.CXSCA_ACCOUNT_NAME;
-import static com.cx.plugin.utils.CxParam.CX_USE_CUSTOM_DEPENDENCY_SETTINGS;
-import static com.cx.plugin.utils.CxParam.CXSCA_USERNAME;
-import static com.cx.plugin.utils.CxParam.CXSCA_PWD;
-
-import static com.cx.plugin.utils.CxParam.GLOBAL_ENABLE_DEPENDENCY_SCAN;
-import static com.cx.plugin.utils.CxParam.GLOBAL_DEPENDENCY_SCAN_TYPE;
-import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_INSTALL_BEFORE_SCAN;
-import static com.cx.plugin.utils.CxParam.GLOBAL_DEPENDENCY_SCAN_FILTER_PATTERNS;
-import static com.cx.plugin.utils.CxParam.DEPENDENCY_SCAN_FOLDER_EXCLUDE;
-import static com.cx.plugin.utils.CxParam.GLOBAL_DEPENDENCY_SCAN_FOLDER_EXCLUDE;
-import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS;
-import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_API_URL;
-import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_ACCESS_CONTROL_URL;
-import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_WEBAPP_URL;
-import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_ACCOUNT_NAME;
-
-import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_USERNAME;
-import static com.cx.plugin.utils.CxParam.GLOBAL_CXSCA_PWD;
-import static com.cx.plugin.utils.CxParam.DEFAULT_CXSCA_API_URL;
-import static com.cx.plugin.utils.CxParam.DEFAULT_CXSCA_ACCESS_CONTROL_URL;
-import static com.cx.plugin.utils.CxParam.DEFAULT_CXSCA_WEB_APP_URL;
-
-
 import static com.cx.plugin.utils.CxPluginUtils.encrypt;
+import static com.cx.plugin.utils.CxParam.*;
 import static com.cx.plugin.utils.CxPluginUtils.decrypt;
 
 import java.lang.reflect.Method;
@@ -326,7 +223,11 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 			context.put(CXSCA_WEBAPP_URL,configMap.get(CXSCA_WEBAPP_URL));
 			context.put(CXSCA_ACCOUNT_NAME,configMap.get(CXSCA_ACCOUNT_NAME));
 			context.put(CXSCA_USERNAME,configMap.get(CXSCA_USERNAME));
-			context.put(CXSCA_PWD,configMap.get(CXSCA_PWD));        	
+			context.put(CXSCA_PWD,configMap.get(CXSCA_PWD));       
+			context.put(CXSCA_RESOLVER_PATH,configMap.get(CXSCA_RESOLVER_PATH));
+            context.put(CXSCA_RESOLVER_ADD_PARAM,configMap.get(CXSCA_RESOLVER_ADD_PARAM));       
+            context.put(CXSCA_RESOLVER_ENABLED,configMap.get(CXSCA_RESOLVER_ENABLED)); 
+            
 		}else {
 						
 	        String dependencyScanType = getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE);
@@ -349,7 +250,11 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 			context.put(CXSCA_WEBAPP_URL,getAdminConfig(GLOBAL_CXSCA_WEBAPP_URL));
 			context.put(CXSCA_ACCOUNT_NAME,getAdminConfig(GLOBAL_CXSCA_ACCOUNT_NAME));
 			context.put(CXSCA_USERNAME,getAdminConfig(GLOBAL_CXSCA_USERNAME));
-			context.put(CXSCA_PWD,getAdminConfig(GLOBAL_CXSCA_PWD));		
+			context.put(CXSCA_PWD,getAdminConfig(GLOBAL_CXSCA_PWD));	
+			context.put(CXSCA_RESOLVER_PATH_GLOBAL,configMap.get(CXSCA_RESOLVER_PATH_GLOBAL));
+            context.put(CXSCA_RESOLVER_ADD_PARAM_GLOBAL,configMap.get(CXSCA_RESOLVER_ADD_PARAM_GLOBAL));       
+            context.put(CXSCA_RESOLVER_ENABLED_GLOBAL,configMap.get(CXSCA_RESOLVER_ENABLED_GLOBAL)); 
+			
 		}	
 		
 		//These are to show global readonly values when user decide to use global
@@ -366,8 +271,12 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 		context.put(GLOBAL_CXSCA_ACCOUNT_NAME,getAdminConfig(GLOBAL_CXSCA_ACCOUNT_NAME));
 		context.put(GLOBAL_CXSCA_USERNAME,getAdminConfig(GLOBAL_CXSCA_USERNAME));
 		context.put(GLOBAL_CXSCA_PWD,getAdminConfig(GLOBAL_CXSCA_PWD));
+		context.put(CXSCA_RESOLVER_PATH_GLOBAL,configMap.get(CXSCA_RESOLVER_PATH_GLOBAL));
+        context.put(CXSCA_RESOLVER_ADD_PARAM_GLOBAL,configMap.get(CXSCA_RESOLVER_ADD_PARAM_GLOBAL));       
+        context.put(CXSCA_RESOLVER_ENABLED_GLOBAL,configMap.get(CXSCA_RESOLVER_ENABLED_GLOBAL)); 
         context.put(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS, getAdminConfig(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS));
         context.put(GLOBAL_OSA_INSTALL_BEFORE_SCAN, getAdminConfig(GLOBAL_OSA_INSTALL_BEFORE_SCAN));
+       
 	}
 
     private void populateOSA_SCA_FieldsForCreate(Map<String, Object> context) {
@@ -389,6 +298,8 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 		context.put(CXSCA_USERNAME,"");
 		context.put(CXSCA_PWD,"");
 		
+		
+        
 		//These are to show global readonly values when user decide to use global
 		//values on the job. Else they need to browse global section everytime
     	context.put(GLOBAL_ENABLE_DEPENDENCY_SCAN, getAdminConfig(GLOBAL_ENABLE_DEPENDENCY_SCAN));
@@ -403,6 +314,8 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 		context.put(GLOBAL_CXSCA_ACCOUNT_NAME,getAdminConfig(GLOBAL_CXSCA_ACCOUNT_NAME));
 		context.put(GLOBAL_CXSCA_USERNAME,getAdminConfig(GLOBAL_CXSCA_USERNAME));
 		context.put(GLOBAL_CXSCA_PWD,getAdminConfig(GLOBAL_CXSCA_PWD));
+		
+
         context.put(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS, getAdminConfig(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS));
         context.put(GLOBAL_OSA_INSTALL_BEFORE_SCAN, getAdminConfig(GLOBAL_OSA_INSTALL_BEFORE_SCAN));
 			
@@ -613,7 +526,12 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 	        config.put(CXSCA_ACCOUNT_NAME,getDefaultString(params, CXSCA_ACCOUNT_NAME).trim());
 	        
 			config.put(CXSCA_USERNAME,getDefaultString(params, CXSCA_USERNAME).trim());
-			config.put(CXSCA_PWD,encrypt(getDefaultString(params, CXSCA_PWD).trim()));    
+			config.put(CXSCA_PWD,encrypt(getDefaultString(params, CXSCA_PWD).trim()));
+			
+			config.put(CXSCA_RESOLVER_ENABLED,getDefaultString(params, CXSCA_RESOLVER_ENABLED).trim());
+			config.put(CXSCA_RESOLVER_PATH,getDefaultString(params, CXSCA_RESOLVER_PATH).trim());
+			config.put(CXSCA_RESOLVER_ADD_PARAM,getDefaultString(params, CXSCA_RESOLVER_ADD_PARAM).trim());
+	        
 			
 		}else {
 			final String configType = getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE);	    	
@@ -632,6 +550,9 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 			
 			config.put(CXSCA_USERNAME,getAdminConfig(GLOBAL_CXSCA_USERNAME).trim());
 			config.put(CXSCA_PWD,getAdminConfig(GLOBAL_CXSCA_PWD).trim());
+			config.put(CXSCA_RESOLVER_ENABLED_GLOBAL,getDefaultString(params, CXSCA_RESOLVER_ENABLED_GLOBAL).trim());
+			config.put(CXSCA_RESOLVER_PATH_GLOBAL,getDefaultString(params, CXSCA_RESOLVER_PATH_GLOBAL).trim());
+			config.put(CXSCA_RESOLVER_ADD_PARAM_GLOBAL,getDefaultString(params, CXSCA_RESOLVER_ADD_PARAM_GLOBAL).trim());
 			
 		}	
 		
@@ -731,6 +652,10 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     public void validate(@NotNull final ActionParametersMap params, @NotNull final ErrorCollection errorCollection) {
         super.validate(params, errorCollection);
         String useSpecific = params.getString(SERVER_CREDENTIALS_SECTION);
+        boolean scaResolverEnabled =  params.getBoolean(CXSCA_RESOLVER_ENABLED);
+        boolean scaResolverEnabledGlobal = params.getBoolean(CXSCA_RESOLVER_ENABLED_GLOBAL);
+        boolean useGlobalSettings = params.getBoolean(CX_USE_CUSTOM_DEPENDENCY_SETTINGS);
+        boolean enableDependancyScan = params.getBoolean(ENABLE_DEPENDENCY_SCAN);
         if (CUSTOM_CONFIGURATION_SERVER.equals(useSpecific)) {
             validateNotEmpty(params, errorCollection, USER_NAME);
             validateNotEmpty(params, errorCollection, PASSWORD);
@@ -738,6 +663,14 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
             validateUrl(params, errorCollection, SERVER_URL);
         }
         validateNotEmpty(params, errorCollection, PROJECT_NAME);
+        if(scaResolverEnabled && useGlobalSettings && enableDependancyScan){
+        validateNotEmpty(params, errorCollection, CXSCA_RESOLVER_PATH);
+        validateNotEmpty(params, errorCollection, CXSCA_RESOLVER_ADD_PARAM);
+        }
+        if(scaResolverEnabledGlobal && !useGlobalSettings && enableDependancyScan){
+            validateNotEmpty(params, errorCollection, CXSCA_RESOLVER_PATH_GLOBAL);
+            validateNotEmpty(params, errorCollection, CXSCA_RESOLVER_ADD_PARAM_GLOBAL);
+        }
         containsIllegals(params, errorCollection, PROJECT_NAME);
         validateProjectNameLength(params, errorCollection, PROJECT_NAME);
 
