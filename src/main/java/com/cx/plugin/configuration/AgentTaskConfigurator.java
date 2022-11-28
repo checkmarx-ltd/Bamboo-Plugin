@@ -314,7 +314,10 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 		context.put(GLOBAL_CXSCA_ACCOUNT_NAME,getAdminConfig(GLOBAL_CXSCA_ACCOUNT_NAME));
 		context.put(GLOBAL_CXSCA_USERNAME,getAdminConfig(GLOBAL_CXSCA_USERNAME));
 		context.put(GLOBAL_CXSCA_PWD,getAdminConfig(GLOBAL_CXSCA_PWD));
-		
+
+        context.put(CXSCA_RESOLVER_ENABLED_GLOBAL,getAdminConfig(CXSCA_RESOLVER_ENABLED_GLOBAL));
+        context.put(CXSCA_RESOLVER_PATH_GLOBAL,getAdminConfig(CXSCA_RESOLVER_PATH_GLOBAL));
+        context.put(CXSCA_RESOLVER_ADD_PARAM_GLOBAL,getAdminConfig(CXSCA_RESOLVER_ADD_PARAM_GLOBAL));
 
         context.put(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS, getAdminConfig(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS));
         context.put(GLOBAL_OSA_INSTALL_BEFORE_SCAN, getAdminConfig(GLOBAL_OSA_INSTALL_BEFORE_SCAN));
@@ -550,9 +553,9 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 			
 			config.put(CXSCA_USERNAME,getAdminConfig(GLOBAL_CXSCA_USERNAME).trim());
 			config.put(CXSCA_PWD,getAdminConfig(GLOBAL_CXSCA_PWD).trim());
-			config.put(CXSCA_RESOLVER_ENABLED_GLOBAL,getDefaultString(params, CXSCA_RESOLVER_ENABLED_GLOBAL).trim());
-			config.put(CXSCA_RESOLVER_PATH_GLOBAL,getDefaultString(params, CXSCA_RESOLVER_PATH_GLOBAL).trim());
-			config.put(CXSCA_RESOLVER_ADD_PARAM_GLOBAL,getDefaultString(params, CXSCA_RESOLVER_ADD_PARAM_GLOBAL).trim());
+			config.put(CXSCA_RESOLVER_ENABLED_GLOBAL,getAdminConfig(CXSCA_RESOLVER_ENABLED_GLOBAL).trim());
+			config.put(CXSCA_RESOLVER_PATH_GLOBAL,getAdminConfig(CXSCA_RESOLVER_PATH_GLOBAL).trim());
+			config.put(CXSCA_RESOLVER_ADD_PARAM_GLOBAL,getAdminConfig(CXSCA_RESOLVER_ADD_PARAM_GLOBAL).trim());
 			
 		}	
 		

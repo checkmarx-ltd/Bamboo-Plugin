@@ -66,6 +66,10 @@ public class CxGlobalConfig extends GlobalAdminAction {
     private String globalcxScaAccessControlServerUrl = DEFAULT_CXSCA_ACCESS_CONTROL_URL;
     private String globalcxScaWebAppUrl = DEFAULT_CXSCA_WEB_APP_URL;
     private String globalcxScaAccountName = "";
+
+    private String globalCxScaResolverEnabled;
+    private String globalCxScaResolverPath;
+    private String globalCxScaResolverAddParam;
   
 	private Map<String, String> globalDependencyScanTypeValues = ImmutableMap.of("OSA", "Use CxOSA dependency scanner", "AST_SCA", "Use CxSCA dependency scanner");
 
@@ -104,7 +108,11 @@ public class CxGlobalConfig extends GlobalAdminAction {
         						
         globalcxScaUsername = adminConfig.getSystemProperty(GLOBAL_CXSCA_USERNAME);
         globalcxScaPss = adminConfig.getSystemProperty(GLOBAL_CXSCA_PWD);
-        
+
+        globalCxScaResolverEnabled = adminConfig.getSystemProperty(CXSCA_RESOLVER_ENABLED_GLOBAL);
+        globalCxScaResolverPath = adminConfig.getSystemProperty(CXSCA_RESOLVER_PATH_GLOBAL);
+        globalCxScaResolverAddParam = adminConfig.getSystemProperty(CXSCA_RESOLVER_ADD_PARAM_GLOBAL);
+
         globalFolderExclusions = adminConfig.getSystemProperty(GLOBAL_FOLDER_EXCLUSION);
         String filterProperty = adminConfig.getSystemProperty(GLOBAL_FILTER_PATTERN);
         if (filterProperty != null) {
@@ -176,6 +184,10 @@ public class CxGlobalConfig extends GlobalAdminAction {
         
         adminConfig.setSystemProperty(GLOBAL_CXSCA_USERNAME, globalcxScaUsername);
         adminConfig.setSystemProperty(GLOBAL_CXSCA_PWD, encrypt(globalcxScaPss));
+
+        adminConfig.setSystemProperty(CXSCA_RESOLVER_ENABLED_GLOBAL, globalCxScaResolverEnabled);
+        adminConfig.setSystemProperty(CXSCA_RESOLVER_PATH_GLOBAL, globalCxScaResolverPath);
+        adminConfig.setSystemProperty(CXSCA_RESOLVER_ADD_PARAM_GLOBAL, globalCxScaResolverAddParam);
 
         adminConfig.setSystemProperty(GLOBAL_FOLDER_EXCLUSION, globalFolderExclusions);
         adminConfig.setSystemProperty(GLOBAL_FILTER_PATTERN, globalFilterPatterns);
@@ -513,6 +525,23 @@ public class CxGlobalConfig extends GlobalAdminAction {
 		this.globalcxScaAccountName = globalcxScaAccountName;
 	}
 
+    public String getGlobalCxScaResolverEnabled() { return globalCxScaResolverEnabled; }
+
+    public void setGlobalCxScaResolverEnabled(String globalCxScaResolverEnabled) {
+        this.globalCxScaResolverEnabled = globalCxScaResolverEnabled;
+    }
+
+    public String getGlobalCxScaResolverPath() { return globalCxScaResolverPath; }
+
+    public void setGlobalCxScaResolverPath(String globalCxScaResolverPath) {
+        this.globalCxScaResolverPath = globalCxScaResolverPath;
+    }
+
+    public String getGlobalCxScaResolverAddParam() { return globalCxScaResolverAddParam; }
+
+    public void setGlobalCxScaResolverAddParam(String globalCxScaResolverAddParam) {
+        this.globalCxScaResolverAddParam = globalCxScaResolverAddParam;
+    }
 
 	public Map<String, String> getGlobalDependencyScanTypeValues() {
 		return globalDependencyScanTypeValues;

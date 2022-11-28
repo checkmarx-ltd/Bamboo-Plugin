@@ -426,10 +426,10 @@ public class CxConfigHelper {
 			result.setTenant(getAdminConfig(GLOBAL_CXSCA_ACCOUNT_NAME));
 			result.setUsername(getAdminConfig(GLOBAL_CXSCA_USERNAME));
 			result.setPassword(decrypt(getAdminConfig(GLOBAL_CXSCA_PWD)));
-			if(OPTION_TRUE.equalsIgnoreCase(configMap.get(CXSCA_RESOLVER_ENABLED_GLOBAL))) {
 	            validateScaResolverParams(configMap.get(CXSCA_RESOLVER_ADD_PARAM_GLOBAL));
-	            result.setPathToScaResolver(configMap.get(CXSCA_RESOLVER_PATH_GLOBAL));
-	    		result.setScaResolverAddParameters(configMap.get(CXSCA_RESOLVER_ADD_PARAM_GLOBAL));
+			if(OPTION_TRUE.equalsIgnoreCase(getAdminConfig(CXSCA_RESOLVER_ENABLED_GLOBAL))) {
+	            result.setPathToScaResolver(getAdminConfig(CXSCA_RESOLVER_PATH_GLOBAL));
+	    		result.setScaResolverAddParameters(getAdminConfig(CXSCA_RESOLVER_ADD_PARAM_GLOBAL));
 	    		result.setEnableScaResolver(true);
 	    		
 			}
