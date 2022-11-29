@@ -93,11 +93,7 @@ import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -113,6 +109,7 @@ import com.cx.restclient.configuration.CxScanConfig;
 import com.cx.restclient.dto.ProxyConfig;
 import com.cx.restclient.dto.ScannerType;
 import com.cx.restclient.exception.CxClientException;
+import com.cx.restclient.sca.utils.CxSCAResolverUtils;
 
 /**
  * Created by Galn on 25/10/2017.
@@ -132,6 +129,8 @@ public class CxConfigHelper {
     private boolean dependencyScanEnabled;
     private ScannerType dependencyScanType;
     private boolean effectiveIncrementalScan;
+    private static final String scaResolverResultPath = ".cxscaresolver" + File.separator + "sca";
+    private static final String scaResolverSastResultPath = ".cxscaresolver" + File.separator + "sast";
 
     public boolean isEffectiveIncrementalScan() {
 		return effectiveIncrementalScan;
@@ -254,7 +253,11 @@ public class CxConfigHelper {
             	scanConfig.setOsaFolderExclusions(configMap.get(DEPENDENCY_SCAN_FOLDER_EXCLUDE));
             	if(configMap.get(DEPENDENCY_SCAN_TYPE).equalsIgnoreCase(ScannerType.AST_SCA.toString())) {        		
             		scannerType = ScannerType.AST_SCA;
-            		scanConfig.setAstScaConfig(getScaConfig(configMap, false));        		
+                    try {
+                        scanConfig.setAstScaConfig(getScaConfig(configMap, workDir, false));
+                    } catch(ParseException e) {
+                        throw new TaskException("Could not parse SCA additional arguments.", e);
+                    }
             	}else {
             		scannerType = ScannerType.OSA;
                     scanConfig.setOsaArchiveIncludePatterns(configMap.get(OSA_ARCHIVE_INCLUDE_PATTERNS));
@@ -266,7 +269,11 @@ public class CxConfigHelper {
             	scanConfig.setOsaFolderExclusions(getAdminConfig(GLOBAL_DEPENDENCY_SCAN_FOLDER_EXCLUDE));
             	if(getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE).equalsIgnoreCase(ScannerType.AST_SCA.toString())) {        		
             		scannerType = ScannerType.AST_SCA;
-            		scanConfig.setAstScaConfig(getScaConfig(configMap, true));        		
+                    try {
+                        scanConfig.setAstScaConfig(getScaConfig(configMap, workDir, true));
+                    } catch(ParseException e) {
+                        throw new TaskException("Could not parse SCA additional arguments.", e);
+                    }
             	}else {
             		scannerType = ScannerType.OSA;
                     scanConfig.setOsaArchiveIncludePatterns(getAdminConfig(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS));
@@ -416,7 +423,7 @@ public class CxConfigHelper {
         return StringUtils.defaultString(adminConfig.getSystemProperty(key));
     }
 
-    private AstScaConfig getScaConfig(ConfigurationMap configMap, boolean fromGlobal) {
+    private AstScaConfig getScaConfig(ConfigurationMap configMap, File workDir, boolean fromGlobal) throws ParseException {
 		AstScaConfig result = new AstScaConfig();
 		
 		if(fromGlobal) {
@@ -426,12 +433,10 @@ public class CxConfigHelper {
 			result.setTenant(getAdminConfig(GLOBAL_CXSCA_ACCOUNT_NAME));
 			result.setUsername(getAdminConfig(GLOBAL_CXSCA_USERNAME));
 			result.setPassword(decrypt(getAdminConfig(GLOBAL_CXSCA_PWD)));
-			if(OPTION_TRUE.equalsIgnoreCase(configMap.get(CXSCA_RESOLVER_ENABLED_GLOBAL))) {
-	            validateScaResolverParams(configMap.get(CXSCA_RESOLVER_ADD_PARAM_GLOBAL));
-	            result.setPathToScaResolver(configMap.get(CXSCA_RESOLVER_PATH_GLOBAL));
-	    		result.setScaResolverAddParameters(configMap.get(CXSCA_RESOLVER_ADD_PARAM_GLOBAL));
+			if(OPTION_TRUE.equalsIgnoreCase(getAdminConfig(CXSCA_RESOLVER_ENABLED_GLOBAL))) {
+	            result.setPathToScaResolver(getAdminConfig(CXSCA_RESOLVER_PATH_GLOBAL));
+                result.setScaResolverAddParameters(generateScaResolverParams(configMap, workDir, true));
 	    		result.setEnableScaResolver(true);
-	    		
 			}
 			
 			
@@ -444,11 +449,9 @@ public class CxConfigHelper {
 			result.setPassword(decrypt(configMap.get(CXSCA_PWD)));
 			
 			if(OPTION_TRUE.equalsIgnoreCase(configMap.get(CXSCA_RESOLVER_ENABLED))) {
-	            validateScaResolverParams(configMap.get(CXSCA_RESOLVER_ADD_PARAM));
 	            result.setPathToScaResolver(configMap.get(CXSCA_RESOLVER_PATH));
-	    		result.setScaResolverAddParameters(configMap.get(CXSCA_RESOLVER_ADD_PARAM));
+                result.setScaResolverAddParameters(generateScaResolverParams(configMap, workDir, false));
 	    		result.setEnableScaResolver(true);
-	    		
 			}
 					
 			
@@ -456,32 +459,38 @@ public class CxConfigHelper {
 		
 		return result;
     }
-    
 
-    private static void validateScaResolverParams(String additionalParams) {
-
-        String[] arguments = additionalParams.split(" ");
+    private List<String> generateScaResolverParams(ConfigurationMap configMap, File workDir, boolean fromGlobal)
+            throws ParseException {
         Map<String, String> params = new HashMap<>();
+        /* Mandatory Parameters */
+        params.put("--resolver-result-path", workDir.getAbsolutePath() + File.separator + scaResolverResultPath);
+        params.put("--scan-path", workDir.getAbsolutePath());
+        params.put("--project-name", configMap.get(PROJECT_NAME).trim());
+        /* CxSAST Parameters */
+        params.put("--sast-result-path", workDir.getAbsolutePath() + File.separator + scaResolverSastResultPath);
+        params.put("--cxserver", fromGlobal ? getAdminConfig(GLOBAL_SERVER_URL) : configMap.get(SERVER_URL));
+        params.put("--cxuser", fromGlobal ? getAdminConfig(GLOBAL_USER_NAME) : configMap.get(USER_NAME));
+        params.put("--cxpassword", decrypt(fromGlobal ? getAdminConfig(GLOBAL_PWD) : configMap.get(PASSWORD)));
+        params.put("--cxprojectname", configMap.get(PROJECT_NAME).trim());
+        /* User additional arguments */
+        params.putAll(
+                CxSCAResolverUtils.parseArguments(
+                        fromGlobal ? getAdminConfig(CXSCA_RESOLVER_ADD_PARAM_GLOBAL) : configMap.get(CXSCA_RESOLVER_ADD_PARAM)
+                )
+        );
 
-        for (int i = 0; i <  arguments.length ; i++) {
-            if(arguments[i].startsWith("-") && (i+1 != arguments.length && !arguments[i+1].startsWith("-")))
-                params.put(arguments[i], arguments[i+1]);
-            else
-                params.put(arguments[i], "");
+        List<String> resolved = new ArrayList<>();
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            if (entry.getValue() != null) {
+                resolved.add(entry.getKey());
+                resolved.add(entry.getValue());
+            } else {
+                resolved.add(entry.getKey());
+            }
         }
 
-        String dirPath = params.get("-s");
-        if(StringUtils.isEmpty(dirPath))
-            throw new CxClientException("Source code path (-s <source code path>) is not provided.");
-
-        String projectName = params.get("-n");
-        if(StringUtils.isEmpty(projectName))
-            throw new CxClientException("Project name parameter (-n <project name>) must be provided to ScaResolver.");
-        
-        String resultParam = params.get("-r");
-        if(StringUtils.isEmpty(resultParam))
-            throw new CxClientException("Result path parameter (-r <project name>) must be provided to ScaResolver.");
-
+        return resolved;
     }
 
     private static void fileExists(String file) {
