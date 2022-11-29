@@ -667,12 +667,10 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         }
         validateNotEmpty(params, errorCollection, PROJECT_NAME);
         if(scaResolverEnabled && useGlobalSettings && enableDependancyScan){
-        validateNotEmpty(params, errorCollection, CXSCA_RESOLVER_PATH);
-        validateNotEmpty(params, errorCollection, CXSCA_RESOLVER_ADD_PARAM);
+            validateNotEmpty(params, errorCollection, CXSCA_RESOLVER_PATH);
         }
         if(scaResolverEnabledGlobal && !useGlobalSettings && enableDependancyScan){
             validateNotEmpty(params, errorCollection, CXSCA_RESOLVER_PATH_GLOBAL);
-            validateNotEmpty(params, errorCollection, CXSCA_RESOLVER_ADD_PARAM_GLOBAL);
         }
         containsIllegals(params, errorCollection, PROJECT_NAME);
         validateProjectNameLength(params, errorCollection, PROJECT_NAME);

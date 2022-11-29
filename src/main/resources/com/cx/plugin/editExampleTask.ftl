@@ -193,7 +193,7 @@
 				[@ww.checkbox labelKey="cxScaResolverEnabled.label" name="cxScaResolverEnabled" id="cxScaResolverEnabled" toggle='true' /]
 		        [@ui.bambooSection title='SCA Resolver' dependsOn='cxScaResolverEnabled' showOn='true' cssClass="cx"]
 		        	[@ww.textfield labelKey="cxScaResolverPath.label" name="cxScaResolverPath" id="cxScaResolverPath" descriptionKey="cxScaResolverPath.description"  required='true'/]
-			        [@ww.textarea labelKey="cxScaResolverAddParam.label" name="cxScaResolverAddParam" id="cxScaResolverAddParam" descriptionKey="cxScaResolverAddParam.description" rows="3" cssClass="long-field"  required='true'/]
+			        [@ww.textarea labelKey="cxScaResolverAddParam.label" name="cxScaResolverAddParam" id="cxScaResolverAddParam" descriptionKey="cxScaResolverAddParam.description" rows="3" cssClass="long-field"/]
 			    [/@ui.bambooSection]
 			[/@ui.bambooSection]
 		[/@ui.bambooSection]
