@@ -460,7 +460,7 @@ public class CxConfigHelper {
 		return result;
     }
 
-    private List<String> generateScaResolverParams(ConfigurationMap configMap, File workDir, boolean fromGlobal)
+    private String generateScaResolverParams(ConfigurationMap configMap, File workDir, boolean fromGlobal)
             throws ParseException {
         Map<String, String> params = new HashMap<>();
         /* Mandatory Parameters */
@@ -480,13 +480,13 @@ public class CxConfigHelper {
                 )
         );
 
-        List<String> resolved = new ArrayList<>();
+        String resolved= "";
         for (Map.Entry<String, String> entry : params.entrySet()) {
             if (entry.getValue() != null) {
-                resolved.add(entry.getKey());
-                resolved.add(entry.getValue());
+                resolved+=" "+entry.getKey();
+                resolved+=" "+entry.getValue();
             } else {
-                resolved.add(entry.getKey());
+                resolved+=" "+entry.getKey();
             }
         }
 
