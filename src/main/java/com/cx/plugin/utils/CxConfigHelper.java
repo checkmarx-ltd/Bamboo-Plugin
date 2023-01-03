@@ -211,7 +211,7 @@ public class CxConfigHelper {
         scanConfig.setTeamId(StringUtils.defaultString(configMap.get(TEAM_PATH_ID)));
         scanConfig.setTeamPath(teamName);
       //add SAST scan details if SAST scan is enabled
-        if(resolveBool(configMap, ENABLE_SAST_SCAN)) {
+        if(enableSAST) {
         if (CUSTOM_CONFIGURATION_CXSAST.equals(configMap.get(CXSAST_SECTION))) {
             scanConfig.setSastFolderExclusions(configMap.get(FOLDER_EXCLUSION));
             scanConfig.setSastFilterPattern(configMap.get(FILTER_PATTERN));
