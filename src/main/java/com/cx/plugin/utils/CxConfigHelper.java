@@ -84,6 +84,7 @@ import static com.cx.plugin.utils.CxParam.TEAM_PATH_ID;
 import static com.cx.plugin.utils.CxParam.TEAM_PATH_NAME;
 import static com.cx.plugin.utils.CxParam.THRESHOLDS_ENABLED;
 import static com.cx.plugin.utils.CxParam.USER_NAME;
+import static com.cx.plugin.utils.CxParam.ENABLE_SAST_SCAN;
 import static com.cx.plugin.utils.CxPluginUtils.decrypt;
 import static com.cx.plugin.utils.CxPluginUtils.resolveInt;
 
@@ -167,12 +168,12 @@ public class CxConfigHelper {
         
         scanConfig.setSourceDir(workDir.getAbsolutePath());
         scanConfig.setReportsDir(workDir);
-        
-        scanConfig.setSastEnabled(true);
+        boolean enableSAST = resolveBool(configMap, ENABLE_SAST_SCAN);
+        scanConfig.setSastEnabled(enableSAST);
         scanConfig.setDisableCertificateValidation(true);
-
+        
         if (CUSTOM_CONFIGURATION_SERVER.equals(configMap.get(SERVER_CREDENTIALS_SECTION))) {
-            scanConfig.setUrl(configMap.get(SERVER_URL));
+            scanConfig.setUrl(configMap.get(SERVER_URL));            
             scanConfig.setUsername(configMap.get(USER_NAME));
             scanConfig.setPassword(decrypt(configMap.get(PASSWORD)));
             scanConfig.setProxy(resolveBool(configMap, ENABLE_PROXY));
@@ -183,8 +184,7 @@ public class CxConfigHelper {
             scanConfig.setPassword(decrypt(getAdminConfig(GLOBAL_PWD)));            
             scanConfig.setProxy(resolveGlobalBool(GLOBAL_ENABLE_PROXY));
             setUsingGlobalSASTServer(true);
-        }
-		
+        }		
 		if (scanConfig.isProxy()) {
 			ProxyConfig proxyConfig = HttpHelper.getProxyConfig();
 			if (proxyConfig != null) {
@@ -210,7 +210,8 @@ public class CxConfigHelper {
         scanConfig.setPresetName(StringUtils.defaultString(configMap.get(PRESET_NAME)));
         scanConfig.setTeamId(StringUtils.defaultString(configMap.get(TEAM_PATH_ID)));
         scanConfig.setTeamPath(teamName);
-
+      //add SAST scan details if SAST scan is enabled
+        if(resolveBool(configMap, ENABLE_SAST_SCAN)) {
         if (CUSTOM_CONFIGURATION_CXSAST.equals(configMap.get(CXSAST_SECTION))) {
             scanConfig.setSastFolderExclusions(configMap.get(FOLDER_EXCLUSION));
             scanConfig.setSastFilterPattern(configMap.get(FILTER_PATTERN));
@@ -243,6 +244,7 @@ public class CxConfigHelper {
             }
         }
         scanConfig.setGeneratePDFReport(resolveBool(configMap, GENERATE_PDF_REPORT));
+    }
         //add AST_SCA or OSA based on what user has selected
         ScannerType scannerType = null;
         if(resolveBool(configMap, ENABLE_DEPENDENCY_SCAN)) {

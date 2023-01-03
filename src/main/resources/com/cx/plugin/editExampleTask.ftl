@@ -98,7 +98,6 @@
     <button type="button" class="aui-button test-connection" id="test_connection">Connect to Server</button>
     <div id="testConnectionMessage" class="test-connection-message"></div>
 
-
     [/@ui.bambooSection]
     [@ui.bambooSection dependsOn='serverCredentialsSection' showOn='globalConfigurationServer']
         [@ww.label labelKey="serverUrl.label"  id="globalServerUrl" name="globalServerUrl"/]
@@ -109,15 +108,17 @@
         [#else]
         	[@ww.checkbox labelKey="enableProxy.label" name="globalEnableProxy" descriptionKey="enableProxy.description" toggle='true' disabled="true" /]
          [/#if]
-    [/@ui.bambooSection]
+             [/@ui.bambooSection]
 
     [@ww.textfield labelKey="projectName.label" name="projectName" required='true' descriptionKey='projectName.description' /]
     [@ww.select labelKey="preset.label" name="presetId" id="presetListId" list="presetList" listKey="key" listValue="value" multiple="false"  cssClass="long-field" descriptionKey="preset.description"/]
-    [@ww.select labelKey="teamPath.label" name="teamPathId" id="teamPathListId" list="teamPathList" listKey="key" listValue="value" multiple="false"  cssClass="long-field" descriptionKey="teamPath.description"/]	
+    [@ww.select labelKey="teamPath.label" name="teamPathId" id="teamPathListId" list="teamPathList" listKey="key" listValue="value" multiple="false"  cssClass="long-field" descriptionKey="teamPath.description"/]
+
 [/@ui.bambooSection]
 
-
 [@ui.bambooSection title='Checkmarx Scan CxSAST' cssClass="cx center"]
+[@ww.checkbox labelKey="enableSASTScan.label" name="enableSASTScan" toggle='true' /]
+[@ui.bambooSection dependsOn="enableSASTScan" showOn="true"]
     [@ww.radio id = 'radioGroup' name='cxSastSection' listKey='key' listValue='value' toggle='true' list=configurationModeTypesCxSAST /]
 
     [@ui.bambooSection dependsOn='cxSastSection' showOn='customConfigurationCxSAST']
@@ -132,7 +133,6 @@
         [@ww.label labelKey="scanTimeoutInMinutes.label" name="globalScanTimeoutInMinutes"/]
 
     [/@ui.bambooSection]
-
     [@ww.textarea labelKey="comment.label"  name="comment" rows="3" descriptionKey="comment.description" cssClass="long-field"/]
 
     [@ww.checkbox labelKey="isIncremental.label" name="isIncremental" descriptionKey="isIncremental.description" toggle='true' /]
@@ -146,6 +146,7 @@
 
 
     [@ww.checkbox labelKey="generatePDFReport.label" name="generatePDFReport" toggle='false' descriptionKey='generatePDFReport.description'/]
+    [/@ui.bambooSection]
 [/@ui.bambooSection]
 
 
