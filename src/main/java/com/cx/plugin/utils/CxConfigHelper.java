@@ -243,7 +243,9 @@ public class CxConfigHelper {
                 }
             }
         }
+        if(!(resolveBool(configMap, FORCE_SCAN)) && (resolveBool(configMap, IS_INCREMENTAL))) {
         scanConfig.setForceScan(resolveBool(configMap,FORCE_SCAN));
+        }
         scanConfig.setGeneratePDFReport(resolveBool(configMap, GENERATE_PDF_REPORT));
         //add AST_SCA or OSA based on what user has selected
         ScannerType scannerType = null;
