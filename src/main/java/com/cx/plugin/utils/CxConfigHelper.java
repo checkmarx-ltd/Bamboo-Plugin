@@ -60,6 +60,7 @@ import static com.cx.plugin.utils.CxParam.HIGH_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.INTERVAL_BEGINS;
 import static com.cx.plugin.utils.CxParam.INTERVAL_ENDS;
 import static com.cx.plugin.utils.CxParam.IS_INCREMENTAL;
+import static com.cx.plugin.utils.CxParam.FORCE_SCAN;
 import static com.cx.plugin.utils.CxParam.IS_INTERVALS;
 import static com.cx.plugin.utils.CxParam.IS_SYNCHRONOUS;
 import static com.cx.plugin.utils.CxParam.LOW_THRESHOLD;
@@ -242,6 +243,7 @@ public class CxConfigHelper {
                 }
             }
         }
+        scanConfig.setForceScan(resolveBool(configMap,FORCE_SCAN));
         scanConfig.setGeneratePDFReport(resolveBool(configMap, GENERATE_PDF_REPORT));
         //add AST_SCA or OSA based on what user has selected
         ScannerType scannerType = null;
