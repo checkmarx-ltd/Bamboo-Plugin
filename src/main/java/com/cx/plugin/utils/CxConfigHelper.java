@@ -243,9 +243,10 @@ public class CxConfigHelper {
                 }
             }
         }
-        if(!(resolveBool(configMap, FORCE_SCAN)) && (resolveBool(configMap, IS_INCREMENTAL))) {
-        scanConfig.setForceScan(resolveBool(configMap,FORCE_SCAN));
+        if(resolveBool(configMap, FORCE_SCAN) && resolveBool(configMap, IS_INCREMENTAL)) {
+        	throw new TaskException("Force scan and incremental scan can not be configured in pair for SAST. Configure either Incremental or Force scan option");
         }
+        scanConfig.setForceScan(resolveBool(configMap,FORCE_SCAN));
         scanConfig.setGeneratePDFReport(resolveBool(configMap, GENERATE_PDF_REPORT));
         //add AST_SCA or OSA based on what user has selected
         ScannerType scannerType = null;
