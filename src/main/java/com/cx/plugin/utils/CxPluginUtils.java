@@ -73,8 +73,8 @@ public abstract class CxPluginUtils {
         log.info("Scan timeout in minutes: " + (config.getSastScanTimeoutInMinutes() <= 0 ? "" : config.getSastScanTimeoutInMinutes()));
         log.info("Full team path: " + config.getTeamPath());
         log.info("Is synchronous scan: " + config.getSynchronous());
-        if (config.isSastEnabled()) {
-            log.info("SAST scan enabled: "+config.isSastEnabled());
+        log.info("SAST scan enabled: "+config.isSastEnabled());
+        if (config.isSastEnabled()) {            
             log.info("Preset id: " + config.getPresetId());
             log.info("Preset: " + config.getPresetName());
             log.info("SAST folder exclusions: " + config.getSastFolderExclusions());
