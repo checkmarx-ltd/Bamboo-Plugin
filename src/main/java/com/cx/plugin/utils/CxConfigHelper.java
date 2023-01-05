@@ -251,8 +251,7 @@ public class CxConfigHelper {
         	setDependencyScanEnabled(true);
         	String useCustomdependencyScanSettings = configMap.get(CX_USE_CUSTOM_DEPENDENCY_SETTINGS);
     		if(!StringUtils.isEmpty(useCustomdependencyScanSettings) && useCustomdependencyScanSettings.equalsIgnoreCase("true")) {
-    			setUsingGlobalDependencyScan(false);
-    			scanConfig.setSynchronous(resolveBool(configMap, IS_SYNCHRONOUS));
+    			setUsingGlobalDependencyScan(false);    			
             	scanConfig.setOsaFilterPattern(configMap.get(DEPENDENCY_SCAN_FILTER_PATTERNS));
             	scanConfig.setOsaFolderExclusions(configMap.get(DEPENDENCY_SCAN_FOLDER_EXCLUDE));
             	if(configMap.get(DEPENDENCY_SCAN_TYPE).equalsIgnoreCase(ScannerType.AST_SCA.toString())) {        		
@@ -264,8 +263,7 @@ public class CxConfigHelper {
                     scanConfig.setOsaRunInstall(resolveBool(configMap, OSA_INSTALL_BEFORE_SCAN));
             	}
     		}else {
-    			setUsingGlobalDependencyScan(true);
-    			scanConfig.setSynchronous(resolveGlobalBool(GLOBAL_IS_SYNCHRONOUS));
+    			setUsingGlobalDependencyScan(true);    			
             	scanConfig.setOsaFilterPattern(getAdminConfig(GLOBAL_DEPENDENCY_SCAN_FILTER_PATTERNS));
             	scanConfig.setOsaFolderExclusions(getAdminConfig(GLOBAL_DEPENDENCY_SCAN_FOLDER_EXCLUDE));
             	if(getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE).equalsIgnoreCase(ScannerType.AST_SCA.toString())) {        		
@@ -309,10 +307,12 @@ public class CxConfigHelper {
             setUsingGlobalScanControlSettings(true);
         }
     }
-        if (isCustomConfSect) {            
+        if (isCustomConfSect) {
+        	scanConfig.setSynchronous(resolveBool(configMap, IS_SYNCHRONOUS));
             scanConfig.setEnablePolicyViolations(resolveBool(configMap, POLICY_VIOLATION_ENABLED));
         }
-        else {            
+        else {
+        	scanConfig.setSynchronous(resolveGlobalBool(GLOBAL_IS_SYNCHRONOUS));
             scanConfig.setEnablePolicyViolations(resolveGlobalBool(GLOBAL_POLICY_VIOLATION_ENABLED));
         }
         scanConfig.setDenyProject(resolveGlobalBool(GLOBAL_DENY_PROJECT));
