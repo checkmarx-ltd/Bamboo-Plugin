@@ -143,7 +143,9 @@
             [@ww.select labelKey="intervalEnds.label" name="intervalEnds" list="intervalEndsList" listKey="key" listValue="value" multiple="false"/]
         [/@ui.bambooSection]
     [/@ui.bambooSection]
-
+	[@ui.bambooSection dependsOn="isIncremental" showOn="false"]
+	[@ww.checkbox labelKey="forceScan.label" name="forceScan" descriptionKey="forceScan.description" toggle='true' /]
+	[/@ui.bambooSection]
 
     [@ww.checkbox labelKey="generatePDFReport.label" name="generatePDFReport" toggle='false' descriptionKey='generatePDFReport.description'/]
 [/@ui.bambooSection]

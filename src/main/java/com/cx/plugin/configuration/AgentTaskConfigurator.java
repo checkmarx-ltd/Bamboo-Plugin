@@ -82,6 +82,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         //context.put(ENABLE_PROXY, OPTION_FALSE);
         context.put(IS_INCREMENTAL, OPTION_FALSE);
         context.put(IS_INTERVALS, OPTION_FALSE);
+        context.put(FORCE_SCAN, OPTION_FALSE);
         populateIntervals(context);
         context.put(INTERVAL_BEGINS, DEFAULT_INTERVAL_BEGINS);
         context.put(INTERVAL_ENDS, DEFAULT_INTERVAL_ENDS);
@@ -175,6 +176,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 
         populateCxSASTFields(context, configMap, false);
         context.put(IS_INCREMENTAL, configMap.get(IS_INCREMENTAL));
+        context.put(FORCE_SCAN, configMap.get(FORCE_SCAN));
         context.put(ENABLE_PROXY, configMap.get(ENABLE_PROXY));
         final String isIntervals = configMap.get(IS_INTERVALS);
         context.put(IS_INTERVALS, isIntervals);
@@ -481,6 +483,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         config.put(POLICY_VIOLATION_ENABLED, params.getString(POLICY_VIOLATION_ENABLED));
 
         config.put(IS_INCREMENTAL, params.getString(IS_INCREMENTAL));
+        config.put(FORCE_SCAN, params.getString(FORCE_SCAN));
         config.put(IS_INTERVALS, params.getString(IS_INTERVALS));
         config.put(INTERVAL_BEGINS, getDefaultString(params, INTERVAL_BEGINS));
         config.put(INTERVAL_ENDS, getDefaultString(params, INTERVAL_ENDS));
@@ -651,6 +654,10 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     @Override
     public void validate(@NotNull final ActionParametersMap params, @NotNull final ErrorCollection errorCollection) {
         super.validate(params, errorCollection);
+        if (params.getBoolean(IS_INCREMENTAL) && params.getBoolean(FORCE_SCAN)) {
+        	errorCollection.addError(FORCE_SCAN, ((ConfigureBuildTasks) errorCollection).getText("errorForceIncrementalScan.equals"));
+        	errorCollection.addError(IS_INCREMENTAL, ((ConfigureBuildTasks) errorCollection).getText("errorForceIncrementalScan.equals"));
+        }
         String useSpecific = params.getString(SERVER_CREDENTIALS_SECTION);
         boolean scaResolverEnabled =  params.getBoolean(CXSCA_RESOLVER_ENABLED);
         boolean scaResolverEnabledGlobal = params.getBoolean(CXSCA_RESOLVER_ENABLED_GLOBAL);
@@ -693,10 +700,10 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
             validateNotNegative(params, errorCollection, OSA_MEDIUM_THRESHOLD);
             validateNotNegative(params, errorCollection, OSA_LOW_THRESHOLD);
         }
-
         if (errorCollection.hasAnyErrors()) {
             errorCollection.addError(ERROR_OCCURRED, ERROR_OCCURRED_MESSAGE);
         }
+        
     }
 
     private void validateNotEmpty(@NotNull ActionParametersMap params, @NotNull final ErrorCollection errorCollection, @NotNull String key) {

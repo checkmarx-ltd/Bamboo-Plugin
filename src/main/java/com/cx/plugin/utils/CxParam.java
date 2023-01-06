@@ -29,6 +29,7 @@ public class CxParam {
     public static final String SCAN_TIMEOUT_IN_MINUTES = "scanTimeoutInMinutes";
     public static final String COMMENT = "comment";
     public static final String IS_INCREMENTAL = "isIncremental";
+    public static final String FORCE_SCAN = "forceScan";
     public static final String IS_INTERVALS = "isIntervals";
     public static final String FORCE_FULL_SCAN = "forceFullScan";
     public static final String INTERVAL_BEGINS = "intervalBegins";
