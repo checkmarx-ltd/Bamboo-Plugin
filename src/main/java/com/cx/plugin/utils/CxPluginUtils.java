@@ -23,6 +23,8 @@ public abstract class CxPluginUtils {
         log.info("Bamboo plugin version: " + configBFF.getPluginVersion());
         log.info("Username: " + config.getUsername());
         log.info("Server URL: " + config.getUrl());
+        log.info("is force scan: " + config.getForceScan());
+		
         if (configBFF.isUsingGlobalSASTServer()) {
         	log.info("Using globally defined CxSAST Server settings.");        	
         }else{
@@ -82,6 +84,7 @@ public abstract class CxPluginUtils {
             log.info("SAST timeout: " + config.getSastScanTimeoutInMinutes());
             log.info("SAST scan comment: " + config.getScanComment());
             log.info("Is incremental scan(Effective): " + configBFF.isEffectiveIncrementalScan());
+            log.info("is force scan: " + config.getForceScan());
             log.info("Is generate full XML report: " + config.getGenerateXmlReport());
             log.info("Is generate PDF report: " + config.getGeneratePDFReport());
             log.info("Policy violations enabled: " + config.getEnablePolicyViolations());
