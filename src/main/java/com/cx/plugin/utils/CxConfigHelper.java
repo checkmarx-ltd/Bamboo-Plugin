@@ -85,6 +85,7 @@ import static com.cx.plugin.utils.CxParam.TEAM_PATH_ID;
 import static com.cx.plugin.utils.CxParam.TEAM_PATH_NAME;
 import static com.cx.plugin.utils.CxParam.THRESHOLDS_ENABLED;
 import static com.cx.plugin.utils.CxParam.USER_NAME;
+import static com.cx.plugin.utils.CxParam.ENABLE_SAST_SCAN;
 import static com.cx.plugin.utils.CxPluginUtils.decrypt;
 import static com.cx.plugin.utils.CxPluginUtils.resolveInt;
 
@@ -168,12 +169,12 @@ public class CxConfigHelper {
         
         scanConfig.setSourceDir(workDir.getAbsolutePath());
         scanConfig.setReportsDir(workDir);
-        
-        scanConfig.setSastEnabled(true);
+        boolean enableSAST = resolveBool(configMap, ENABLE_SAST_SCAN);
+        scanConfig.setSastEnabled(enableSAST);
         scanConfig.setDisableCertificateValidation(true);
-
+        
         if (CUSTOM_CONFIGURATION_SERVER.equals(configMap.get(SERVER_CREDENTIALS_SECTION))) {
-            scanConfig.setUrl(configMap.get(SERVER_URL));
+            scanConfig.setUrl(configMap.get(SERVER_URL));            
             scanConfig.setUsername(configMap.get(USER_NAME));
             scanConfig.setPassword(decrypt(configMap.get(PASSWORD)));
             scanConfig.setProxy(resolveBool(configMap, ENABLE_PROXY));
@@ -184,8 +185,7 @@ public class CxConfigHelper {
             scanConfig.setPassword(decrypt(getAdminConfig(GLOBAL_PWD)));            
             scanConfig.setProxy(resolveGlobalBool(GLOBAL_ENABLE_PROXY));
             setUsingGlobalSASTServer(true);
-        }
-		
+        }		
 		if (scanConfig.isProxy()) {
 			ProxyConfig proxyConfig = HttpHelper.getProxyConfig();
 			if (proxyConfig != null) {
@@ -211,7 +211,8 @@ public class CxConfigHelper {
         scanConfig.setPresetName(StringUtils.defaultString(configMap.get(PRESET_NAME)));
         scanConfig.setTeamId(StringUtils.defaultString(configMap.get(TEAM_PATH_ID)));
         scanConfig.setTeamPath(teamName);
-
+      //add SAST scan details if SAST scan is enabled
+        if(enableSAST) {
         if (CUSTOM_CONFIGURATION_CXSAST.equals(configMap.get(CXSAST_SECTION))) {
             scanConfig.setSastFolderExclusions(configMap.get(FOLDER_EXCLUSION));
             scanConfig.setSastFilterPattern(configMap.get(FILTER_PATTERN));
@@ -248,13 +249,14 @@ public class CxConfigHelper {
         }
         scanConfig.setForceScan(resolveBool(configMap,FORCE_SCAN));
         scanConfig.setGeneratePDFReport(resolveBool(configMap, GENERATE_PDF_REPORT));
+    }
         //add AST_SCA or OSA based on what user has selected
         ScannerType scannerType = null;
         if(resolveBool(configMap, ENABLE_DEPENDENCY_SCAN)) {
         	setDependencyScanEnabled(true);
         	String useCustomdependencyScanSettings = configMap.get(CX_USE_CUSTOM_DEPENDENCY_SETTINGS);
     		if(!StringUtils.isEmpty(useCustomdependencyScanSettings) && useCustomdependencyScanSettings.equalsIgnoreCase("true")) {
-    			setUsingGlobalDependencyScan(false);
+    			setUsingGlobalDependencyScan(false);    			
             	scanConfig.setOsaFilterPattern(configMap.get(DEPENDENCY_SCAN_FILTER_PATTERNS));
             	scanConfig.setOsaFolderExclusions(configMap.get(DEPENDENCY_SCAN_FOLDER_EXCLUDE));
             	if(configMap.get(DEPENDENCY_SCAN_TYPE).equalsIgnoreCase(ScannerType.AST_SCA.toString())) {        		
@@ -266,7 +268,7 @@ public class CxConfigHelper {
                     scanConfig.setOsaRunInstall(resolveBool(configMap, OSA_INSTALL_BEFORE_SCAN));
             	}
     		}else {
-    			setUsingGlobalDependencyScan(true);
+    			setUsingGlobalDependencyScan(true);    			
             	scanConfig.setOsaFilterPattern(getAdminConfig(GLOBAL_DEPENDENCY_SCAN_FILTER_PATTERNS));
             	scanConfig.setOsaFolderExclusions(getAdminConfig(GLOBAL_DEPENDENCY_SCAN_FOLDER_EXCLUDE));
             	if(getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE).equalsIgnoreCase(ScannerType.AST_SCA.toString())) {        		
@@ -286,32 +288,38 @@ public class CxConfigHelper {
             }
         }
         scanConfig.setDisableCertificateValidation(true);
-
-        if (CUSTOM_CONFIGURATION_CONTROL.equals(configMap.get(SCAN_CONTROL_SECTION))) {
-            scanConfig.setSynchronous(resolveBool(configMap, IS_SYNCHRONOUS));
-            scanConfig.setEnablePolicyViolations(resolveBool(configMap, POLICY_VIOLATION_ENABLED));
+        boolean isCustomConfSect = CUSTOM_CONFIGURATION_CONTROL.equals(configMap.get(SCAN_CONTROL_SECTION));
+        
+        	if (isCustomConfSect) { 
+        		scanConfig.setSynchronous(resolveBool(configMap, IS_SYNCHRONOUS));
+                scanConfig.setEnablePolicyViolations(resolveBool(configMap, POLICY_VIOLATION_ENABLED));
+        		if(enableSAST) {
             scanConfig.setSastThresholdsEnabled(resolveBool(configMap, THRESHOLDS_ENABLED));
             scanConfig.setSastHighThreshold(resolveInt(configMap.get(HIGH_THRESHOLD), log));
             scanConfig.setSastMediumThreshold(resolveInt(configMap.get(MEDIUM_THRESHOLD), log));
             scanConfig.setSastLowThreshold(resolveInt(configMap.get(LOW_THRESHOLD), log));
+        	}
             scanConfig.setOsaThresholdsEnabled(resolveBool(configMap, OSA_THRESHOLDS_ENABLED));
             scanConfig.setOsaHighThreshold(resolveInt(configMap.get(OSA_HIGH_THRESHOLD), log));
             scanConfig.setOsaMediumThreshold(resolveInt(configMap.get(OSA_MEDIUM_THRESHOLD), log));
-            scanConfig.setOsaLowThreshold(resolveInt(configMap.get(OSA_LOW_THRESHOLD), log));
+            scanConfig.setOsaLowThreshold(resolveInt(configMap.get(OSA_LOW_THRESHOLD), log));            
             setUsingGlobalScanControlSettings(false);
-        } else {
-            scanConfig.setSynchronous(resolveGlobalBool(GLOBAL_IS_SYNCHRONOUS));
-            scanConfig.setEnablePolicyViolations(resolveGlobalBool(GLOBAL_POLICY_VIOLATION_ENABLED));
+        	} 
+        	else {
+        		scanConfig.setSynchronous(resolveGlobalBool(GLOBAL_IS_SYNCHRONOUS));
+                scanConfig.setEnablePolicyViolations(resolveGlobalBool(GLOBAL_POLICY_VIOLATION_ENABLED));
+        		if(enableSAST) {
             scanConfig.setSastThresholdsEnabled(resolveGlobalBool(GLOBAL_THRESHOLDS_ENABLED));
             scanConfig.setSastHighThreshold(resolveInt(getAdminConfig(GLOBAL_HIGH_THRESHOLD), log));
             scanConfig.setSastMediumThreshold(resolveInt(getAdminConfig(GLOBAL_MEDIUM_THRESHOLD), log));
             scanConfig.setSastLowThreshold(resolveInt(getAdminConfig(GLOBAL_LOW_THRESHOLD), log));
+        		}
             scanConfig.setOsaThresholdsEnabled(resolveGlobalBool(GLOBAL_OSA_THRESHOLDS_ENABLED));
             scanConfig.setOsaHighThreshold(resolveInt(getAdminConfig(GLOBAL_OSA_HIGH_THRESHOLD), log));
             scanConfig.setOsaMediumThreshold(resolveInt(getAdminConfig(GLOBAL_OSA_MEDIUM_THRESHOLD), log));
-            scanConfig.setOsaLowThreshold(resolveInt(getAdminConfig(GLOBAL_OSA_LOW_THRESHOLD), log));
-            setUsingGlobalScanControlSettings(true);
-        }
+            scanConfig.setOsaLowThreshold(resolveInt(getAdminConfig(GLOBAL_OSA_LOW_THRESHOLD), log));            
+            setUsingGlobalScanControlSettings(true);        
+      }        
         scanConfig.setDenyProject(resolveGlobalBool(GLOBAL_DENY_PROJECT));
         scanConfig.setHideResults(resolveGlobalBool(GLOBAL_HIDE_RESULTS));
         scanConfig.setDisableCertificateValidation(true);

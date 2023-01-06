@@ -147,4 +147,5 @@ public class CxParam {
     public static final String CONNECTION_FAILED_COMPATIBILITY = "Connection Failed.\n" +
             "Validate the provided login credentials and server URL are correct.\n" +
             "In addition, make sure the installed plugin version is compatible with the CxSAST version according to CxSAST release notes.";
+    public static final String ENABLE_SAST_SCAN = "enableSASTScan";
 }
