@@ -134,7 +134,7 @@
     [/@ui.bambooSection]
 
     [@ww.textarea labelKey="comment.label"  name="comment" rows="3" descriptionKey="comment.description" cssClass="long-field"/]
-
+	[@ui.bambooSection dependsOn="forceScan" showOn="false"]
     [@ww.checkbox labelKey="isIncremental.label" name="isIncremental" descriptionKey="isIncremental.description" toggle='true' /]
     [@ui.bambooSection dependsOn="isIncremental" showOn="true"]
         [@ww.checkbox labelKey="isIntervals.label" name="isIntervals" descriptionKey="isIntervals.description" toggle="true"/]
@@ -142,6 +142,7 @@
             [@ww.select labelKey="intervalBegins.label" name="intervalBegins" list="intervalBeginsList" listKey="key" listValue="value" multiple="false"/]
             [@ww.select labelKey="intervalEnds.label" name="intervalEnds" list="intervalEndsList" listKey="key" listValue="value" multiple="false"/]
         [/@ui.bambooSection]
+    [/@ui.bambooSection]
     [/@ui.bambooSection]
 	[@ui.bambooSection dependsOn="isIncremental" showOn="false"]
 	[@ww.checkbox labelKey="forceScan.label" name="forceScan" descriptionKey="forceScan.description" toggle='true' /]
