@@ -168,7 +168,7 @@ public class CxConfigHelper {
         
         scanConfig.setSourceDir(workDir.getAbsolutePath());
         scanConfig.setReportsDir(workDir);
-        boolean enableSAST = resolveBool(configMap, ENABLE_SAST_SCAN);
+        boolean enableSAST = isSASTEnabled(configMap, ENABLE_SAST_SCAN);
         scanConfig.setSastEnabled(enableSAST);
         scanConfig.setDisableCertificateValidation(true);
         
@@ -600,6 +600,16 @@ public class CxConfigHelper {
 	public void setDependencyScanType(ScannerType dependencyScanType) {
 		this.dependencyScanType = dependencyScanType;
 	}
-    
+	
+	private boolean isSASTEnabled(ConfigurationMap configMap, String value) {
+		Object enableSAST = configMap.get(value);
+	    if(OPTION_TRUE.equals(enableSAST) || enableSAST == null) {
+			return true;
+		}
+		else {
+			return false;
+		}
+    }
+	
        
 }

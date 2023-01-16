@@ -117,7 +117,7 @@
 [/@ui.bambooSection]
 
 [@ui.bambooSection title='Checkmarx Scan CxSAST' cssClass="cx center"]
-[@ww.checkbox labelKey="enableSASTScan.label" name="enableSASTScan" toggle='true' /]
+[@ww.checkbox labelKey="enableSASTScan.label" name="enableSASTScan" descriptionKey="enableSASTScan.description" checked="true" toggle='true' /]
 [@ui.bambooSection dependsOn="enableSASTScan" showOn="true"]
     [@ww.radio id = 'radioGroup' name='cxSastSection' listKey='key' listValue='value' toggle='true' list=configurationModeTypesCxSAST /]
 
