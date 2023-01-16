@@ -23,7 +23,6 @@ public abstract class CxPluginUtils {
         log.info("Bamboo plugin version: " + configBFF.getPluginVersion());
         log.info("Username: " + config.getUsername());
         log.info("Server URL: " + config.getUrl());
-        log.info("is force scan: " + config.getForceScan());
 		
         if (configBFF.isUsingGlobalSASTServer()) {
         	log.info("Using globally defined CxSAST Server settings.");        	
