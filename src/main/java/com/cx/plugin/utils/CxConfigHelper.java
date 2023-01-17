@@ -603,7 +603,7 @@ public class CxConfigHelper {
 	
 	private boolean isSASTEnabled(ConfigurationMap configMap, String value) {
 		Object enableSAST = configMap.get(value);
-	    if(OPTION_TRUE.equals(enableSAST) || enableSAST == null) {
+	    if(enableSAST == null || OPTION_TRUE.equals(enableSAST)) {
 			return true;
 		}
 		else {

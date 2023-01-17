@@ -74,6 +74,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         String projectName = resolveProjectName(context);
         context.put(PROJECT_NAME, projectName);
         context.put(SERVER_URL, DEFAULT_SERVER_URL);
+        context.put(ENABLE_SAST_SCAN, OPTION_TRUE);
         context.put(ENABLE_PROXY,getAdminConfig(GLOBAL_ENABLE_PROXY));
         context.put(GLOBAL_ENABLE_PROXY,getAdminConfig(GLOBAL_ENABLE_PROXY));
         populateCredentialsFieldsForCreate(context);        

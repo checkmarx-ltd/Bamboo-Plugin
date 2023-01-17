@@ -117,7 +117,12 @@
 [/@ui.bambooSection]
 
 [@ui.bambooSection title='Checkmarx Scan CxSAST' cssClass="cx center"]
-[@ww.checkbox labelKey="enableSASTScan.label" name="enableSASTScan" descriptionKey="enableSASTScan.description" checked="true" toggle='true' /]
+[#if (enableSASTScan.attribute)??]
+[@ww.checkbox labelKey="enableSASTScan.label" name="enableSASTScan" descriptionKey="enableSASTScan.description" toggle='true' checked='true'/]
+ [#else]            
+    [@ww.checkbox labelKey="enableSASTScan.label" name="enableSASTScan" descriptionKey="enableSASTScan.description" toggle='true'  /]
+    
+    [/#if]
 [@ui.bambooSection dependsOn="enableSASTScan" showOn="true"]
     [@ww.radio id = 'radioGroup' name='cxSastSection' listKey='key' listValue='value' toggle='true' list=configurationModeTypesCxSAST /]
 
@@ -149,6 +154,8 @@
 
     [@ww.checkbox labelKey="generatePDFReport.label" name="generatePDFReport" toggle='false' descriptionKey='generatePDFReport.description'/]
     [/@ui.bambooSection]
+   
+    
 [/@ui.bambooSection]
 
 
