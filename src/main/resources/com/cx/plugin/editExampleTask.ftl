@@ -241,8 +241,8 @@
 	        [@ww.label labelKey="cxScaPassword.label" type="password" /]
 	        <br/>
 	        [@ww.checkbox labelKey="cxScaResolverEnabled.label" name="globalCxScaResolverEnabled" id="globalCxScaResolverEnabled" toggle='true' disabled="true" /]
-            [@ui.bambooSection title='SCA Resolver' dependsOn='globalCxScaResolverEnabled' showOn='true' cssClass="cx"]
-                [@ww.label labelKey="cxScaResolverPath.label" name="globalCxScaResolverPath"/]
+            [@ui.bambooSection dependsOn='globalCxScaResolverEnabled' showOn='true' cssClass="cx"]
+                [@ww.label labelKey="cxScaResolverPath.label" name="globalCxScaResolverPath" rows="3" cssClass="long-field"/]
                 [@ww.label labelKey="cxScaResolverAddParam.label" name="globalCxScaResolverAddParam" rows="3" cssClass="long-field"/]
             [/@ui.bambooSection]
 		[/@ui.bambooSection]
