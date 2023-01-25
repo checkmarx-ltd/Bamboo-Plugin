@@ -173,7 +173,12 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         context.put(PROJECT_NAME, configMap.get(PROJECT_NAME));
 
         populateCredentialsFieldsForEdit(context, configMap);
+        if(configMap.get(ENABLE_SAST_SCAN) == null) {
+        	context.put(ENABLE_SAST_SCAN, OPTION_TRUE);
+        }
+        else {
         context.put(ENABLE_SAST_SCAN, configMap.get(ENABLE_SAST_SCAN));
+        }
         populateCxSASTFields(context, configMap, false);
         context.put(IS_INCREMENTAL, configMap.get(IS_INCREMENTAL));
         context.put(FORCE_SCAN, configMap.get(FORCE_SCAN));
