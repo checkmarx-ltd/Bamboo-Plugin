@@ -69,6 +69,14 @@
         max-height: 374px;
         min-height: 12px;
     }
+    
+    #panel-editor-config form.aui .autoresizing {
+    max-width: 450px;
+		  width: 93%;
+        max-height: 374px;
+        min-height: 12px;
+        overflow: scroll;
+	}
 
     .aui-button.test-connection {
         margin: 10px 0;
@@ -232,7 +240,7 @@
 	        [@ww.checkbox labelKey="cxScaResolverEnabled.label" name="globalCxScaResolverEnabled" id="globalCxScaResolverEnabled" toggle='true' disabled="true" /]
             [@ui.bambooSection title='SCA Resolver' dependsOn='globalCxScaResolverEnabled' showOn='true' cssClass="cx"]
                 [@ww.label labelKey="cxScaResolverPath.label" name="globalCxScaResolverPath"/]
-                [@ww.label labelKey="cxScaResolverAddParam.label" name="globalCxScaResolverAddParam" rows="3" cssClass="long-field"/]
+                 [@ww.label labelKey="cxScaResolverAddParam.label" name="globalCxScaResolverAddParam" rows="3" cssClass="textarea autoresizing"/]
             [/@ui.bambooSection]
 		[/@ui.bambooSection]
 	[/@ui.bambooSection]
