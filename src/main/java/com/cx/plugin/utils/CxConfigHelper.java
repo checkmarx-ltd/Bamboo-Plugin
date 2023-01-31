@@ -133,6 +133,7 @@ public class CxConfigHelper {
     private boolean effectiveIncrementalScan;
     private static final String scaResolverResultPath = ".cxscaresolver" + File.separator + "sca";
     private static final String scaResolverSastResultPath = ".cxscaresolver" + File.separator + "sast";
+	private static final String SUPPRESS_BENIGN_ERRORS = System.getProperty("suppressBenignErrors");
 
     public boolean isEffectiveIncrementalScan() {
 		return effectiveIncrementalScan;
@@ -193,6 +194,8 @@ public class CxConfigHelper {
 				ProxyConfig proxy = new ProxyConfig();
 				scanConfig.setProxyConfig(proxy);
 			}
+			scanConfig.setScaProxy(true);
+			scanConfig.setScaProxyConfig(proxyConfig);
 		}
 		
         scanConfig.setProjectName(configMap.get(PROJECT_NAME).trim());
@@ -330,6 +333,14 @@ public class CxConfigHelper {
         scanConfig.setDenyProject(resolveGlobalBool(GLOBAL_DENY_PROJECT));
         scanConfig.setHideResults(resolveGlobalBool(GLOBAL_HIDE_RESULTS));
         scanConfig.setDisableCertificateValidation(true);
+      //Ignore errors that can be suppressed for ex. duplicate scan,source folder is empty, no files to zip.
+        String suppressBenignErrors = System.getProperty("suppressBenignErrors");
+        if(suppressBenignErrors != null && Boolean.parseBoolean(suppressBenignErrors))
+        	scanConfig.setIgnoreBenignErrors(true);
+
+        else
+
+        	scanConfig.setIgnoreBenignErrors(false);
         return scanConfig;
     }
     
