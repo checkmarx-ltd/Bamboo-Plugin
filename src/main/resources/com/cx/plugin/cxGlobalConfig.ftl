@@ -131,6 +131,12 @@
         [@ww.password labelKey="cxScaGlobalPassword.label" name="globalcxScaPss" showPassword='true' /]
         <button type="button" class="aui-button test-cxsca-connection" id="g_test-cxsca-connection" onclick="connectToScaServer()">Connect to Server</button>
 		<div id="gtestScaConnectionMessage" class="test-cxsca-connection-message"></div>
+        <br/>
+		[@ww.checkbox labelKey="cxScaResolverEnabled.label" name="globalCxScaResolverEnabled" id="globalCxScaResolverEnabled" toggle='true' /]
+		[@ui.bambooSection cssClass="cx" dependsOn="globalCxScaResolverEnabled" showOn="true"]
+			[@ww.textfield labelKey="cxScaResolverPath.label" name="globalCxScaResolverPath" id="globalCxScaResolverPath" descriptionKey="cxScaResolverPath.description" required='true'/]
+			[@ww.textarea labelKey="cxScaResolverAddParam.label" name="globalCxScaResolverAddParam" id="globalCxScaResolverAddParam" descriptionKey="cxScaResolverAddParam.description" rows="3" cssClass="long-field"/]
+		[/@ui.bambooSection]
 		[/@ui.bambooSection]
 	[/@ui.bambooSection]
 [/@ui.bambooSection]

@@ -60,6 +60,7 @@ import static com.cx.plugin.utils.CxParam.HIGH_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.INTERVAL_BEGINS;
 import static com.cx.plugin.utils.CxParam.INTERVAL_ENDS;
 import static com.cx.plugin.utils.CxParam.IS_INCREMENTAL;
+import static com.cx.plugin.utils.CxParam.FORCE_SCAN;
 import static com.cx.plugin.utils.CxParam.IS_INTERVALS;
 import static com.cx.plugin.utils.CxParam.IS_SYNCHRONOUS;
 import static com.cx.plugin.utils.CxParam.LOW_THRESHOLD;
@@ -84,6 +85,7 @@ import static com.cx.plugin.utils.CxParam.TEAM_PATH_ID;
 import static com.cx.plugin.utils.CxParam.TEAM_PATH_NAME;
 import static com.cx.plugin.utils.CxParam.THRESHOLDS_ENABLED;
 import static com.cx.plugin.utils.CxParam.USER_NAME;
+import static com.cx.plugin.utils.CxParam.ENABLE_SAST_SCAN;
 import static com.cx.plugin.utils.CxPluginUtils.decrypt;
 import static com.cx.plugin.utils.CxPluginUtils.resolveInt;
 
@@ -93,11 +95,7 @@ import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -113,6 +111,7 @@ import com.cx.restclient.configuration.CxScanConfig;
 import com.cx.restclient.dto.ProxyConfig;
 import com.cx.restclient.dto.ScannerType;
 import com.cx.restclient.exception.CxClientException;
+import com.cx.restclient.sca.utils.CxSCAResolverUtils;
 
 /**
  * Created by Galn on 25/10/2017.
@@ -132,6 +131,9 @@ public class CxConfigHelper {
     private boolean dependencyScanEnabled;
     private ScannerType dependencyScanType;
     private boolean effectiveIncrementalScan;
+    private static final String scaResolverResultPath = ".cxscaresolver" + File.separator + "sca";
+    private static final String scaResolverSastResultPath = ".cxscaresolver" + File.separator + "sast";
+	private static final String SUPPRESS_BENIGN_ERRORS = System.getProperty("suppressBenignErrors");
 
     public boolean isEffectiveIncrementalScan() {
 		return effectiveIncrementalScan;
@@ -167,12 +169,12 @@ public class CxConfigHelper {
         
         scanConfig.setSourceDir(workDir.getAbsolutePath());
         scanConfig.setReportsDir(workDir);
-        
-        scanConfig.setSastEnabled(true);
+        boolean enableSAST = isSASTEnabled(configMap, ENABLE_SAST_SCAN);
+        scanConfig.setSastEnabled(enableSAST);
         scanConfig.setDisableCertificateValidation(true);
-
+        
         if (CUSTOM_CONFIGURATION_SERVER.equals(configMap.get(SERVER_CREDENTIALS_SECTION))) {
-            scanConfig.setUrl(configMap.get(SERVER_URL));
+            scanConfig.setUrl(configMap.get(SERVER_URL));            
             scanConfig.setUsername(configMap.get(USER_NAME));
             scanConfig.setPassword(decrypt(configMap.get(PASSWORD)));
             scanConfig.setProxy(resolveBool(configMap, ENABLE_PROXY));
@@ -183,8 +185,7 @@ public class CxConfigHelper {
             scanConfig.setPassword(decrypt(getAdminConfig(GLOBAL_PWD)));            
             scanConfig.setProxy(resolveGlobalBool(GLOBAL_ENABLE_PROXY));
             setUsingGlobalSASTServer(true);
-        }
-		
+        }		
 		if (scanConfig.isProxy()) {
 			ProxyConfig proxyConfig = HttpHelper.getProxyConfig();
 			if (proxyConfig != null) {
@@ -193,6 +194,8 @@ public class CxConfigHelper {
 				ProxyConfig proxy = new ProxyConfig();
 				scanConfig.setProxyConfig(proxy);
 			}
+			scanConfig.setScaProxy(true);
+			scanConfig.setScaProxyConfig(proxyConfig);
 		}
 		
         scanConfig.setProjectName(configMap.get(PROJECT_NAME).trim());
@@ -210,7 +213,8 @@ public class CxConfigHelper {
         scanConfig.setPresetName(StringUtils.defaultString(configMap.get(PRESET_NAME)));
         scanConfig.setTeamId(StringUtils.defaultString(configMap.get(TEAM_PATH_ID)));
         scanConfig.setTeamPath(teamName);
-
+      //add SAST scan details if SAST scan is enabled
+        if(enableSAST) {
         if (CUSTOM_CONFIGURATION_CXSAST.equals(configMap.get(CXSAST_SECTION))) {
             scanConfig.setSastFolderExclusions(configMap.get(FOLDER_EXCLUSION));
             scanConfig.setSastFilterPattern(configMap.get(FILTER_PATTERN));
@@ -242,31 +246,44 @@ public class CxConfigHelper {
                 }
             }
         }
+        if(resolveBool(configMap, FORCE_SCAN) && resolveBool(configMap, IS_INCREMENTAL)) {
+        	throw new TaskException("Force scan and incremental scan can not be configured in pair for SAST. Configure either Incremental or Force scan option.");
+        }
+        scanConfig.setForceScan(resolveBool(configMap,FORCE_SCAN));
         scanConfig.setGeneratePDFReport(resolveBool(configMap, GENERATE_PDF_REPORT));
+    }
         //add AST_SCA or OSA based on what user has selected
         ScannerType scannerType = null;
         if(resolveBool(configMap, ENABLE_DEPENDENCY_SCAN)) {
         	setDependencyScanEnabled(true);
         	String useCustomdependencyScanSettings = configMap.get(CX_USE_CUSTOM_DEPENDENCY_SETTINGS);
     		if(!StringUtils.isEmpty(useCustomdependencyScanSettings) && useCustomdependencyScanSettings.equalsIgnoreCase("true")) {
-    			setUsingGlobalDependencyScan(false);
+    			setUsingGlobalDependencyScan(false);    			
             	scanConfig.setOsaFilterPattern(configMap.get(DEPENDENCY_SCAN_FILTER_PATTERNS));
             	scanConfig.setOsaFolderExclusions(configMap.get(DEPENDENCY_SCAN_FOLDER_EXCLUDE));
             	if(configMap.get(DEPENDENCY_SCAN_TYPE).equalsIgnoreCase(ScannerType.AST_SCA.toString())) {        		
             		scannerType = ScannerType.AST_SCA;
-            		scanConfig.setAstScaConfig(getScaConfig(configMap, false));        		
+                    try {
+                        scanConfig.setAstScaConfig(getScaConfig(configMap, workDir, false));
+                    } catch(ParseException e) {
+                        throw new TaskException("Could not parse SCA additional arguments.", e);
+                    }
             	}else {
             		scannerType = ScannerType.OSA;
                     scanConfig.setOsaArchiveIncludePatterns(configMap.get(OSA_ARCHIVE_INCLUDE_PATTERNS));
                     scanConfig.setOsaRunInstall(resolveBool(configMap, OSA_INSTALL_BEFORE_SCAN));
             	}
     		}else {
-    			setUsingGlobalDependencyScan(true);
+    			setUsingGlobalDependencyScan(true);    			
             	scanConfig.setOsaFilterPattern(getAdminConfig(GLOBAL_DEPENDENCY_SCAN_FILTER_PATTERNS));
             	scanConfig.setOsaFolderExclusions(getAdminConfig(GLOBAL_DEPENDENCY_SCAN_FOLDER_EXCLUDE));
             	if(getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE).equalsIgnoreCase(ScannerType.AST_SCA.toString())) {        		
             		scannerType = ScannerType.AST_SCA;
-            		scanConfig.setAstScaConfig(getScaConfig(configMap, true));        		
+                    try {
+                        scanConfig.setAstScaConfig(getScaConfig(configMap, workDir, true));
+                    } catch(ParseException e) {
+                        throw new TaskException("Could not parse SCA additional arguments.", e);
+                    }
             	}else {
             		scannerType = ScannerType.OSA;
                     scanConfig.setOsaArchiveIncludePatterns(getAdminConfig(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS));
@@ -281,35 +298,49 @@ public class CxConfigHelper {
             }
         }
         scanConfig.setDisableCertificateValidation(true);
-
-        if (CUSTOM_CONFIGURATION_CONTROL.equals(configMap.get(SCAN_CONTROL_SECTION))) {
-            scanConfig.setSynchronous(resolveBool(configMap, IS_SYNCHRONOUS));
-            scanConfig.setEnablePolicyViolations(resolveBool(configMap, POLICY_VIOLATION_ENABLED));
+        boolean isCustomConfSect = CUSTOM_CONFIGURATION_CONTROL.equals(configMap.get(SCAN_CONTROL_SECTION));
+        
+        	if (isCustomConfSect) { 
+        		scanConfig.setSynchronous(resolveBool(configMap, IS_SYNCHRONOUS));
+                scanConfig.setEnablePolicyViolations(resolveBool(configMap, POLICY_VIOLATION_ENABLED));
+        		if(enableSAST) {
             scanConfig.setSastThresholdsEnabled(resolveBool(configMap, THRESHOLDS_ENABLED));
             scanConfig.setSastHighThreshold(resolveInt(configMap.get(HIGH_THRESHOLD), log));
             scanConfig.setSastMediumThreshold(resolveInt(configMap.get(MEDIUM_THRESHOLD), log));
             scanConfig.setSastLowThreshold(resolveInt(configMap.get(LOW_THRESHOLD), log));
+        	}
             scanConfig.setOsaThresholdsEnabled(resolveBool(configMap, OSA_THRESHOLDS_ENABLED));
             scanConfig.setOsaHighThreshold(resolveInt(configMap.get(OSA_HIGH_THRESHOLD), log));
             scanConfig.setOsaMediumThreshold(resolveInt(configMap.get(OSA_MEDIUM_THRESHOLD), log));
-            scanConfig.setOsaLowThreshold(resolveInt(configMap.get(OSA_LOW_THRESHOLD), log));
+            scanConfig.setOsaLowThreshold(resolveInt(configMap.get(OSA_LOW_THRESHOLD), log));            
             setUsingGlobalScanControlSettings(false);
-        } else {
-            scanConfig.setSynchronous(resolveGlobalBool(GLOBAL_IS_SYNCHRONOUS));
-            scanConfig.setEnablePolicyViolations(resolveGlobalBool(GLOBAL_POLICY_VIOLATION_ENABLED));
+        	} 
+        	else {
+        		scanConfig.setSynchronous(resolveGlobalBool(GLOBAL_IS_SYNCHRONOUS));
+                scanConfig.setEnablePolicyViolations(resolveGlobalBool(GLOBAL_POLICY_VIOLATION_ENABLED));
+        		if(enableSAST) {
             scanConfig.setSastThresholdsEnabled(resolveGlobalBool(GLOBAL_THRESHOLDS_ENABLED));
             scanConfig.setSastHighThreshold(resolveInt(getAdminConfig(GLOBAL_HIGH_THRESHOLD), log));
             scanConfig.setSastMediumThreshold(resolveInt(getAdminConfig(GLOBAL_MEDIUM_THRESHOLD), log));
             scanConfig.setSastLowThreshold(resolveInt(getAdminConfig(GLOBAL_LOW_THRESHOLD), log));
+        		}
             scanConfig.setOsaThresholdsEnabled(resolveGlobalBool(GLOBAL_OSA_THRESHOLDS_ENABLED));
             scanConfig.setOsaHighThreshold(resolveInt(getAdminConfig(GLOBAL_OSA_HIGH_THRESHOLD), log));
             scanConfig.setOsaMediumThreshold(resolveInt(getAdminConfig(GLOBAL_OSA_MEDIUM_THRESHOLD), log));
-            scanConfig.setOsaLowThreshold(resolveInt(getAdminConfig(GLOBAL_OSA_LOW_THRESHOLD), log));
-            setUsingGlobalScanControlSettings(true);
-        }
+            scanConfig.setOsaLowThreshold(resolveInt(getAdminConfig(GLOBAL_OSA_LOW_THRESHOLD), log));            
+            setUsingGlobalScanControlSettings(true);        
+      }        
         scanConfig.setDenyProject(resolveGlobalBool(GLOBAL_DENY_PROJECT));
         scanConfig.setHideResults(resolveGlobalBool(GLOBAL_HIDE_RESULTS));
         scanConfig.setDisableCertificateValidation(true);
+      //Ignore errors that can be suppressed for ex. duplicate scan,source folder is empty, no files to zip.
+        String suppressBenignErrors = System.getProperty("suppressBenignErrors");
+        if(suppressBenignErrors != null && Boolean.parseBoolean(suppressBenignErrors))
+        	scanConfig.setIgnoreBenignErrors(true);
+
+        else
+
+        	scanConfig.setIgnoreBenignErrors(false);
         return scanConfig;
     }
     
@@ -416,7 +447,7 @@ public class CxConfigHelper {
         return StringUtils.defaultString(adminConfig.getSystemProperty(key));
     }
 
-    private AstScaConfig getScaConfig(ConfigurationMap configMap, boolean fromGlobal) {
+    private AstScaConfig getScaConfig(ConfigurationMap configMap, File workDir, boolean fromGlobal) throws ParseException {
 		AstScaConfig result = new AstScaConfig();
 		
 		if(fromGlobal) {
@@ -426,12 +457,10 @@ public class CxConfigHelper {
 			result.setTenant(getAdminConfig(GLOBAL_CXSCA_ACCOUNT_NAME));
 			result.setUsername(getAdminConfig(GLOBAL_CXSCA_USERNAME));
 			result.setPassword(decrypt(getAdminConfig(GLOBAL_CXSCA_PWD)));
-			if(OPTION_TRUE.equalsIgnoreCase(configMap.get(CXSCA_RESOLVER_ENABLED_GLOBAL))) {
-	            validateScaResolverParams(configMap.get(CXSCA_RESOLVER_ADD_PARAM_GLOBAL));
-	            result.setPathToScaResolver(configMap.get(CXSCA_RESOLVER_PATH_GLOBAL));
-	    		result.setScaResolverAddParameters(configMap.get(CXSCA_RESOLVER_ADD_PARAM_GLOBAL));
+			if(OPTION_TRUE.equalsIgnoreCase(getAdminConfig(CXSCA_RESOLVER_ENABLED_GLOBAL))) {
+	            result.setPathToScaResolver(getAdminConfig(CXSCA_RESOLVER_PATH_GLOBAL));
+                result.setScaResolverAddParameters(generateScaResolverParams(configMap, workDir, true));
 	    		result.setEnableScaResolver(true);
-	    		
 			}
 			
 			
@@ -444,11 +473,9 @@ public class CxConfigHelper {
 			result.setPassword(decrypt(configMap.get(CXSCA_PWD)));
 			
 			if(OPTION_TRUE.equalsIgnoreCase(configMap.get(CXSCA_RESOLVER_ENABLED))) {
-	            validateScaResolverParams(configMap.get(CXSCA_RESOLVER_ADD_PARAM));
 	            result.setPathToScaResolver(configMap.get(CXSCA_RESOLVER_PATH));
-	    		result.setScaResolverAddParameters(configMap.get(CXSCA_RESOLVER_ADD_PARAM));
+                result.setScaResolverAddParameters(generateScaResolverParams(configMap, workDir, false));
 	    		result.setEnableScaResolver(true);
-	    		
 			}
 					
 			
@@ -456,32 +483,38 @@ public class CxConfigHelper {
 		
 		return result;
     }
-    
 
-    private static void validateScaResolverParams(String additionalParams) {
-
-        String[] arguments = additionalParams.split(" ");
+    private String generateScaResolverParams(ConfigurationMap configMap, File workDir, boolean fromGlobal)
+            throws ParseException {
         Map<String, String> params = new HashMap<>();
+        /* Mandatory Parameters */
+        params.put("--resolver-result-path", workDir.getAbsolutePath() + File.separator + scaResolverResultPath);
+        params.put("--scan-path", workDir.getAbsolutePath());
+        params.put("--project-name", configMap.get(PROJECT_NAME).trim());
+        /* CxSAST Parameters */
+        params.put("--sast-result-path", workDir.getAbsolutePath() + File.separator + scaResolverSastResultPath);
+        params.put("--cxserver", fromGlobal ? getAdminConfig(GLOBAL_SERVER_URL) : configMap.get(SERVER_URL));
+        params.put("--cxuser", fromGlobal ? getAdminConfig(GLOBAL_USER_NAME) : configMap.get(USER_NAME));
+        params.put("--cxpassword", decrypt(fromGlobal ? getAdminConfig(GLOBAL_PWD) : configMap.get(PASSWORD)));
+        params.put("--cxprojectname", configMap.get(PROJECT_NAME).trim());
+        /* User additional arguments */
+        params.putAll(
+                CxSCAResolverUtils.parseArguments(
+                        fromGlobal ? getAdminConfig(CXSCA_RESOLVER_ADD_PARAM_GLOBAL) : configMap.get(CXSCA_RESOLVER_ADD_PARAM)
+                )
+        );
 
-        for (int i = 0; i <  arguments.length ; i++) {
-            if(arguments[i].startsWith("-") && (i+1 != arguments.length && !arguments[i+1].startsWith("-")))
-                params.put(arguments[i], arguments[i+1]);
-            else
-                params.put(arguments[i], "");
+        String resolved= "";
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            if (entry.getValue() != null) {
+                resolved+=" "+entry.getKey();
+                resolved+=" "+entry.getValue();
+            } else {
+                resolved+=" "+entry.getKey();
+            }
         }
 
-        String dirPath = params.get("-s");
-        if(StringUtils.isEmpty(dirPath))
-            throw new CxClientException("Source code path (-s <source code path>) is not provided.");
-
-        String projectName = params.get("-n");
-        if(StringUtils.isEmpty(projectName))
-            throw new CxClientException("Project name parameter (-n <project name>) must be provided to ScaResolver.");
-        
-        String resultParam = params.get("-r");
-        if(StringUtils.isEmpty(resultParam))
-            throw new CxClientException("Result path parameter (-r <project name>) must be provided to ScaResolver.");
-
+        return resolved;
     }
 
     private static void fileExists(String file) {
@@ -578,6 +611,16 @@ public class CxConfigHelper {
 	public void setDependencyScanType(ScannerType dependencyScanType) {
 		this.dependencyScanType = dependencyScanType;
 	}
-    
+	
+	private boolean isSASTEnabled(ConfigurationMap configMap, String value) {
+		Object enableSAST = configMap.get(value);
+	    if(enableSAST == null || OPTION_TRUE.equals(enableSAST)) {
+			return true;
+		}
+		else {
+			return false;
+		}
+    }
+	
        
 }

@@ -29,6 +29,7 @@ public class CxParam {
     public static final String SCAN_TIMEOUT_IN_MINUTES = "scanTimeoutInMinutes";
     public static final String COMMENT = "comment";
     public static final String IS_INCREMENTAL = "isIncremental";
+    public static final String FORCE_SCAN = "forceScan";
     public static final String IS_INTERVALS = "isIntervals";
     public static final String FORCE_FULL_SCAN = "forceFullScan";
     public static final String INTERVAL_BEGINS = "intervalBegins";
@@ -146,4 +147,5 @@ public class CxParam {
     public static final String CONNECTION_FAILED_COMPATIBILITY = "Connection Failed.\n" +
             "Validate the provided login credentials and server URL are correct.\n" +
             "In addition, make sure the installed plugin version is compatible with the CxSAST version according to CxSAST release notes.";
+    public static final String ENABLE_SAST_SCAN = "enableSASTScan";
 }

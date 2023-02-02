@@ -5,7 +5,7 @@
     <groupId>com.cx</groupId>
     <artifactId>checkmarx-bamboo-plugin</artifactId>
 
-    <version>2022.2.6</version>
+    <version>2023.1.4</version>
 
     <organization>
         <name>Checkmarx LTD</name>
@@ -67,6 +67,7 @@
                 <version>3.7.0.1746</version>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.7.0</version>
                 <configuration>
@@ -88,7 +89,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     
-        <common.client.version>2022.2.11</common.client.version>
+        <common.client.version>2023.1.7</common.client.version>
 
          <slf4jVersion>1.7.16</slf4jVersion>
 
@@ -281,7 +282,7 @@
          <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
-            <version>1.28</version>
+            <version>1.33</version>
          </dependency>
          <dependency>
               <groupId>org.quartz-scheduler</groupId>
@@ -354,7 +355,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.12.3	</version>
+            <version>2.14.1	</version>
         </dependency>
 	    <dependency>
 			<groupId>com.sun.xml.parsers</groupId>
@@ -375,7 +376,7 @@
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk14</artifactId>
-            <version>1.68</version>
+            <version>1.72</version>
         </dependency>
         <dependency>
             <groupId>xalan</groupId>
@@ -420,7 +421,11 @@
             		<artifactId>jaxb-runtime</artifactId>
             		 <version>2.3.1</version>
         		</dependency>
-        		
+        		<dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>3.0.1</version>
+        </dependency>
         		
         <dependency>
             <groupId>com.checkmarx</groupId>
@@ -497,7 +502,7 @@
         <dependency>
              <groupId>io.netty</groupId>
              <artifactId>netty-codec-http</artifactId>
-             <version>4.1.60.Final</version>
+             <version>4.1.86.Final</version>
         </dependency>
         <dependency>
              <groupId>io.netty</groupId>
@@ -518,7 +523,7 @@
          <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.2.2</version>
+            <version>2.10.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

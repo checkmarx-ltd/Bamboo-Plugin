@@ -74,14 +74,15 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         String projectName = resolveProjectName(context);
         context.put(PROJECT_NAME, projectName);
         context.put(SERVER_URL, DEFAULT_SERVER_URL);
+        context.put(ENABLE_SAST_SCAN, OPTION_TRUE);
         context.put(ENABLE_PROXY,getAdminConfig(GLOBAL_ENABLE_PROXY));
         context.put(GLOBAL_ENABLE_PROXY,getAdminConfig(GLOBAL_ENABLE_PROXY));
-        populateCredentialsFieldsForCreate(context);
-
+        populateCredentialsFieldsForCreate(context);        
         populateCxSASTFields(context, null, true);
         //context.put(ENABLE_PROXY, OPTION_FALSE);
         context.put(IS_INCREMENTAL, OPTION_FALSE);
         context.put(IS_INTERVALS, OPTION_FALSE);
+        context.put(FORCE_SCAN, OPTION_FALSE);
         populateIntervals(context);
         context.put(INTERVAL_BEGINS, DEFAULT_INTERVAL_BEGINS);
         context.put(INTERVAL_ENDS, DEFAULT_INTERVAL_ENDS);
@@ -172,9 +173,15 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         context.put(PROJECT_NAME, configMap.get(PROJECT_NAME));
 
         populateCredentialsFieldsForEdit(context, configMap);
-
+        if(configMap.get(ENABLE_SAST_SCAN) == null) {
+        	context.put(ENABLE_SAST_SCAN, OPTION_TRUE);
+        }
+        else {
+        context.put(ENABLE_SAST_SCAN, configMap.get(ENABLE_SAST_SCAN));
+        }
         populateCxSASTFields(context, configMap, false);
         context.put(IS_INCREMENTAL, configMap.get(IS_INCREMENTAL));
+        context.put(FORCE_SCAN, configMap.get(FORCE_SCAN));
         context.put(ENABLE_PROXY, configMap.get(ENABLE_PROXY));
         final String isIntervals = configMap.get(IS_INTERVALS);
         context.put(IS_INTERVALS, isIntervals);
@@ -314,7 +321,10 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 		context.put(GLOBAL_CXSCA_ACCOUNT_NAME,getAdminConfig(GLOBAL_CXSCA_ACCOUNT_NAME));
 		context.put(GLOBAL_CXSCA_USERNAME,getAdminConfig(GLOBAL_CXSCA_USERNAME));
 		context.put(GLOBAL_CXSCA_PWD,getAdminConfig(GLOBAL_CXSCA_PWD));
-		
+
+        context.put(CXSCA_RESOLVER_ENABLED_GLOBAL,getAdminConfig(CXSCA_RESOLVER_ENABLED_GLOBAL));
+        context.put(CXSCA_RESOLVER_PATH_GLOBAL,getAdminConfig(CXSCA_RESOLVER_PATH_GLOBAL));
+        context.put(CXSCA_RESOLVER_ADD_PARAM_GLOBAL,getAdminConfig(CXSCA_RESOLVER_ADD_PARAM_GLOBAL));
 
         context.put(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS, getAdminConfig(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS));
         context.put(GLOBAL_OSA_INSTALL_BEFORE_SCAN, getAdminConfig(GLOBAL_OSA_INSTALL_BEFORE_SCAN));
@@ -326,8 +336,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         String cxUser;
         String cxPass;
         String cxProxyEnabled;
-        String configType = configMap.get(SERVER_CREDENTIALS_SECTION);
-
+        String configType = configMap.get(SERVER_CREDENTIALS_SECTION);        
         if ((GLOBAL_CONFIGURATION_SERVER.equals(configType))) {
             cxServerUrl = getAdminConfig(GLOBAL_SERVER_URL);
             cxUser = getAdminConfig(GLOBAL_USER_NAME);
@@ -339,7 +348,8 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
             context.put(PASSWORD, configMap.get(GLOBAL_PWD));
             context.put(ENABLE_PROXY, configMap.get(GLOBAL_ENABLE_PROXY));
 
-        } else {
+        } else {        	
+        	context.put(ENABLE_SAST_SCAN, configMap.get(ENABLE_SAST_SCAN));
             cxServerUrl = configMap.get(SERVER_URL);
             cxUser = configMap.get(USER_NAME);
             cxPass = configMap.get(PASSWORD);
@@ -434,7 +444,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 
         Map<String, String> config = super.generateTaskConfigMap(params, previousTaskDefinition);
         config = generateCredentialsFields(params, config);
-
+        config.put(ENABLE_SAST_SCAN, params.getString(ENABLE_SAST_SCAN));
         config.put(PROJECT_NAME, getDefaultString(params, PROJECT_NAME).trim());
         config.put(GENERATE_PDF_REPORT, params.getString(GENERATE_PDF_REPORT));
         config.put(ENABLE_PROXY,params.getString(ENABLE_PROXY));
@@ -481,6 +491,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         config.put(POLICY_VIOLATION_ENABLED, params.getString(POLICY_VIOLATION_ENABLED));
 
         config.put(IS_INCREMENTAL, params.getString(IS_INCREMENTAL));
+        config.put(FORCE_SCAN, params.getString(FORCE_SCAN));
         config.put(IS_INTERVALS, params.getString(IS_INTERVALS));
         config.put(INTERVAL_BEGINS, getDefaultString(params, INTERVAL_BEGINS));
         config.put(INTERVAL_ENDS, getDefaultString(params, INTERVAL_ENDS));
@@ -550,9 +561,9 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 			
 			config.put(CXSCA_USERNAME,getAdminConfig(GLOBAL_CXSCA_USERNAME).trim());
 			config.put(CXSCA_PWD,getAdminConfig(GLOBAL_CXSCA_PWD).trim());
-			config.put(CXSCA_RESOLVER_ENABLED_GLOBAL,getDefaultString(params, CXSCA_RESOLVER_ENABLED_GLOBAL).trim());
-			config.put(CXSCA_RESOLVER_PATH_GLOBAL,getDefaultString(params, CXSCA_RESOLVER_PATH_GLOBAL).trim());
-			config.put(CXSCA_RESOLVER_ADD_PARAM_GLOBAL,getDefaultString(params, CXSCA_RESOLVER_ADD_PARAM_GLOBAL).trim());
+			config.put(CXSCA_RESOLVER_ENABLED_GLOBAL,getAdminConfig(CXSCA_RESOLVER_ENABLED_GLOBAL).trim());
+			config.put(CXSCA_RESOLVER_PATH_GLOBAL,getAdminConfig(CXSCA_RESOLVER_PATH_GLOBAL).trim());
+			config.put(CXSCA_RESOLVER_ADD_PARAM_GLOBAL,getAdminConfig(CXSCA_RESOLVER_ADD_PARAM_GLOBAL).trim());
 			
 		}	
 		
@@ -560,7 +571,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     }
     
     private Map<String, String> generateCxSASTFields(@NotNull final ActionParametersMap params, Map<String, String> config) {
-
+    	config.put(ENABLE_SAST_SCAN, getDefaultString(params, ENABLE_SAST_SCAN).trim());
         final String configType = getDefaultString(params, CXSAST_SECTION);
         config.put(CXSAST_SECTION, configType);
         config.put(FOLDER_EXCLUSION, getDefaultString(params, FOLDER_EXCLUSION).trim());
@@ -651,25 +662,28 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     @Override
     public void validate(@NotNull final ActionParametersMap params, @NotNull final ErrorCollection errorCollection) {
         super.validate(params, errorCollection);
+        if (params.getBoolean(IS_INCREMENTAL) && params.getBoolean(FORCE_SCAN)) {
+        	errorCollection.addError(FORCE_SCAN, ((ConfigureBuildTasks) errorCollection).getText("errorForceIncrementalScan.equals"));
+        	errorCollection.addError(IS_INCREMENTAL, ((ConfigureBuildTasks) errorCollection).getText("errorForceIncrementalScan.equals"));
+        }
         String useSpecific = params.getString(SERVER_CREDENTIALS_SECTION);
         boolean scaResolverEnabled =  params.getBoolean(CXSCA_RESOLVER_ENABLED);
         boolean scaResolverEnabledGlobal = params.getBoolean(CXSCA_RESOLVER_ENABLED_GLOBAL);
         boolean useGlobalSettings = params.getBoolean(CX_USE_CUSTOM_DEPENDENCY_SETTINGS);
-        boolean enableDependancyScan = params.getBoolean(ENABLE_DEPENDENCY_SCAN);
+        boolean enableDependancyScan = params.getBoolean(ENABLE_DEPENDENCY_SCAN);        
         if (CUSTOM_CONFIGURATION_SERVER.equals(useSpecific)) {
             validateNotEmpty(params, errorCollection, USER_NAME);
             validateNotEmpty(params, errorCollection, PASSWORD);
             validateNotEmpty(params, errorCollection, SERVER_URL);
             validateUrl(params, errorCollection, SERVER_URL);
         }
+    
         validateNotEmpty(params, errorCollection, PROJECT_NAME);
         if(scaResolverEnabled && useGlobalSettings && enableDependancyScan){
-        validateNotEmpty(params, errorCollection, CXSCA_RESOLVER_PATH);
-        validateNotEmpty(params, errorCollection, CXSCA_RESOLVER_ADD_PARAM);
+            validateNotEmpty(params, errorCollection, CXSCA_RESOLVER_PATH);
         }
         if(scaResolverEnabledGlobal && !useGlobalSettings && enableDependancyScan){
             validateNotEmpty(params, errorCollection, CXSCA_RESOLVER_PATH_GLOBAL);
-            validateNotEmpty(params, errorCollection, CXSCA_RESOLVER_ADD_PARAM_GLOBAL);
         }
         containsIllegals(params, errorCollection, PROJECT_NAME);
         validateProjectNameLength(params, errorCollection, PROJECT_NAME);
@@ -693,10 +707,10 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
             validateNotNegative(params, errorCollection, OSA_MEDIUM_THRESHOLD);
             validateNotNegative(params, errorCollection, OSA_LOW_THRESHOLD);
         }
-
         if (errorCollection.hasAnyErrors()) {
             errorCollection.addError(ERROR_OCCURRED, ERROR_OCCURRED_MESSAGE);
         }
+        
     }
 
     private void validateNotEmpty(@NotNull ActionParametersMap params, @NotNull final ErrorCollection errorCollection, @NotNull String key) {

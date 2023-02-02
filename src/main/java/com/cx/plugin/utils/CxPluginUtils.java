@@ -23,6 +23,7 @@ public abstract class CxPluginUtils {
         log.info("Bamboo plugin version: " + configBFF.getPluginVersion());
         log.info("Username: " + config.getUsername());
         log.info("Server URL: " + config.getUrl());
+		
         if (configBFF.isUsingGlobalSASTServer()) {
         	log.info("Using globally defined CxSAST Server settings.");        	
         }else{
@@ -73,8 +74,8 @@ public abstract class CxPluginUtils {
         log.info("Scan timeout in minutes: " + (config.getSastScanTimeoutInMinutes() <= 0 ? "" : config.getSastScanTimeoutInMinutes()));
         log.info("Full team path: " + config.getTeamPath());
         log.info("Is synchronous scan: " + config.getSynchronous());
-        if (config.isSastEnabled()) {
-            log.info("SAST scan enabled: "+config.isSastEnabled());
+        log.info("SAST scan enabled: "+config.isSastEnabled());
+        if (config.isSastEnabled()) {            
             log.info("Preset id: " + config.getPresetId());
             log.info("Preset: " + config.getPresetName());
             log.info("SAST folder exclusions: " + config.getSastFolderExclusions());
@@ -82,6 +83,7 @@ public abstract class CxPluginUtils {
             log.info("SAST timeout: " + config.getSastScanTimeoutInMinutes());
             log.info("SAST scan comment: " + config.getScanComment());
             log.info("Is incremental scan(Effective): " + configBFF.isEffectiveIncrementalScan());
+            log.info("is force scan: " + config.getForceScan());
             log.info("Is generate full XML report: " + config.getGenerateXmlReport());
             log.info("Is generate PDF report: " + config.getGeneratePDFReport());
             log.info("Policy violations enabled: " + config.getEnablePolicyViolations());

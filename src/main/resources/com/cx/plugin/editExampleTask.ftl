@@ -69,6 +69,13 @@
         max-height: 374px;
         min-height: 12px;
     }
+    #panel-editor-config form.aui .autoresizing {
+    max-width: 450px;
+		  width: 93%;
+        max-height: 374px;
+        min-height: 12px;
+        overflow: scroll;
+	}
 
     .aui-button.test-connection {
         margin: 10px 0;
@@ -98,7 +105,6 @@
     <button type="button" class="aui-button test-connection" id="test_connection">Connect to Server</button>
     <div id="testConnectionMessage" class="test-connection-message"></div>
 
-
     [/@ui.bambooSection]
     [@ui.bambooSection dependsOn='serverCredentialsSection' showOn='globalConfigurationServer']
         [@ww.label labelKey="serverUrl.label"  id="globalServerUrl" name="globalServerUrl"/]
@@ -109,15 +115,22 @@
         [#else]
         	[@ww.checkbox labelKey="enableProxy.label" name="globalEnableProxy" descriptionKey="enableProxy.description" toggle='true' disabled="true" /]
          [/#if]
-    [/@ui.bambooSection]
+             [/@ui.bambooSection]
 
     [@ww.textfield labelKey="projectName.label" name="projectName" required='true' descriptionKey='projectName.description' /]
     [@ww.select labelKey="preset.label" name="presetId" id="presetListId" list="presetList" listKey="key" listValue="value" multiple="false"  cssClass="long-field" descriptionKey="preset.description"/]
-    [@ww.select labelKey="teamPath.label" name="teamPathId" id="teamPathListId" list="teamPathList" listKey="key" listValue="value" multiple="false"  cssClass="long-field" descriptionKey="teamPath.description"/]	
+    [@ww.select labelKey="teamPath.label" name="teamPathId" id="teamPathListId" list="teamPathList" listKey="key" listValue="value" multiple="false"  cssClass="long-field" descriptionKey="teamPath.description"/]
+
 [/@ui.bambooSection]
 
-
 [@ui.bambooSection title='Checkmarx Scan CxSAST' cssClass="cx center"]
+[#if (enableSASTScan.attribute)??]
+[@ww.checkbox labelKey="enableSASTScan.label" name="enableSASTScan" descriptionKey="enableSASTScan.description" toggle='true' checked='true'/]
+ [#else]            
+    [@ww.checkbox labelKey="enableSASTScan.label" name="enableSASTScan" descriptionKey="enableSASTScan.description" toggle='true'  /]
+    
+    [/#if]
+[@ui.bambooSection dependsOn="enableSASTScan" showOn="true"]
     [@ww.radio id = 'radioGroup' name='cxSastSection' listKey='key' listValue='value' toggle='true' list=configurationModeTypesCxSAST /]
 
     [@ui.bambooSection dependsOn='cxSastSection' showOn='customConfigurationCxSAST']
@@ -132,9 +145,8 @@
         [@ww.label labelKey="scanTimeoutInMinutes.label" name="globalScanTimeoutInMinutes"/]
 
     [/@ui.bambooSection]
-
     [@ww.textarea labelKey="comment.label"  name="comment" rows="3" descriptionKey="comment.description" cssClass="long-field"/]
-
+	[@ui.bambooSection dependsOn="forceScan" showOn="false"]
     [@ww.checkbox labelKey="isIncremental.label" name="isIncremental" descriptionKey="isIncremental.description" toggle='true' /]
     [@ui.bambooSection dependsOn="isIncremental" showOn="true"]
         [@ww.checkbox labelKey="isIntervals.label" name="isIntervals" descriptionKey="isIntervals.description" toggle="true"/]
@@ -143,9 +155,15 @@
             [@ww.select labelKey="intervalEnds.label" name="intervalEnds" list="intervalEndsList" listKey="key" listValue="value" multiple="false"/]
         [/@ui.bambooSection]
     [/@ui.bambooSection]
-
+    [/@ui.bambooSection]
+	[@ui.bambooSection dependsOn="isIncremental" showOn="false"]
+	[@ww.checkbox labelKey="forceScan.label" name="forceScan" descriptionKey="forceScan.description" toggle='true' /]
+	[/@ui.bambooSection]
 
     [@ww.checkbox labelKey="generatePDFReport.label" name="generatePDFReport" toggle='false' descriptionKey='generatePDFReport.description'/]
+    [/@ui.bambooSection]
+   
+    
 [/@ui.bambooSection]
 
 
@@ -189,11 +207,11 @@
 				[@ww.password labelKey="cxScaPassword.label"  id="cxScaPassword" name="cxScaPassword" showPassword='true' required='true'/]
 				<button type="button" class="aui-button test-cxsca-connection" id="test-cxsca-connection">Connect to Server</button>
 				<div id="test-cxsca-connection-message" class="test-cxsca-connection-message"></div>
-				
+				<br/>
 				[@ww.checkbox labelKey="cxScaResolverEnabled.label" name="cxScaResolverEnabled" id="cxScaResolverEnabled" toggle='true' /]
-		        [@ui.bambooSection title='SCA Resolver' dependsOn='cxScaResolverEnabled' showOn='true' cssClass="cx"]
+		        [@ui.bambooSection dependsOn='cxScaResolverEnabled' showOn='true' cssClass="cx"]
 		        	[@ww.textfield labelKey="cxScaResolverPath.label" name="cxScaResolverPath" id="cxScaResolverPath" descriptionKey="cxScaResolverPath.description"  required='true'/]
-			        [@ww.textarea labelKey="cxScaResolverAddParam.label" name="cxScaResolverAddParam" id="cxScaResolverAddParam" descriptionKey="cxScaResolverAddParam.description"  required='true'/]
+			        [@ww.textarea labelKey="cxScaResolverAddParam.label" name="cxScaResolverAddParam" id="cxScaResolverAddParam" descriptionKey="cxScaResolverAddParam.description" rows="3" cssClass="long-field"/]
 			    [/@ui.bambooSection]
 			[/@ui.bambooSection]
 		[/@ui.bambooSection]
@@ -228,12 +246,12 @@
 	        
 	        [@ww.label labelKey="cxScaUsername.label" name="globalcxScaUsername"/]
 	        [@ww.label labelKey="cxScaPassword.label" type="password" /]
-	      
-	        [@ww.checkbox labelKey="cxScaResolverEnabled.label" name="globalCxScaResolverEnabled" id="globalCxScaResolverEnabled" toggle='true' /]
-		        [@ui.bambooSection title='SCA Resolver' dependsOn='globalCxScaResolverEnabled' showOn='true' cssClass="cx"]
-		        	[@ww.textfield labelKey="cxScaResolverPath.label" name="globalCxScaResolverPath" id="globalCxScaResolverPath" descriptionKey="cxScaResolverPath.description"  required='true'/]
-			        [@ww.textarea labelKey="cxScaResolverAddParam.label" name="globalCxScaResolverAddParam" id="globalCxScaResolverAddParam" descriptionKey="cxScaResolverAddParam.description"  required='true'/]
-			    [/@ui.bambooSection]
+	        <br/>
+	        [@ww.checkbox labelKey="cxScaResolverEnabled.label" name="globalCxScaResolverEnabled" id="globalCxScaResolverEnabled" toggle='true' disabled="true" /]
+            [@ui.bambooSection dependsOn='globalCxScaResolverEnabled' showOn='true' cssClass="cx"]
+                [@ww.label labelKey="cxScaResolverPath.label" name="globalCxScaResolverPath" rows="3" cssClass="long-field"/]
+                [@ww.label labelKey="cxScaResolverAddParam.label" name="globalCxScaResolverAddParam" rows="3" cssClass="textarea autoresizing"/]
+            [/@ui.bambooSection]
 		[/@ui.bambooSection]
 	[/@ui.bambooSection]
 	
@@ -254,7 +272,7 @@
         [@ui.bambooSection dependsOn='isSynchronous' showOn='true']
 
             [@ww.checkbox labelKey="enablePolicyViolations.label" name="enablePolicyViolations" descriptionKey="enablePolicyViolations.description" toggle='true' /]
-
+			[@ui.bambooSection dependsOn="enableSASTScan" showOn="true"]
             [@ww.checkbox labelKey="thresholdsEnabled.label" name="thresholdsEnabled" descriptionKey="thresholdsEnabled.description" toggle='true' /]
             [@ui.bambooSection dependsOn='thresholdsEnabled' showOn='true']
 
@@ -268,7 +286,7 @@
                 [@ww.label labelKey="sastMediumThreshold.label" /]
                 [@ww.label labelKey="sastLowThreshold.label"/]
             [/@ui.bambooSection]
-
+			[/@ui.bambooSection]
             [@ui.bambooSection dependsOn='enableDependencyScan' showOn='true']
                 [@ww.checkbox labelKey="osaThresholdsEnabled.label" name="osaThresholdsEnabled"  descriptionKey="thresholdsEnabled.description"toggle='true' /]
 
@@ -288,7 +306,7 @@
 
         [/@ui.bambooSection]
 
-        [@ui.bambooSection dependsOn='isSynchronous' showOn='false']
+        [@ui.bambooSection dependsOn='isSynchronous' showOn='false']        
             [@ww.checkbox labelKey="thresholdsEnabled.label" name="thresholdsEnabled" descriptionKey="thresholdsEnabled.description" toggle='true' disabled="true" checked='false' /]
             [@ww.label labelKey="sastHighThreshold.label"/]
             [@ww.label labelKey="sastMediumThreshold.label"  /]
@@ -296,7 +314,7 @@
             [@ww.checkbox labelKey="osaThresholdsEnabled.label" name="osaThresholdsEnabled"  descriptionKey="thresholdsEnabled.description"toggle='true' disabled="true" checked='false' /]
             [@ww.label labelKey="osaHighThreshold.label" /]
             [@ww.label labelKey="osaMediumThreshold.label" /]
-            [@ww.label labelKey="osaLowThreshold.label" /]
+            [@ww.label labelKey="osaLowThreshold.label" /]            
         [/@ui.bambooSection]
 
     [/@ui.bambooSection]
@@ -310,17 +328,19 @@
             [#else]
                 [@ww.checkbox labelKey="enablePolicyViolations.label" name="globalEnablePolicyViolations" descriptionKey="enablePolicyViolations.description" toggle='true' disabled="true" /]
             [/#if]
-            [#if (globalThresholdsEnabled.attribute)??]
+            
+            [#if (globalThresholdsEnabled.attribute)??]            
                 [@ww.checkbox labelKey="thresholdsEnabled.label" name="globalThresholdsEnabled" descriptionKey="thresholdsEnabled.description" toggle='true' disabled="true" checked='true' /]
                 [@ww.label labelKey="sastHighThreshold.label" name="globalHighThreshold" /]
                 [@ww.label labelKey="sastMediumThreshold.label" name="globalMediumThreshold" /]
-                [@ww.label labelKey="sastLowThreshold.label" name="globalLowThreshold" /]
-            [#else]
+                [@ww.label labelKey="sastLowThreshold.label" name="globalLowThreshold" /]                
+            [#else]            
                 [@ww.checkbox labelKey="thresholdsEnabled.label" name="globalThresholdsEnabled" descriptionKey="thresholdsEnabled.description" toggle='true' disabled="true" /]
                 [@ww.label labelKey="sastHighThreshold.label"/]
                 [@ww.label labelKey="sastMediumThreshold.label"/]
-                [@ww.label labelKey="sastLowThreshold.label"/]
+                [@ww.label labelKey="sastLowThreshold.label"/]                
             [/#if]
+            
             [#if (globalOsaThresholdsEnabled.attribute)??]
                 [@ww.checkbox labelKey="osaThresholdsEnabled.label" name="globalOsaThresholdsEnabled"  descriptionKey="thresholdsEnabled.description"toggle='true' disabled="true" checked='true' /]
                 [@ww.label labelKey="osaHighThreshold.label" name="globalOsaHighThreshold"/]
@@ -335,7 +355,9 @@
         [#else]
             [@ww.checkbox labelKey="isSynchronous.label" name="globalIsSynchronous" descriptionKey="isSynchronous.description" toggle='true' disabled="true" checked='false'/]
             [@ww.checkbox labelKey="enablePolicyViolations.label" name="globalEnablePolicyViolations" descriptionKey="enablePolicyViolations.description" toggle='true' disabled="true" checked='false'/]
+            [@ui.bambooSection dependsOn="enableSASTScan" showOn="true"]
             [@ww.checkbox labelKey="thresholdsEnabled.label" name="globalThresholdsEnabled" descriptionKey="thresholdsEnabled.description" toggle='true' disabled="true" checked='false'/]
+            [/@ui.bambooSection]
             [@ww.checkbox labelKey="osaThresholdsEnabled.label" name="globalThresholdsEnabled" descriptionKey="thresholdsEnabled.description" toggle='true' disabled="true" checked='false'/]
         [/#if]
         [#if (globalDenyProject.attribute)??]
