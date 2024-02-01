@@ -4,18 +4,13 @@ import com.atlassian.bamboo.configuration.AdministrationConfiguration;
 import com.atlassian.bamboo.configuration.AdministrationConfigurationPersister;
 import com.atlassian.bamboo.configuration.GlobalAdminAction;
 import com.atlassian.spring.container.ContainerManager;
-import com.atlassian.util.concurrent.NotNull;
 import com.cx.plugin.utils.CxParam;
-import com.cx.restclient.exception.CxClientException;
 import com.google.common.collect.ImmutableMap;
-
-import org.apache.commons.lang3.SystemUtils;
 import org.codehaus.plexus.util.StringUtils;
 
-import java.io.File;
+import javax.annotation.Nonnull;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
 
 import static com.cx.plugin.utils.CxParam.*;
@@ -255,7 +250,7 @@ public class CxGlobalConfig extends GlobalAdminAction {
 
     }
 
-    private boolean isNegative(@NotNull String value, @NotNull String key) {
+    private boolean isNegative(@Nonnull String value, @Nonnull String key) {
         boolean ret = false;
         if (!StringUtils.isEmpty(value)) {
             try {

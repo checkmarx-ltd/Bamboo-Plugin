@@ -1,8 +1,24 @@
 package com.cx.plugin.configuration;
 
-import static com.cx.plugin.utils.CxPluginUtils.encrypt;
-import static com.cx.plugin.utils.CxParam.*;
-import static com.cx.plugin.utils.CxPluginUtils.decrypt;
+import com.atlassian.bamboo.collections.ActionParametersMap;
+import com.atlassian.bamboo.configuration.AdministrationConfiguration;
+import com.atlassian.bamboo.task.AbstractTaskConfigurator;
+import com.atlassian.bamboo.task.TaskDefinition;
+import com.atlassian.bamboo.utils.error.ErrorCollection;
+import com.atlassian.bamboo.ww2.actions.build.admin.config.task.ConfigureBuildTasks;
+import com.atlassian.spring.container.ContainerManager;
+import com.cx.plugin.utils.HttpHelper;
+import com.cx.restclient.configuration.CxScanConfig;
+import com.cx.restclient.dto.ProxyConfig;
+import com.cx.restclient.dto.ScannerType;
+import com.cx.restclient.dto.Team;
+import com.cx.restclient.sast.dto.Preset;
+import com.cx.restclient.sast.utils.LegacyClient;
+import com.google.common.collect.ImmutableMap;
+import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -14,32 +30,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
-import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-/**
- * Created by galn
- * Date: 20/12/2016.
- */
-
-import com.atlassian.bamboo.collections.ActionParametersMap;
-import com.atlassian.bamboo.configuration.AdministrationConfiguration;
-import com.atlassian.bamboo.task.AbstractTaskConfigurator;
-import com.atlassian.bamboo.task.TaskDefinition;
-import com.atlassian.bamboo.utils.error.ErrorCollection;
-import com.atlassian.bamboo.ww2.actions.build.admin.config.task.ConfigureBuildTasks;
-import com.atlassian.spring.container.ContainerManager;
-import com.atlassian.util.concurrent.Nullable;
-import com.cx.plugin.utils.HttpHelper;
-import com.cx.restclient.configuration.CxScanConfig;
-import com.cx.restclient.dto.ProxyConfig;
-import com.cx.restclient.dto.ScannerType;
-import com.cx.restclient.dto.Team;
-import com.cx.restclient.sast.dto.Preset;
-import com.cx.restclient.sast.utils.LegacyClient;
-import com.google.common.collect.ImmutableMap;
+import static com.cx.plugin.utils.CxParam.*;
+import static com.cx.plugin.utils.CxPluginUtils.decrypt;
+import static com.cx.plugin.utils.CxPluginUtils.encrypt;
 
 
 public class AgentTaskConfigurator extends AbstractTaskConfigurator {
@@ -440,7 +433,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     //save task configuration
     @NotNull
     @Override
-    public Map<String, String> generateTaskConfigMap(@NotNull final ActionParametersMap params, @Nullable final TaskDefinition previousTaskDefinition) {
+    public Map<String, String> generateTaskConfigMap(@NotNull final ActionParametersMap params, @javax.annotation.Nullable final TaskDefinition previousTaskDefinition) {
 
         Map<String, String> config = super.generateTaskConfigMap(params, previousTaskDefinition);
         config = generateCredentialsFields(params, config);
