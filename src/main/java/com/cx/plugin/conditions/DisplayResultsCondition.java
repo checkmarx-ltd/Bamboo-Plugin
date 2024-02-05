@@ -12,7 +12,6 @@ import com.atlassian.bamboo.resultsummary.AbstractResultsSummary;
 import com.atlassian.bamboo.task.TaskDefinition;
 import com.atlassian.bamboo.task.TaskIdentifier;
 import com.atlassian.plugin.web.Condition;
-import com.atlassian.util.concurrent.Nullable;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
@@ -55,7 +54,7 @@ public class DisplayResultsCondition implements Condition {
 
     private static class IsCxTaskPredicate<TASKDEF extends TaskIdentifier> implements Predicate<TASKDEF> {
 
-        public boolean apply(@Nullable TASKDEF taskIdentifier) {
+        public boolean apply(@javax.annotation.Nullable TASKDEF taskIdentifier) {
             return (Preconditions.checkNotNull(taskIdentifier)).getPluginKey().startsWith("com.cx.checkmarx-bamboo-plugin:checkmarx");
         }
 
