@@ -83,7 +83,7 @@ public class CheckmarxTask implements TaskType {
                 }
             }
 
-            if (!config.isSastEnabled() && !configHelper.isDependencyScanEnabled()) {
+            if (!config.isSastEnabled() && !(config.isOsaEnabled() || config.isAstScaEnabled())) { //if SAST and Dependency Scans are disabled at both global and config level 
                 log.error("Both SAST and Dependency Scan are disabled. Exiting.");
                 taskResultBuilder.failed().build();
             }
@@ -126,7 +126,7 @@ public class CheckmarxTask implements TaskType {
             }
             results.add(scanResults);
 
-            if (config.getEnablePolicyViolations()) {
+            if (((config.isSastEnabled()||config.isOsaEnabled()) && config.getEnablePolicyViolations()) || (config.isAstScaEnabled() && config.getEnablePolicyViolationsSCA())) {
                 delegator.printIsProjectViolated(scanResults);
             }
 
@@ -146,16 +146,19 @@ public class CheckmarxTask implements TaskType {
                 if (config.isAstScaEnabled() && (ret.getScaResults() == null || !ret.getScaResults().isScaResultReady()))
                     scanFailedAtServer.append("CxAST SCA scan results are not found. Scan might have failed at the server or aborted by the server.\n");
 
-                if (scanSummary.hasErrors() && scanFailedAtServer.toString().isEmpty())
+                if (scanSummary.hasErrors() && scanFailedAtServer.toString().isEmpty()) {
                     scanFailedAtServer.append(scanSummary.toString());
-                else if (scanSummary.hasErrors())
+                    printBuildFailure(scanFailedAtServer.toString(), ret, log);}
+                else if (scanSummary.hasErrors()) {
                     scanFailedAtServer.append("\n").append(scanSummary.toString());
+                    printBuildFailure(scanFailedAtServer.toString(), ret, log);}
 
-                printBuildFailure(scanFailedAtServer.toString(), ret, log);
+                
 
                 //handle hard failures. In case of threshold or policy failure, we still need to generate report before returning.
                 //Hence, cannot return yet
-                if (!scanSummary.hasErrors())
+                //Business level errors, to be checked only in case of synchronous scans
+                if(!scanSummary.hasErrors() && config.getSynchronous())
                     return taskResultBuilder.failed().build();
             }
 

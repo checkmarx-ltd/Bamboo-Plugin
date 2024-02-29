@@ -272,6 +272,7 @@
         [@ui.bambooSection dependsOn='isSynchronous' showOn='true']
 
             [@ww.checkbox labelKey="enablePolicyViolations.label" name="enablePolicyViolations" descriptionKey="enablePolicyViolations.description" toggle='true' /]
+            [@ww.checkbox labelKey="enablePolicyViolationsSCA.label" name="enablePolicyViolationsSCA" descriptionKey="enablePolicyViolationsSCA.description" toggle='true' /]
 			[@ui.bambooSection dependsOn="enableSASTScan" showOn="true"]
             [@ww.checkbox labelKey="thresholdsEnabled.label" name="thresholdsEnabled" descriptionKey="thresholdsEnabled.description" toggle='true' /]
             [@ui.bambooSection dependsOn='thresholdsEnabled' showOn='true']
@@ -329,6 +330,13 @@
                 [@ww.checkbox labelKey="enablePolicyViolations.label" name="globalEnablePolicyViolations" descriptionKey="enablePolicyViolations.description" toggle='true' disabled="true" /]
             [/#if]
             
+            [#if (globalEnablePolicyViolationsSCA.attribute)??]
+                [@ww.checkbox labelKey="enablePolicyViolationsSCA.label" name="globalEnablePolicyViolationsSCA" descriptionKey="enablePolicyViolationsSCA.description" toggle='true' disabled="true" checked='true' /]
+
+            [#else]
+                [@ww.checkbox labelKey="enablePolicyViolationsSCA.label" name="globalEnablePolicyViolationsSCA" descriptionKey="enablePolicyViolationsSCA.description" toggle='true' disabled="true" /]    
+            [/#if]
+            
             [#if (globalThresholdsEnabled.attribute)??]            
                 [@ww.checkbox labelKey="thresholdsEnabled.label" name="globalThresholdsEnabled" descriptionKey="thresholdsEnabled.description" toggle='true' disabled="true" checked='true' /]
                 [@ww.label labelKey="sastHighThreshold.label" name="globalHighThreshold" /]
@@ -355,6 +363,7 @@
         [#else]
             [@ww.checkbox labelKey="isSynchronous.label" name="globalIsSynchronous" descriptionKey="isSynchronous.description" toggle='true' disabled="true" checked='false'/]
             [@ww.checkbox labelKey="enablePolicyViolations.label" name="globalEnablePolicyViolations" descriptionKey="enablePolicyViolations.description" toggle='true' disabled="true" checked='false'/]
+            [@ww.checkbox labelKey="enablePolicyViolationsSCA.label" name="globalEnablePolicyViolationsSCA" descriptionKey="enablePolicyViolationsSCA.description" toggle='true' disabled="true" checked='false'/]
             [@ui.bambooSection dependsOn="enableSASTScan" showOn="true"]
             [@ww.checkbox labelKey="thresholdsEnabled.label" name="globalThresholdsEnabled" descriptionKey="thresholdsEnabled.description" toggle='true' disabled="true" checked='false'/]
             [/@ui.bambooSection]

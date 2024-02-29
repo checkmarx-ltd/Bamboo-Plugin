@@ -18,6 +18,7 @@ import static com.cx.plugin.utils.CxParam.CXSCA_RESOLVER_PATH_GLOBAL;
 import static com.cx.plugin.utils.CxParam.CXSCA_USERNAME;
 import static com.cx.plugin.utils.CxParam.CXSCA_WEBAPP_URL;
 import static com.cx.plugin.utils.CxParam.CX_USE_CUSTOM_DEPENDENCY_SETTINGS;
+import static com.cx.plugin.utils.CxParam.GLOBAL_ENABLE_DEPENDENCY_SCAN;
 import static com.cx.plugin.utils.CxParam.DEPENDENCY_SCAN_FILTER_PATTERNS;
 import static com.cx.plugin.utils.CxParam.DEPENDENCY_SCAN_FOLDER_EXCLUDE;
 import static com.cx.plugin.utils.CxParam.DEPENDENCY_SCAN_TYPE;
@@ -51,6 +52,7 @@ import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_LOW_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_MEDIUM_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_THRESHOLDS_ENABLED;
 import static com.cx.plugin.utils.CxParam.GLOBAL_POLICY_VIOLATION_ENABLED;
+import static com.cx.plugin.utils.CxParam.GLOBAL_POLICY_VIOLATION_ENABLED_SCA;
 import static com.cx.plugin.utils.CxParam.GLOBAL_PWD;
 import static com.cx.plugin.utils.CxParam.GLOBAL_SCAN_TIMEOUT_IN_MINUTES;
 import static com.cx.plugin.utils.CxParam.GLOBAL_SERVER_URL;
@@ -74,6 +76,7 @@ import static com.cx.plugin.utils.CxParam.OSA_MEDIUM_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.OSA_THRESHOLDS_ENABLED;
 import static com.cx.plugin.utils.CxParam.PASSWORD;
 import static com.cx.plugin.utils.CxParam.POLICY_VIOLATION_ENABLED;
+import static com.cx.plugin.utils.CxParam.POLICY_VIOLATION_ENABLED_SCA;
 import static com.cx.plugin.utils.CxParam.PRESET_ID;
 import static com.cx.plugin.utils.CxParam.PRESET_NAME;
 import static com.cx.plugin.utils.CxParam.PROJECT_NAME;
@@ -255,6 +258,7 @@ public class CxConfigHelper {
         //add AST_SCA or OSA based on what user has selected
         ScannerType scannerType = null;
         if(resolveBool(configMap, ENABLE_DEPENDENCY_SCAN)) {
+        	
         	setDependencyScanEnabled(true);
         	String useCustomdependencyScanSettings = configMap.get(CX_USE_CUSTOM_DEPENDENCY_SETTINGS);
     		if(!StringUtils.isEmpty(useCustomdependencyScanSettings) && useCustomdependencyScanSettings.equalsIgnoreCase("true")) {
@@ -274,7 +278,10 @@ public class CxConfigHelper {
                     scanConfig.setOsaRunInstall(resolveBool(configMap, OSA_INSTALL_BEFORE_SCAN));
             	}
     		}else {
-    			setUsingGlobalDependencyScan(true);    			
+//    			setUsingGlobalDependencyScan(true);
+    			//Global level configurations for dependency scan are used only when "Enable Dependency Scan" checkbox is enabled in global configurations
+    			String useGlobalependencyScanSettings = getAdminConfig(GLOBAL_ENABLE_DEPENDENCY_SCAN);
+    			if(!StringUtils.isEmpty(useGlobalependencyScanSettings) && useGlobalependencyScanSettings.equalsIgnoreCase("true")) {
             	scanConfig.setOsaFilterPattern(getAdminConfig(GLOBAL_DEPENDENCY_SCAN_FILTER_PATTERNS));
             	scanConfig.setOsaFolderExclusions(getAdminConfig(GLOBAL_DEPENDENCY_SCAN_FOLDER_EXCLUDE));
             	if(getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE).equalsIgnoreCase(ScannerType.AST_SCA.toString())) {        		
@@ -289,6 +296,7 @@ public class CxConfigHelper {
                     scanConfig.setOsaArchiveIncludePatterns(getAdminConfig(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS));
                     scanConfig.setOsaRunInstall(resolveGlobalBool(GLOBAL_OSA_INSTALL_BEFORE_SCAN));
             	}
+    			}
     		}
     		
 
@@ -303,6 +311,7 @@ public class CxConfigHelper {
         	if (isCustomConfSect) { 
         		scanConfig.setSynchronous(resolveBool(configMap, IS_SYNCHRONOUS));
                 scanConfig.setEnablePolicyViolations(resolveBool(configMap, POLICY_VIOLATION_ENABLED));
+                scanConfig.setEnablePolicyViolationsSCA(resolveBool(configMap, POLICY_VIOLATION_ENABLED_SCA));
         		if(enableSAST) {
             scanConfig.setSastThresholdsEnabled(resolveBool(configMap, THRESHOLDS_ENABLED));
             scanConfig.setSastHighThreshold(resolveInt(configMap.get(HIGH_THRESHOLD), log));
@@ -318,6 +327,7 @@ public class CxConfigHelper {
         	else {
         		scanConfig.setSynchronous(resolveGlobalBool(GLOBAL_IS_SYNCHRONOUS));
                 scanConfig.setEnablePolicyViolations(resolveGlobalBool(GLOBAL_POLICY_VIOLATION_ENABLED));
+                scanConfig.setEnablePolicyViolationsSCA(resolveGlobalBool(GLOBAL_POLICY_VIOLATION_ENABLED_SCA));
         		if(enableSAST) {
             scanConfig.setSastThresholdsEnabled(resolveGlobalBool(GLOBAL_THRESHOLDS_ENABLED));
             scanConfig.setSastHighThreshold(resolveInt(getAdminConfig(GLOBAL_HIGH_THRESHOLD), log));

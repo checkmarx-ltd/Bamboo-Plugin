@@ -43,6 +43,7 @@ public class CxParam {
     public static final String MEDIUM_THRESHOLD = "mediumThreshold";
     public static final String LOW_THRESHOLD = "lowThreshold";
     public static final String POLICY_VIOLATION_ENABLED = "enablePolicyViolations";
+    public static final String POLICY_VIOLATION_ENABLED_SCA = "enablePolicyViolationsSCA";
     public static final String OSA_ENABLED = "osaEnabled";
     public static final String DEPENDENCY_SCAN_FILTER_PATTERNS = "cxDependencyScanFilterPatterns";
     public static final String DEPENDENCY_SCAN_FOLDER_EXCLUDE = "cxDependencyScanfolderExclusions";
@@ -127,6 +128,7 @@ public class CxParam {
     public static final String IS_GLOBAL_HIDE_RESULTS = "isglobalHideResults";
     public static final String GLOBAL_HIDE_RESULTS = "globalHideResults";
     public static final String GLOBAL_POLICY_VIOLATION_ENABLED = "globalEnablePolicyViolations";
+    public static final String GLOBAL_POLICY_VIOLATION_ENABLED_SCA = "globalEnablePolicyViolationsSCA";
     public static final String DEFAULT_FILTER_PATTERNS = "!**/_cvs/**/*, !**/.svn/**/*,   !**/.hg/**/*,   !**/.git/**/*,  !**/.bzr/**/*, !**/bin/**/*," +
             "!**/obj/**/*,  !**/backup/**/*, !**/.idea/**/*, !**/*.DS_Store, !**/*.ipr,     !**/*.iws,   " +
             "!**/*.bak,     !**/*.tmp,       !**/*.aac,      !**/*.aif,      !**/*.iff,     !**/*.m3u,   !**/*.mid,   !**/*.mp3,  " +

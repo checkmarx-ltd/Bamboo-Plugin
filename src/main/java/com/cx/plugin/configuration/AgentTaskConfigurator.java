@@ -394,6 +394,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
             context.put(SCAN_CONTROL_SECTION, GLOBAL_CONFIGURATION_CONTROL);
             context.put(IS_SYNCHRONOUS, OPTION_TRUE);
             context.put(POLICY_VIOLATION_ENABLED, OPTION_FALSE);
+            context.put(POLICY_VIOLATION_ENABLED_SCA, OPTION_FALSE);
             context.put(THRESHOLDS_ENABLED, OPTION_FALSE);
             context.put(HIGH_THRESHOLD, "");
             context.put(MEDIUM_THRESHOLD, "");
@@ -406,6 +407,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
             context.put(SCAN_CONTROL_SECTION, configMap.get(SCAN_CONTROL_SECTION));
             context.put(IS_SYNCHRONOUS, configMap.get(IS_SYNCHRONOUS));
             context.put(POLICY_VIOLATION_ENABLED, configMap.get(POLICY_VIOLATION_ENABLED));
+            context.put(POLICY_VIOLATION_ENABLED_SCA, configMap.get(POLICY_VIOLATION_ENABLED_SCA));
             context.put(THRESHOLDS_ENABLED, configMap.get(THRESHOLDS_ENABLED));
             context.put(HIGH_THRESHOLD, configMap.get(HIGH_THRESHOLD));
             context.put(MEDIUM_THRESHOLD, configMap.get(MEDIUM_THRESHOLD));
@@ -418,6 +420,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 
         context.put(GLOBAL_IS_SYNCHRONOUS, getAdminConfig(GLOBAL_IS_SYNCHRONOUS));
         context.put(GLOBAL_POLICY_VIOLATION_ENABLED, getAdminConfig(GLOBAL_POLICY_VIOLATION_ENABLED));
+        context.put(GLOBAL_POLICY_VIOLATION_ENABLED_SCA, getAdminConfig(GLOBAL_POLICY_VIOLATION_ENABLED_SCA));
         context.put(GLOBAL_THRESHOLDS_ENABLED, getAdminConfig(GLOBAL_THRESHOLDS_ENABLED));
         context.put(GLOBAL_HIGH_THRESHOLD, getAdminConfig(GLOBAL_HIGH_THRESHOLD));
         context.put(GLOBAL_MEDIUM_THRESHOLD, getAdminConfig(GLOBAL_MEDIUM_THRESHOLD));
@@ -482,6 +485,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 
         config.put(IS_SYNCHRONOUS, params.getString(IS_SYNCHRONOUS));
         config.put(POLICY_VIOLATION_ENABLED, params.getString(POLICY_VIOLATION_ENABLED));
+        config.put(POLICY_VIOLATION_ENABLED_SCA, params.getString(POLICY_VIOLATION_ENABLED_SCA));
 
         config.put(IS_INCREMENTAL, params.getString(IS_INCREMENTAL));
         config.put(FORCE_SCAN, params.getString(FORCE_SCAN));
