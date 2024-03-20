@@ -37,6 +37,7 @@ public class CxGlobalConfig extends GlobalAdminAction {
     private String globalIsSynchronous;
     private String globalEnableProxy;
     private String globalEnablePolicyViolations;
+    private String globalEnablePolicyViolationsSCA;
     private String globalScanTimeoutInMinutes;
     private String globalThresholdsEnabled;
     private String globalHighThreshold;
@@ -119,6 +120,7 @@ public class CxGlobalConfig extends GlobalAdminAction {
         globalEnableProxy=adminConfig.getSystemProperty(GLOBAL_ENABLE_PROXY);
         globalHideResults = adminConfig.getSystemProperty(GLOBAL_HIDE_RESULTS);
         globalEnablePolicyViolations = adminConfig.getSystemProperty(GLOBAL_POLICY_VIOLATION_ENABLED);
+        globalEnablePolicyViolationsSCA = adminConfig.getSystemProperty(GLOBAL_POLICY_VIOLATION_ENABLED_SCA);
         globalThresholdsEnabled = adminConfig.getSystemProperty(GLOBAL_THRESHOLDS_ENABLED);
         globalHighThreshold = adminConfig.getSystemProperty(GLOBAL_HIGH_THRESHOLD);
         globalMediumThreshold = adminConfig.getSystemProperty(GLOBAL_MEDIUM_THRESHOLD);
@@ -194,8 +196,10 @@ public class CxGlobalConfig extends GlobalAdminAction {
             globalThresholdsEnabled = null;
             globalOsaThresholdsEnabled = null;
             globalEnablePolicyViolations = null;
+            globalEnablePolicyViolationsSCA = null;
         }
         adminConfig.setSystemProperty(GLOBAL_POLICY_VIOLATION_ENABLED, globalEnablePolicyViolations);
+        adminConfig.setSystemProperty(GLOBAL_POLICY_VIOLATION_ENABLED_SCA, globalEnablePolicyViolationsSCA);
         adminConfig.setSystemProperty(GLOBAL_THRESHOLDS_ENABLED, globalThresholdsEnabled);
         adminConfig.setSystemProperty(GLOBAL_HIGH_THRESHOLD, globalHighThreshold);
         adminConfig.setSystemProperty(GLOBAL_MEDIUM_THRESHOLD, globalMediumThreshold);
@@ -345,6 +349,14 @@ public class CxGlobalConfig extends GlobalAdminAction {
 
     public void setGlobalEnablePolicyViolations(String globalEnablePolicyViolations) {
         this.globalEnablePolicyViolations = globalEnablePolicyViolations;
+    }
+    
+    public String getGlobalEnablePolicyViolationsSCA() {
+        return globalEnablePolicyViolationsSCA;
+    }
+
+    public void setGlobalEnablePolicyViolationsSCA(String globalEnablePolicyViolationsSCA) {
+        this.globalEnablePolicyViolationsSCA = globalEnablePolicyViolationsSCA;
     }
 
     public void setGlobalIsSynchronous(String globalIsSynchronous) {

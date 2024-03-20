@@ -86,7 +86,8 @@ public abstract class CxPluginUtils {
             log.info("is force scan: " + config.getForceScan());
             log.info("Is generate full XML report: " + config.getGenerateXmlReport());
             log.info("Is generate PDF report: " + config.getGeneratePDFReport());
-            log.info("Policy violations enabled: " + config.getEnablePolicyViolations());
+            log.info("SAST and OSA Policy violations enabled: " + config.getEnablePolicyViolations());
+            log.info("SCA Policy violations enabled: " + config.getEnablePolicyViolationsSCA());
             log.info("Source code encoding id: " + config.getEngineConfigurationId());
             log.info("CxSAST thresholds enabled: " + config.getSastThresholdsEnabled());
             if (config.getSastThresholdsEnabled()) {
@@ -105,7 +106,7 @@ public abstract class CxPluginUtils {
         }
         
         log.info("Dependency Scan enabled : " + configBFF.isDependencyScanEnabled());        
-        if(configBFF.isDependencyScanEnabled()) {
+        if(config.isOsaEnabled() || config.isAstScaEnabled()) {
 	        log.info("Dependency Scan type : " + configBFF.getDependencyScanType().getDisplayName() );
 	        log.info("Dependency scan configuration:");
 	        log.info(" Folder exclusions: " + config.getOsaFolderExclusions());
@@ -119,6 +120,9 @@ public abstract class CxPluginUtils {
 	        if (config.isOsaEnabled()) {	            
 	            log.info(" CxOSA archive extract patterns: " + config.getOsaArchiveIncludePatterns());
 	            log.info(" Execute dependency managers 'install packages' command before CxOSA Scan: " + config.getOsaRunInstall());            
+	        } else if(config.isAstScaEnabled())	{
+	        	log.info(" CxSCA Tenant: " + config.getAstScaConfig().getTenant());
+	        	log.info(" CxSCA TeamPath: " + config.getAstScaConfig().getTeamPath());
 	        }	        
         }
 
