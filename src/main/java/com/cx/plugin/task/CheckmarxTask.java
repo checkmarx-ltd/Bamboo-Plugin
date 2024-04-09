@@ -243,27 +243,29 @@ public class CheckmarxTask implements TaskType {
         }
     }
 
-    private String extractPDFBaseUrlFromCxOriginUrl(String cxOriginUrl) {
-    	   try {
-    	       int browseIndex = cxOriginUrl.indexOf("/browse");
-    	       if (browseIndex != -1) {
-    	           String baseUrl = cxOriginUrl.substring(0, browseIndex);
-    	           if (!StringUtils.isEmpty(baseUrl)) {
-    	               int slashIndex = baseUrl.indexOf("://");
-    	               int nextSlashIndex = baseUrl.indexOf("/", slashIndex + 3);
-    	               if (nextSlashIndex != -1) {
-    	                   String path = baseUrl.substring(nextSlashIndex);
-    	                   if(!path.isEmpty()) {
-    	                	   return path;
-    	                   }
-    	               }
-    	           }
-    	       }
-    	   } catch (Exception e) {
-    	       e.printStackTrace();
-    	   }
-    	   return "";
-    	}
+	private String extractPDFBaseUrlFromCxOriginUrl(String cxOriginUrl) {
+		try {
+			if (cxOriginUrl.contains("/browse")) {
+				int browseIndex = cxOriginUrl.indexOf("/browse");
+				if (browseIndex != -1) {
+					String baseUrl = cxOriginUrl.substring(0, browseIndex);
+					if (!StringUtils.isEmpty(baseUrl)) {
+						int slashIndex = baseUrl.indexOf("://");
+						int nextSlashIndex = baseUrl.indexOf("/", slashIndex + 3);
+						if (nextSlashIndex != -1) {
+							String path = baseUrl.substring(nextSlashIndex);
+							if (!path.isEmpty()) {
+								return path;
+							}
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "";
+	}
 
 	private ArtifactDefinitionContext getPDFArt(TaskContext taskContext) {
         if (!taskContext.getBuildContext().getArtifactContext().getDefinitionContexts().isEmpty()) {
