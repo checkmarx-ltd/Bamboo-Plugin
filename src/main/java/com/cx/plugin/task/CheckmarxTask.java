@@ -199,9 +199,13 @@ public class CheckmarxTask implements TaskType {
 						printBuildFailure(null, ret, log);
 						return taskResultBuilder.failed().build();
 					}
-
+					
 					return taskResultBuilder.success().build();
 					
+				}else {
+					String message= "<br><br><br><b>Job is configured to run Checkmarx scan asynchronously. Previous report not found.</b>";
+					ret.getSummary().put(HTML_REPORT, message);
+					buildContext.getBuildResult().getCustomBuildData().putAll(ret.getSummary());
 				}
 			}
 
