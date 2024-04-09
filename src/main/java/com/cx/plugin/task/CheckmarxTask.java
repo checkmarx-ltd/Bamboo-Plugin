@@ -193,18 +193,18 @@ public class CheckmarxTask implements TaskType {
                     int buildNumber = buildContext.getParentBuildContext().getResultKey().getResultNumber();
                     String buildPath = buildContext.getPlanResultKey().getPlanKey().getKey()
                             .substring(buildContext.getPlanResultKey().getPlanKey().getKey().lastIndexOf("-") + 1);
-
+                    String pdfBaseUrl = extractPDFBaseUrlFromCxOriginUrl(config.getCxOriginUrl());
                     ArtifactDefinitionContext pdfArt = getPDFArt(taskContext);
                     if (pdfArt != null) {
                         if (pdfArt.isSharedArtifact()) {
-                            sastResults.setSastPDFLink("/browse/" + buildKey + "-" + buildNumber + "/artifact/shared/" + pdfArt.getName()
+                            sastResults.setSastPDFLink(pdfBaseUrl +"/browse/" + buildKey + "-" + buildNumber + "/artifact/shared/" + pdfArt.getName()
                                     + "/" + pdfName);
                         } else {
-                            sastResults.setSastPDFLink("/browse/" + buildKey + "-" + buildNumber + "/artifact/" + buildPath
+                            sastResults.setSastPDFLink(pdfBaseUrl +"/browse/" + buildKey + "-" + buildNumber + "/artifact/" + buildPath
                                     + "/" + pdfArt.getName() + "/" + pdfName);
                         }
                     } else {
-                        sastResults.setSastPDFLink("/browse/" + buildKey + "-" + buildNumber + "/artifact/" + buildPath
+                        sastResults.setSastPDFLink(pdfBaseUrl +"/browse/" + buildKey + "-" + buildNumber + "/artifact/" + buildPath
                                 + "/Checkmarx-PDF-Report/" + pdfName);
                         ArtifactDefinitionContext artifact = new ArtifactDefinitionContextImpl("Checkmarx PDF Report", false, null);
                         artifact.setCopyPattern("**/" + pdfName);
@@ -243,7 +243,29 @@ public class CheckmarxTask implements TaskType {
         }
     }
 
-    private ArtifactDefinitionContext getPDFArt(TaskContext taskContext) {
+    private String extractPDFBaseUrlFromCxOriginUrl(String cxOriginUrl) {
+    	   try {
+    	       int browseIndex = cxOriginUrl.indexOf("/browse");
+    	       if (browseIndex != -1) {
+    	           String baseUrl = cxOriginUrl.substring(0, browseIndex);
+    	           if (!StringUtils.isEmpty(baseUrl)) {
+    	               int slashIndex = baseUrl.indexOf("://");
+    	               int nextSlashIndex = baseUrl.indexOf("/", slashIndex + 3);
+    	               if (nextSlashIndex != -1) {
+    	                   String path = baseUrl.substring(nextSlashIndex);
+    	                   if(!path.isEmpty()) {
+    	                	   return path;
+    	                   }
+    	               }
+    	           }
+    	       }
+    	   } catch (Exception e) {
+    	       e.printStackTrace();
+    	   }
+    	   return "";
+    	}
+
+	private ArtifactDefinitionContext getPDFArt(TaskContext taskContext) {
         if (!taskContext.getBuildContext().getArtifactContext().getDefinitionContexts().isEmpty()) {
             for (ArtifactDefinitionContext artDef : taskContext.getBuildContext().getArtifactContext().getDefinitionContexts()) {
                 if (StringUtils.isNotEmpty(artDef.getCopyPattern()) &&
