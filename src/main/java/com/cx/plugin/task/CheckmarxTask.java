@@ -39,15 +39,16 @@ import static com.cx.plugin.utils.CxParam.HTML_REPORT;
 import static com.cx.plugin.utils.CxPluginUtils.printBuildFailure;
 import static com.cx.plugin.utils.CxPluginUtils.printConfiguration;
 
+
 public class CheckmarxTask implements TaskType {
 
-	private final ArtifactManager artifactManager;
+    private final ArtifactManager artifactManager;
+   	   
+    public CheckmarxTask(final ArtifactManager artifactManager) {
+        this.artifactManager = artifactManager;
+    }
 
-	public CheckmarxTask(final ArtifactManager artifactManager) {
-		this.artifactManager = artifactManager;
-	}
-
-	@NotNull
+    @NotNull
     public TaskResult execute(@NotNull final TaskContext taskContext) throws TaskException {
     	StaticLoggerBinder binder = StaticLoggerBinder.getSingleton(taskContext.getBuildLogger());    	
         CxLoggerAdapter log;
@@ -161,10 +162,8 @@ public class CheckmarxTask implements TaskType {
                     return taskResultBuilder.failed().build();
             }
 
-			/*
-			 * For asynchronous scan, if reports are not ready or previous reports is not
-			 * found, HTML Report is not generated
-			 */
+			/*For asynchronous scan, if reports are not ready or previous reports is not
+			 found, HTML Report is not generated */
 
 			boolean generateAsyncReport = false;
 			if (config.isSastEnabled() && ret.getSastResults() != null && ret.getSastResults().isSastResultsReady()) {
@@ -189,7 +188,6 @@ public class CheckmarxTask implements TaskType {
 				log.info("Running in Asynchronous mode. Not waiting for scan to finish.");
 
 				if (generateAsyncReport) {
-					log.info("generateAsyncReport: " + generateAsyncReport);
 					ScanResults finalScanResults = getFinalScanResults(results);
 					String scanHTMLSummary = delegator.generateHTMLSummary(finalScanResults);
 					ret.getSummary().put(HTML_REPORT, scanHTMLSummary);
@@ -199,11 +197,9 @@ public class CheckmarxTask implements TaskType {
 						printBuildFailure(null, ret, log);
 						return taskResultBuilder.failed().build();
 					}
-					
 					return taskResultBuilder.success().build();
-					
-				}else {
-					String message= "<br><br><br><b>Job is configured to run Checkmarx scan asynchronously. Previous report not found.</b>";
+				} else {
+					String message = "<br><br><br><b>Job is configured to run Checkmarx scan asynchronously. Previous report not found.</b>";
 					ret.getSummary().put(HTML_REPORT, message);
 					buildContext.getBuildResult().getCustomBuildData().putAll(ret.getSummary());
 				}
@@ -250,13 +246,13 @@ public class CheckmarxTask implements TaskType {
                         taskContext.getBuildContext().getArtifactContext().addPublishingResult(result);
                     }
                 }
-                
-                if (config.getSynchronous()){
-                String showSummaryStr = delegator.generateHTMLSummary(finalScanResults);
-                ret.getSummary().put(HTML_REPORT, showSummaryStr);
-                buildContext.getBuildResult().getCustomBuildData().putAll(ret.getSummary());
-                }
-              }
+
+				if (config.getSynchronous()) {
+					String showSummaryStr = delegator.generateHTMLSummary(finalScanResults);
+					ret.getSummary().put(HTML_REPORT, showSummaryStr);
+					buildContext.getBuildResult().getCustomBuildData().putAll(ret.getSummary());
+				}
+            }
 
             if (scanSummary.hasErrors()) {
                 return taskResultBuilder.failed().build();
@@ -277,44 +273,41 @@ public class CheckmarxTask implements TaskType {
         }
     }
 
-	private ArtifactDefinitionContext getPDFArt(TaskContext taskContext) {
-		if (!taskContext.getBuildContext().getArtifactContext().getDefinitionContexts().isEmpty()) {
-			for (ArtifactDefinitionContext artDef : taskContext.getBuildContext().getArtifactContext()
-					.getDefinitionContexts()) {
-				if (StringUtils.isNotEmpty(artDef.getCopyPattern())
-						&& StringUtils.containsIgnoreCase(artDef.getCopyPattern(), "pdf")) {
-					return artDef;
-				}
-			}
-		}
-		return null;
-	}
+    private ArtifactDefinitionContext getPDFArt(TaskContext taskContext) {
+        if (!taskContext.getBuildContext().getArtifactContext().getDefinitionContexts().isEmpty()) {
+            for (ArtifactDefinitionContext artDef : taskContext.getBuildContext().getArtifactContext().getDefinitionContexts()) {
+                if (StringUtils.isNotEmpty(artDef.getCopyPattern()) &&
+                        StringUtils.containsIgnoreCase(artDef.getCopyPattern(), "pdf")) {
+                    return artDef;
+                }
+            }
+        }
+        return null;
+    }
 
-	private ScanResults getFinalScanResults(List<ScanResults> results) {
-		ScanResults scanResults = new ScanResults();
+    private ScanResults getFinalScanResults(List<ScanResults> results) {
+        ScanResults scanResults = new ScanResults();
 
-		for (int i = 0; i < results.size(); i++) {
-			Map<ScannerType, Results> resultsMap = results.get(i).getResults();
-			for (Map.Entry<ScannerType, Results> entry : resultsMap.entrySet()) {
-				if (entry != null && entry.getValue() != null && entry.getValue().getException() != null
-						&& scanResults.get(entry.getKey()) == null) {
-					scanResults.put(entry.getKey(), entry.getValue());
-				}
-				if (i == results.size() - 1 && entry != null && entry.getValue() != null
-						&& entry.getValue().getException() == null) {
-					scanResults.put(entry.getKey(), entry.getValue());
-				}
-			}
-		}
+        for (int i = 0; i < results.size(); i++) {
+            Map<ScannerType, Results> resultsMap = results.get(i).getResults();
+            for (Map.Entry<ScannerType, Results> entry : resultsMap.entrySet()) {
+                if (entry != null && entry.getValue() != null && entry.getValue().getException() != null && scanResults.get(entry.getKey()) == null) {
+                    scanResults.put(entry.getKey(), entry.getValue());
+                }
+                if (i == results.size() - 1 && entry != null && entry.getValue() != null && entry.getValue().getException() == null) {
+                    scanResults.put(entry.getKey(), entry.getValue());
+                }
+            }
+        }
 
-		return scanResults;
-	}
+        return scanResults;
+    }
 
-	private void cancelScan(CxClientDelegator delegator) {
-		try {
-			delegator.getSastClient().cancelSASTScan();
-		} catch (Exception ignored) {
-		}
-	}
+    private void cancelScan(CxClientDelegator delegator) {
+        try {
+            delegator.getSastClient().cancelSASTScan();
+        } catch (Exception ignored) {
+        }
+    }
 
 }
