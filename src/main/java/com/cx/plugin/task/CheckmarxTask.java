@@ -193,9 +193,10 @@ public class CheckmarxTask implements TaskType {
                     int buildNumber = buildContext.getParentBuildContext().getResultKey().getResultNumber();
                     String buildPath = buildContext.getPlanResultKey().getPlanKey().getKey()
                             .substring(buildContext.getPlanResultKey().getPlanKey().getKey().lastIndexOf("-") + 1);
-                    if(config != null && config.getCxOriginUrl() != null) {
-                    String pdfBaseUrl = extractPDFBaseUrlFromCxOriginUrl(config.getCxOriginUrl());
-                    
+                    String pdfBaseUrl ="";
+                    if(config.getCxOriginUrl() != null) {
+                    pdfBaseUrl = extractPDFBaseUrlFromCxOriginUrl(config.getCxOriginUrl());
+                    }
                     ArtifactDefinitionContext pdfArt = getPDFArt(taskContext);
                     if (pdfArt != null) {
                         if (pdfArt.isSharedArtifact()) {
@@ -219,7 +220,6 @@ public class CheckmarxTask implements TaskType {
                                 15);
                         taskContext.getBuildContext().getArtifactContext().addPublishingResult(result);
                     }
-                   }
                 }
 
                 String showSummaryStr = delegator.generateHTMLSummary(finalScanResults);
