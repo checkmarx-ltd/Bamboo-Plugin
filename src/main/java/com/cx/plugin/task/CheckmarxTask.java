@@ -162,20 +162,54 @@ public class CheckmarxTask implements TaskType {
                     return taskResultBuilder.failed().build();
             }
 
-            //Asynchronous MODE
-            if (!config.getSynchronous()) {
-                log.info("Running in Asynchronous mode. Not waiting for scan to finish.");
-                ScanResults finalScanResults = getFinalScanResults(results);
-                String scanHTMLSummary = delegator.generateHTMLSummary(finalScanResults);
-                ret.getSummary().put(HTML_REPORT, scanHTMLSummary);
-                buildContext.getBuildResult().getCustomBuildData().putAll(ret.getSummary());
+			/*For asynchronous scan, if reports are not ready or previous reports is not
+			 found, HTML Report is not generated */
 
-                if (ret.getException() != null || ret.getGeneralException() != null) {
-                    printBuildFailure(null, ret, log);
-                    return taskResultBuilder.failed().build();
-                }
-                return taskResultBuilder.success().build();
-            }
+			boolean generateAsyncReport = false;
+			if (config.isSastEnabled() && ret.getSastResults() != null && ret.getSastResults().isSastResultsReady()) {
+				generateAsyncReport = true;
+			}
+			
+			/*If a combination scan is run(SAST + OSA/SCA), 
+			HTML report is generated only if, previous reports are available for both the scans*/
+			if (config.isOsaEnabled() || config.isAstScaEnabled()) {
+				if ((config.isOsaEnabled() && (ret.getOsaResults() == null || !ret.getOsaResults().isOsaResultsReady()))
+						|| (config.isAstScaEnabled()
+								&& (ret.getScaResults() == null || !ret.getScaResults().isScaResultReady()))
+						|| (config.isSastEnabled()
+								&& (ret.getSastResults() == null || !ret.getSastResults().isSastResultsReady()))) {
+					generateAsyncReport = false;
+				} else {
+					generateAsyncReport = true;
+				}
+			}
+
+			if (!config.getSynchronous()) {
+				log.info("Running in Asynchronous mode. Not waiting for scan to finish.");
+
+				if(config.isSastEnabled() || config.isOsaEnabled() || config.isAstScaEnabled()) {
+				if (generateAsyncReport) {
+					ScanResults finalScanResults = getFinalScanResults(results);
+					String scanHTMLSummary = delegator.generateHTMLSummary(finalScanResults);
+					ret.getSummary().put(HTML_REPORT, scanHTMLSummary);
+					buildContext.getBuildResult().getCustomBuildData().putAll(ret.getSummary());
+					
+					if (ret.getException() != null || ret.getGeneralException() != null) {
+						printBuildFailure(null, ret, log);
+						return taskResultBuilder.failed().build();
+					}
+					return taskResultBuilder.success().build();
+				} else {
+					String message = "<br><br><br><b>Job is configured to run Checkmarx scan asynchronously. Previous report not found.</b>";
+					ret.getSummary().put(HTML_REPORT, message);
+					buildContext.getBuildResult().getCustomBuildData().putAll(ret.getSummary());
+				}
+				}else {
+					String message = "<br><br><br><b>Both SAST and Dependency Scan are disabled.</b>";
+					ret.getSummary().put(HTML_REPORT, message);
+					buildContext.getBuildResult().getCustomBuildData().putAll(ret.getSummary());
+				}
+			}
 
             if (config.getSynchronous() && config.isSastEnabled() &&
                     ((createScanResults.getSastResults() != null && createScanResults.getSastResults().getException() != null && createScanResults.getSastResults().getScanId() > 0) || (scanResults.getSastResults() != null && scanResults.getSastResults().getException() != null))) {
@@ -222,9 +256,11 @@ public class CheckmarxTask implements TaskType {
                     }
                 }
 
-                String showSummaryStr = delegator.generateHTMLSummary(finalScanResults);
-                ret.getSummary().put(HTML_REPORT, showSummaryStr);
-                buildContext.getBuildResult().getCustomBuildData().putAll(ret.getSummary());
+				if (config.getSynchronous()) {
+					String showSummaryStr = delegator.generateHTMLSummary(finalScanResults);
+					ret.getSummary().put(HTML_REPORT, showSummaryStr);
+					buildContext.getBuildResult().getCustomBuildData().putAll(ret.getSummary());
+				}
             }
 
             if (scanSummary.hasErrors()) {
