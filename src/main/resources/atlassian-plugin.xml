@@ -9,7 +9,9 @@
        <!-- <param name="plugin-banner">/ru/andreymarkelov/atlas/plugins/requestedfiedls/images/banner_1.jpg</param>
         <param name="vendor-icon">/ru/andreymarkelov/atlas/plugins/requestedfiedls/images/144.jpg</param>
         <param name="vendor-logo">/ru/andreymarkelov/atlas/plugins/requestedfiedls/images/32.jpg</param>-->
+		<param name="atlassian-data-center-status">compatible</param>
         <param name="atlassian-data-center-compatible">true</param>
+		<param name="plugin-type">data-center</param>
     </plugin-info>
 
     <!-- add our i18n resource -->
