@@ -187,12 +187,13 @@ public class CheckmarxTask implements TaskType {
 			if (!config.getSynchronous()) {
 				log.info("Running in Asynchronous mode. Not waiting for scan to finish.");
 
+				if(config.isSastEnabled() || config.isOsaEnabled() || config.isAstScaEnabled()) {
 				if (generateAsyncReport) {
 					ScanResults finalScanResults = getFinalScanResults(results);
 					String scanHTMLSummary = delegator.generateHTMLSummary(finalScanResults);
 					ret.getSummary().put(HTML_REPORT, scanHTMLSummary);
 					buildContext.getBuildResult().getCustomBuildData().putAll(ret.getSummary());
-
+					
 					if (ret.getException() != null || ret.getGeneralException() != null) {
 						printBuildFailure(null, ret, log);
 						return taskResultBuilder.failed().build();
@@ -200,6 +201,11 @@ public class CheckmarxTask implements TaskType {
 					return taskResultBuilder.success().build();
 				} else {
 					String message = "<br><br><br><b>Job is configured to run Checkmarx scan asynchronously. Previous report not found.</b>";
+					ret.getSummary().put(HTML_REPORT, message);
+					buildContext.getBuildResult().getCustomBuildData().putAll(ret.getSummary());
+				}
+				}else {
+					String message = "<br><br><br><b>Both SAST and Dependency Scan are disabled.</b>";
 					ret.getSummary().put(HTML_REPORT, message);
 					buildContext.getBuildResult().getCustomBuildData().putAll(ret.getSummary());
 				}
