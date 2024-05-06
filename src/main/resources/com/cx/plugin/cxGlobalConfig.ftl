@@ -37,6 +37,10 @@
     .aui-page-focused .aui-page-panel-content h3:not(.collapsible-header) {
         margin-top: 0;
     }
+    
+   .hidden{
+   visibility:hidden;
+   }
 
     h3 {
         color: #3b73af;
@@ -153,6 +157,15 @@
                 [@ww.textfield labelKey="sastHighThreshold.label" name="globalHighThreshold" required='false'/]
                 [@ww.textfield labelKey="sastMediumThreshold.label" name="globalMediumThreshold" required='false'/]
                 [@ww.textfield labelKey="sastLowThreshold.label" name="globalLowThreshold" required='false'/]
+                [#if (globalEnableCriticalSeverity.attribute)??]
+                [@ui.bambooSection dependsOn="globalEnableCriticalSeverity" showOn="true"]
+                [@ww.textfield labelKey="sastCriticalThreshold.label" name="globalCriticalThreshold" required='false' toggle='true'/]
+                [/@ui.bambooSection]
+                [#else] 
+                [@ui.bambooSection dependsOn="globalEnableCriticalSeverity" showOn="true"]
+                [@ww.textfield labelKey="sastCriticalThreshold.label" name="globalCriticalThreshold" required='false' toggle='true'/]
+                [/@ui.bambooSection]
+                [/#if]
             [/@ui.bambooSection]
 
             [@ui.bambooSection dependsOn='globalEnableDependencyScan' showOn='true']
@@ -161,6 +174,7 @@
                 [@ww.textfield labelKey="osaHighThreshold.label" name="globalOsaHighThreshold" required='false'/]
                 [@ww.textfield labelKey="osaMediumThreshold.label" name="globalOsaMediumThreshold" required='false'/]
                 [@ww.textfield labelKey="osaLowThreshold.label" name="globalOsaLowThreshold" required='false'/]
+                [@ww.textfield labelKey="osaCriticalThreshold.label" name="globalOsaCriticalThreshold" required='false'/]
             [/@ui.bambooSection]
             [/@ui.bambooSection]
         [/@ui.bambooSection]
@@ -180,7 +194,7 @@ function connectToScaServer() {
 
         function restScaRequest() {
 			var request;
-			
+			alert("inside rest sca request");
 			var scaServerUrl = document.getElementById("checkmarxDefaultConfiguration_globalcxScaAPIUrl").value;
             var scaAccessControlUrl = document.getElementById("checkmarxDefaultConfiguration_globalcxScaAccessControlServerUrl").value;
             var scaWebAppUrl = document.getElementById("checkmarxDefaultConfiguration_globalcxScaWebAppUrl").value;
@@ -331,7 +345,40 @@ function connectToScaServer() {
             }
 
             xhr.onload = function () {
+           
                 var parsed = JSON.parse(xhr.responseText);
+                alert("parsed"+ parsed.cxVersion);
+                var sastVersion = parsed.cxVersion;
+                alert("inside onload function"+ sastVersion);
+                if (sastVersion !== null && sastVersion.trim() !== "") {
+	   				var versionComponents = sastVersion.split(".");
+	   				if (versionComponents.length >= 2) {
+		       			var currentVersion = versionComponents[0] + "." + versionComponents[1];
+		       			var currentVersionFloat = parseFloat(currentVersion);
+		       			if (currentVersionFloat >= parseFloat("9.7")) {
+		           			globalEnableCriticalSeverity = "true";
+		           			document.getElementById("checkmarxDefaultConfiguration_globalCriticalThreshold").style.display='block';
+		           			const input = document.getElementById("checkmarxDefaultConfiguration_globalCriticalThreshold");
+		           			for (const label of input.labels) {   
+		           			alert(label.textContent); 
+		           			label.style.display='block'
+		           			
+		           			}
+		       			}else{
+		       				globalEnableCriticalSeverity = "false";
+		       				document.getElementById("checkmarxDefaultConfiguration_globalCriticalThreshold").style.display='none';
+               				const input = document.getElementById("checkmarxDefaultConfiguration_globalCriticalThreshold");
+		           			for (const label of input.labels) {   
+		           			alert(label.textContent); 
+		           			label.style.display='none'
+		           			}
+		       			}
+		       	
+		       			alert("sastVersionSplit: " + sastVersion + ', majorVersion: ' + versionComponents[0] + ', minorVersion: ' + versionComponents[1]);
+	   				}
+				}
+                 
+                
                 var message = document.getElementById("gtestConnectionMessage");
                 if (xhr.status == 200) {
                     message.style.color = "green";

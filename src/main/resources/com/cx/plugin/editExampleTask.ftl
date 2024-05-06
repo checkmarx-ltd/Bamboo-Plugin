@@ -42,6 +42,10 @@
         color: #3b73af;
         font-size: 17px;
     }
+    
+    .hidden{
+   visibility:hidden;
+   }
 
     form.aui .field-value {
         border-radius: 3.01px;
@@ -280,12 +284,22 @@
                 [@ww.textfield labelKey="sastHighThreshold.label" name="highThreshold"/]
                 [@ww.textfield labelKey="sastMediumThreshold.label" name="mediumThreshold"/]
                 [@ww.textfield labelKey="sastLowThreshold.label" name="lowThreshold" /]
+                [#if (enableCriticalSeverity.attribute)??]
+                [@ui.bambooSection dependsOn="enableCriticalSeverity" showOn="true"]
+                [@ww.textfield labelKey="sastCriticalThreshold.label" name="criticalThreshold" required='false' toggle='true'/]
+                [/@ui.bambooSection]
+                [#else] 
+                [@ui.bambooSection dependsOn="enableCriticalSeverity" showOn="true"]
+                [@ww.textfield labelKey="sastCriticalThreshold.label" name="criticalThreshold" required='false' toggle='true'/]
+                [/@ui.bambooSection]
+                [/#if]
             [/@ui.bambooSection]
 
             [@ui.bambooSection dependsOn='thresholdsEnabled' showOn='false']
                 [@ww.label labelKey="sastHighThreshold.label"/]
                 [@ww.label labelKey="sastMediumThreshold.label" /]
                 [@ww.label labelKey="sastLowThreshold.label"/]
+                [@ww.label labelKey="sastCriticalThreshold.label"/]
             [/@ui.bambooSection]
 			[/@ui.bambooSection]
             [@ui.bambooSection dependsOn='enableDependencyScan' showOn='true']
@@ -295,12 +309,14 @@
                     [@ww.textfield labelKey="osaHighThreshold.label" name="osaHighThreshold"/]
                     [@ww.textfield labelKey="osaMediumThreshold.label" name="osaMediumThreshold"/]
                     [@ww.textfield labelKey="osaLowThreshold.label" name="osaLowThreshold" /]
+                    [@ww.textfield labelKey="osaCriticalThreshold.label" name="osaCriticalThreshold" /]
                 [/@ui.bambooSection]
 
                 [@ui.bambooSection dependsOn='osaThresholdsEnabled' showOn='false']
                     [@ww.label labelKey="osaHighThreshold.label" /]
                     [@ww.label labelKey="osaMediumThreshold.label" /]
                     [@ww.label labelKey="osaLowThreshold.label"  /]
+                    [@ww.label labelKey="osaCriticalThreshold.label"  /]
                 [/@ui.bambooSection]
 
             [/@ui.bambooSection]
@@ -312,10 +328,19 @@
             [@ww.label labelKey="sastHighThreshold.label"/]
             [@ww.label labelKey="sastMediumThreshold.label"  /]
             [@ww.label labelKey="sastLowThreshold.label" /]
+            [#if (globalEnableCriticalSeverity.attribute)??]
+                [@ui.bambooSection dependsOn="globalEnableCriticalSeverity" showOn="true"]
+                [@ww.label labelKey="sastCriticalThreshold.label" /]
+                [/@ui.bambooSection]
+                [#else] 
+                [@ui.bambooSection dependsOn="globalEnableCriticalSeverity" showOn="false"]
+                [@ww.label labelKey="sastCriticalThreshold.label" /]
+                [/@ui.bambooSection]
+                [/#if]
             [@ww.checkbox labelKey="osaThresholdsEnabled.label" name="osaThresholdsEnabled"  descriptionKey="thresholdsEnabled.description"toggle='true' disabled="true" checked='false' /]
             [@ww.label labelKey="osaHighThreshold.label" /]
             [@ww.label labelKey="osaMediumThreshold.label" /]
-            [@ww.label labelKey="osaLowThreshold.label" /]            
+            [@ww.label labelKey="osaLowThreshold.label" /]           
         [/@ui.bambooSection]
 
     [/@ui.bambooSection]
@@ -341,12 +366,14 @@
                 [@ww.checkbox labelKey="thresholdsEnabled.label" name="globalThresholdsEnabled" descriptionKey="thresholdsEnabled.description" toggle='true' disabled="true" checked='true' /]
                 [@ww.label labelKey="sastHighThreshold.label" name="globalHighThreshold" /]
                 [@ww.label labelKey="sastMediumThreshold.label" name="globalMediumThreshold" /]
-                [@ww.label labelKey="sastLowThreshold.label" name="globalLowThreshold" /]                
+                [@ww.label labelKey="sastLowThreshold.label" name="globalLowThreshold" /]   
+                [@ww.label labelKey="sastCriticalThreshold.label" name="globalCriticalThreshold" /]              
             [#else]            
                 [@ww.checkbox labelKey="thresholdsEnabled.label" name="globalThresholdsEnabled" descriptionKey="thresholdsEnabled.description" toggle='true' disabled="true" /]
                 [@ww.label labelKey="sastHighThreshold.label"/]
                 [@ww.label labelKey="sastMediumThreshold.label"/]
-                [@ww.label labelKey="sastLowThreshold.label"/]                
+                [@ww.label labelKey="sastLowThreshold.label"/]    
+                [@ww.label labelKey="sastCriticalThreshold.label"/]                
             [/#if]
             
             [#if (globalOsaThresholdsEnabled.attribute)??]
@@ -354,11 +381,13 @@
                 [@ww.label labelKey="osaHighThreshold.label" name="globalOsaHighThreshold"/]
                 [@ww.label labelKey="osaMediumThreshold.label" name="globalOsaMediumThreshold" /]
                 [@ww.label labelKey="osaLowThreshold.label" name="globalOsaLowThreshold" /]
+                [@ww.label labelKey="osaCriticalThreshold.label" name="globalOsaCriticalThreshold" /]
             [#else]
                 [@ww.checkbox labelKey="osaThresholdsEnabled.label" name="globalOsaThresholdsEnabled" descriptionKey="thresholdsEnabled.description" toggle='true' disabled="true" /]
                 [@ww.label labelKey="osaHighThreshold.label" /]
                 [@ww.label labelKey="osaMediumThreshold.label" /]
                 [@ww.label labelKey="osaLowThreshold.label"/]
+                [@ww.label labelKey="osaCriticalThreshold.label"/]
             [/#if]
         [#else]
             [@ww.checkbox labelKey="isSynchronous.label" name="globalIsSynchronous" descriptionKey="isSynchronous.description" toggle='true' disabled="true" checked='false'/]

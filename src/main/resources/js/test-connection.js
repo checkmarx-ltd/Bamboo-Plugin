@@ -1,10 +1,13 @@
 (function ($) {
+	
     $(document).on("click", "#test_connection", function (event) {
-        $('#testConnectionMessage').html("");
+	alert("i am at 1");
+        $('#testConnectionMessage').html("i m at 1");
         restRequest();
     });
 
     function restRequest() {
+	alert("i am at 2");
 
         if (!validateFields()) {
             return populateEmptyDropdownList();
@@ -30,18 +33,46 @@
         }
 
         var xhr = createRestRequest("POST", "/rest/checkmarx/1.0/test/connection");
+        alert("i am at 3"+xhr);
+        console.log('XHR Object', xhr);
         if (!xhr) {
             console.log("Request Failed");
             return;
         }
-
+		alert("i am before onload");
         xhr.onload = function () {
+			alert("inside 1");
             var parsed = JSON.parse(xhr.responseText);
+                alert("parsed"+ parsed.cxVersion);
+                var sastVersion = parsed.cxVersion;
+                alert("inside onload function"+ sastVersion);
+                if (sastVersion !== null && sastVersion.trim() !== "") {
+	   				var versionComponents = sastVersion.split(".");
+	   				if (versionComponents.length >= 2) {
+		       			var currentVersion = versionComponents[0] + "." + versionComponents[1];
+		       			var currentVersionFloat = parseFloat(currentVersion);
+		       			if (currentVersionFloat >= parseFloat("9.7")) {
+							var criticalSeverity = $('#enableCriticalSeverity');
+							criticalSeverity.text('true');
+		           			document.getElementById("checkmarxDefaultConfiguration_criticalThreshold").style.display='block';
+		           			var criticalThresholdElement = $('#criticalThreshold');
+		           			criticalThresholdElement.css('visibility', 'visible');
+		       			}else{
+							var criticalSeverity = $('#enableCriticalSeverity');
+							criticalSeverity.text('false');
+		       				document.getElementById("checkmarxDefaultConfiguration_criticalThreshold").style.display='none';
+		       				$('#criticalThreshold').css('visibility', 'hidden');
+		       			}
+		       	
+		       			alert("sastVersionSplit: " + sastVersion + ', majorVersion: ' + versionComponents[0] + ', minorVersion: ' + versionComponents[1]);
+	   				}
+				}
             if (xhr.status == 200) {
                 $('#testConnectionMessage').css('color', 'green');
                 populateDropdownList(parsed.presetList, "#presetListId");
-                populateDropdownList(parsed.teamPathList, "#teamPathListId");
-            }
+                populateDropdownList(parsed.teamPathList, "#teamPathListId"); 
+   				
+   				}
             else {
                 $('#testConnectionMessage').css('color', '#d22020');
                 populateEmptyDropdownList();
