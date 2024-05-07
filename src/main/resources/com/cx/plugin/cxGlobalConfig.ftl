@@ -162,7 +162,7 @@
                 [@ww.textfield labelKey="sastCriticalThreshold.label" name="globalCriticalThreshold" required='false' toggle='true'/]
                 [/@ui.bambooSection]
                 [#else] 
-                [@ui.bambooSection dependsOn="globalEnableCriticalSeverity" showOn="true"]
+                [@ui.bambooSection dependsOn="globalEnableCriticalSeverity" showOn="false"]
                 [@ww.textfield labelKey="sastCriticalThreshold.label" name="globalCriticalThreshold" required='false' toggle='true'/]
                 [/@ui.bambooSection]
                 [/#if]
@@ -194,7 +194,6 @@ function connectToScaServer() {
 
         function restScaRequest() {
 			var request;
-			alert("inside rest sca request");
 			var scaServerUrl = document.getElementById("checkmarxDefaultConfiguration_globalcxScaAPIUrl").value;
             var scaAccessControlUrl = document.getElementById("checkmarxDefaultConfiguration_globalcxScaAccessControlServerUrl").value;
             var scaWebAppUrl = document.getElementById("checkmarxDefaultConfiguration_globalcxScaWebAppUrl").value;
@@ -347,9 +346,7 @@ function connectToScaServer() {
             xhr.onload = function () {
            
                 var parsed = JSON.parse(xhr.responseText);
-                alert("parsed"+ parsed.cxVersion);
                 var sastVersion = parsed.cxVersion;
-                alert("inside onload function"+ sastVersion);
                 if (sastVersion !== null && sastVersion.trim() !== "") {
 	   				var versionComponents = sastVersion.split(".");
 	   				if (versionComponents.length >= 2) {
@@ -357,24 +354,22 @@ function connectToScaServer() {
 		       			var currentVersionFloat = parseFloat(currentVersion);
 		       			if (currentVersionFloat >= parseFloat("9.7")) {
 		           			globalEnableCriticalSeverity = "true";
+		           			localStorage.setItem("criticalVisibility", "true");
 		           			document.getElementById("checkmarxDefaultConfiguration_globalCriticalThreshold").style.display='block';
 		           			const input = document.getElementById("checkmarxDefaultConfiguration_globalCriticalThreshold");
-		           			for (const label of input.labels) {   
-		           			alert(label.textContent); 
+		           			for (const label of input.labels) { 
 		           			label.style.display='block'
 		           			
 		           			}
 		       			}else{
 		       				globalEnableCriticalSeverity = "false";
+		       				localStorage.setItem("criticalVisibility", "false");
 		       				document.getElementById("checkmarxDefaultConfiguration_globalCriticalThreshold").style.display='none';
                				const input = document.getElementById("checkmarxDefaultConfiguration_globalCriticalThreshold");
-		           			for (const label of input.labels) {   
-		           			alert(label.textContent); 
+		           			for (const label of input.labels) { 
 		           			label.style.display='none'
 		           			}
 		       			}
-		       	
-		       			alert("sastVersionSplit: " + sastVersion + ', majorVersion: ' + versionComponents[0] + ', minorVersion: ' + versionComponents[1]);
 	   				}
 				}
                  
@@ -427,5 +422,23 @@ function connectToScaServer() {
             }
 
         }
+        
+       window.onload = function() {
+       var criticalVisibility = localStorage.getItem("criticalVisibility");
+       if (criticalVisibility === "true") {
+           document.getElementById("checkmarxDefaultConfiguration_globalCriticalThreshold").style.display = 'block';
+           const input = document.getElementById("checkmarxDefaultConfiguration_globalCriticalThreshold");
+		           			for (const label of input.labels) { 
+		           			label.style.display='block'
+		           			
+		           			}
+       } else {
+           document.getElementById("checkmarxDefaultConfiguration_globalCriticalThreshold").style.display = 'none';
+           const input = document.getElementById("checkmarxDefaultConfiguration_globalCriticalThreshold");
+		           			for (const label of input.labels) { 
+		           			label.style.display='none'
+		           			}
+       }
+   };
 </script>
 
