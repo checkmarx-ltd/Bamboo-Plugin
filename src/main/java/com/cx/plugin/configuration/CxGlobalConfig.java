@@ -48,33 +48,17 @@ public class CxGlobalConfig extends GlobalAdminAction {
     private String globalOsaHighThreshold;
     private String globalOsaMediumThreshold;
     private String globalOsaLowThreshold;
-    private String globalOsaCriticalThreshold;
     private String globalDenyProject;
     private String globalHideResults;
     private String globalEnableCriticalSeverity = OPTION_FALSE;
     
     private String globalEnableDependencyScan = OPTION_FALSE;
-	public String getGlobalEnableCriticalSeverity() {
-		return globalEnableCriticalSeverity;
-	}
-
-	public void setGlobalEnableCriticalSeverity(String globalEnableCriticalSeverity) {
-		this.globalEnableCriticalSeverity = globalEnableCriticalSeverity;
-	}
 
 	private String globalDependencyScanType;
 	
     private String globalDependencyScanFilterPatterns="";
     
     private boolean criticalSupported = false;
-    
-	public boolean isCriticalSupported() {
-		return criticalSupported;
-	}
-
-	public void setCriticalSupported(boolean criticalSupported) {
-		this.criticalSupported = criticalSupported;
-	}
 
 	private String globalDependencyScanfolderExclusions;
 	private String globalOsaArchiveIncludePatterns = DEFAULT_OSA_ARCHIVE_INCLUDE_PATTERNS;
@@ -152,7 +136,6 @@ public class CxGlobalConfig extends GlobalAdminAction {
         globalOsaHighThreshold = adminConfig.getSystemProperty(GLOBAL_OSA_HIGH_THRESHOLD);
         globalOsaMediumThreshold = adminConfig.getSystemProperty(GLOBAL_OSA_MEDIUM_THRESHOLD);
         globalOsaLowThreshold = adminConfig.getSystemProperty(GLOBAL_OSA_LOW_THRESHOLD);
-        globalOsaCriticalThreshold = adminConfig.getSystemProperty(GLOBAL_OSA_CRITICAL_THRESHOLD);
         globalDenyProject = adminConfig.getSystemProperty(GLOBAL_DENY_PROJECT);
         globalHideResults = adminConfig.getSystemProperty(GLOBAL_HIDE_RESULTS);
                 
@@ -182,7 +165,6 @@ public class CxGlobalConfig extends GlobalAdminAction {
                 error |= isNegative(getGlobalOsaHighThreshold(), GLOBAL_OSA_HIGH_THRESHOLD);
                 error |= isNegative(getGlobalOsaMediumThreshold(), GLOBAL_OSA_MEDIUM_THRESHOLD);
                 error |= isNegative(getGlobalOsaLowThreshold(), GLOBAL_OSA_LOW_THRESHOLD);
-                error |= isNegative(getGlobalOsaCriticalThreshold(), GLOBAL_OSA_CRITICAL_THRESHOLD);
             }
         }
         if (error) {
@@ -235,7 +217,6 @@ public class CxGlobalConfig extends GlobalAdminAction {
         adminConfig.setSystemProperty(GLOBAL_OSA_HIGH_THRESHOLD, globalOsaHighThreshold);
         adminConfig.setSystemProperty(GLOBAL_OSA_MEDIUM_THRESHOLD, globalOsaMediumThreshold);
         adminConfig.setSystemProperty(GLOBAL_OSA_LOW_THRESHOLD, globalOsaLowThreshold);
-        adminConfig.setSystemProperty(GLOBAL_OSA_CRITICAL_THRESHOLD, globalOsaCriticalThreshold);
         adminConfig.setSystemProperty(GLOBAL_DENY_PROJECT, globalDenyProject);
         adminConfig.setSystemProperty(GLOBAL_HIDE_RESULTS, globalHideResults);
         adminConfig.setSystemProperty(GLOBAL_ENABLE_CRITICAL_SEVERITY, globalEnableCriticalSeverity);
@@ -471,14 +452,6 @@ public class CxGlobalConfig extends GlobalAdminAction {
     public void setGlobalOsaLowThreshold(String globalOsaLowThreshold) {
         this.globalOsaLowThreshold = globalOsaLowThreshold;
     }
-    
-    public String getGlobalOsaCriticalThreshold() {
-        return globalOsaCriticalThreshold;
-    }
-
-    public void setGlobalOsaCriticalThreshold(String globalOsaCriticalThreshold) {
-        this.globalOsaCriticalThreshold = globalOsaCriticalThreshold;
-    }
 
     public String getGlobalDenyProject() {
         return globalDenyProject;
@@ -495,6 +468,14 @@ public class CxGlobalConfig extends GlobalAdminAction {
     public void setGlobalHideResults(String globalHideResults) {
         this.globalHideResults = globalHideResults;
     }
+    
+    public String getGlobalEnableCriticalSeverity() {
+		return globalEnableCriticalSeverity;
+	}
+
+	public void setGlobalEnableCriticalSeverity(String globalEnableCriticalSeverity) {
+		this.globalEnableCriticalSeverity = globalEnableCriticalSeverity;
+	}
     
 
 	public String getGlobalEnableDependencyScan() {

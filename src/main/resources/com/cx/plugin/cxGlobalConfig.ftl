@@ -174,7 +174,6 @@
                 [@ww.textfield labelKey="osaHighThreshold.label" name="globalOsaHighThreshold" required='false'/]
                 [@ww.textfield labelKey="osaMediumThreshold.label" name="globalOsaMediumThreshold" required='false'/]
                 [@ww.textfield labelKey="osaLowThreshold.label" name="globalOsaLowThreshold" required='false'/]
-                [@ww.textfield labelKey="osaCriticalThreshold.label" name="globalOsaCriticalThreshold" required='false'/]
             [/@ui.bambooSection]
             [/@ui.bambooSection]
         [/@ui.bambooSection]

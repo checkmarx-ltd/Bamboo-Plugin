@@ -56,7 +56,6 @@ public class CxParam {
     public static final String OSA_HIGH_THRESHOLD = "osaHighThreshold";
     public static final String OSA_MEDIUM_THRESHOLD = "osaMediumThreshold";
     public static final String OSA_LOW_THRESHOLD = "osaLowThreshold";
-    public static final String OSA_CRITICAL_THRESHOLD = "osaCriticalThreshold";
     public static final String SERVER_CREDENTIALS_SECTION = "serverCredentialsSection";
     public static final String CXSAST_SECTION = "cxSastSection";
     public static final String SCAN_CONTROL_SECTION = "scanControlSection";
@@ -127,7 +126,6 @@ public class CxParam {
     public static final String GLOBAL_OSA_HIGH_THRESHOLD = "globalOsaHighThreshold";
     public static final String GLOBAL_OSA_MEDIUM_THRESHOLD = "globalOsaMediumThreshold";
     public static final String GLOBAL_OSA_LOW_THRESHOLD = "globalOsaLowThreshold";
-    public static final String GLOBAL_OSA_CRITICAL_THRESHOLD = "globalOsaCriticalThreshold";
     public static final String GLOBAL_DENY_PROJECT = "globalDenyProject";
     public static final String IS_GLOBAL_DENY_PROJECT = "isglobalDenyProject";
     public static final String IS_GLOBAL_HIDE_RESULTS = "isglobalHideResults";

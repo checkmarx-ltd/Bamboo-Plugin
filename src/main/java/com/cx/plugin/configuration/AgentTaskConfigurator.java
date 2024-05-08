@@ -50,14 +50,6 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     private static final String DEFAULT_INTERVAL_ENDS = "04:00";
     
     private boolean criticalSupported = false;
-    
-	public boolean isCriticalSupported() {
-		return criticalSupported;
-	}
-
-	public void setCriticalSupported(boolean criticalSupported) {
-		this.criticalSupported = criticalSupported;
-	}
 
     private Map<String, String> CONFIGURATION_MODE_TYPES_MAP_SERVER = ImmutableMap.of(GLOBAL_CONFIGURATION_SERVER, DEFAULT_SETTING_LABEL, CUSTOM_CONFIGURATION_SERVER, SPECIFIC_SETTING_LABEL);
     private Map<String, String> CONFIGURATION_MODE_TYPES_MAP_CXSAST = ImmutableMap.of(GLOBAL_CONFIGURATION_CXSAST, DEFAULT_SETTING_LABEL, CUSTOM_CONFIGURATION_CXSAST, SPECIFIC_SETTING_LABEL);
@@ -415,7 +407,6 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
             context.put(OSA_HIGH_THRESHOLD, "");
             context.put(OSA_MEDIUM_THRESHOLD, "");
             context.put(OSA_LOW_THRESHOLD, "");
-            context.put(OSA_CRITICAL_THRESHOLD, "");
         } else {
             context.put(SCAN_CONTROL_SECTION, configMap.get(SCAN_CONTROL_SECTION));
             context.put(IS_SYNCHRONOUS, configMap.get(IS_SYNCHRONOUS));
@@ -431,7 +422,6 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
             context.put(OSA_HIGH_THRESHOLD, configMap.get(OSA_HIGH_THRESHOLD));
             context.put(OSA_MEDIUM_THRESHOLD, configMap.get(OSA_MEDIUM_THRESHOLD));
             context.put(OSA_LOW_THRESHOLD, configMap.get(OSA_LOW_THRESHOLD));
-            context.put(OSA_CRITICAL_THRESHOLD, configMap.get(OSA_CRITICAL_THRESHOLD));
         }
 
         context.put(GLOBAL_IS_SYNCHRONOUS, getAdminConfig(GLOBAL_IS_SYNCHRONOUS));
@@ -446,7 +436,6 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         context.put(GLOBAL_OSA_HIGH_THRESHOLD, getAdminConfig(GLOBAL_OSA_HIGH_THRESHOLD));
         context.put(GLOBAL_OSA_MEDIUM_THRESHOLD, getAdminConfig(GLOBAL_OSA_MEDIUM_THRESHOLD));
         context.put(GLOBAL_OSA_LOW_THRESHOLD, getAdminConfig(GLOBAL_OSA_LOW_THRESHOLD));
-        context.put(GLOBAL_OSA_CRITICAL_THRESHOLD, getAdminConfig(GLOBAL_OSA_CRITICAL_THRESHOLD));
         context.put(GLOBAL_HIDE_RESULTS, getAdminConfig(GLOBAL_HIDE_RESULTS));
         context.put(GLOBAL_DENY_PROJECT, getAdminConfig(GLOBAL_DENY_PROJECT));
     }
@@ -610,7 +599,6 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         config.put(OSA_HIGH_THRESHOLD, getDefaultString(params, OSA_HIGH_THRESHOLD));
         config.put(OSA_MEDIUM_THRESHOLD, getDefaultString(params, OSA_MEDIUM_THRESHOLD));
         config.put(OSA_LOW_THRESHOLD, getDefaultString(params, OSA_LOW_THRESHOLD));
-        config.put(OSA_CRITICAL_THRESHOLD, getDefaultString(params, OSA_CRITICAL_THRESHOLD));
 
 
         return config;
@@ -725,7 +713,6 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
             validateNotNegative(params, errorCollection, OSA_HIGH_THRESHOLD);
             validateNotNegative(params, errorCollection, OSA_MEDIUM_THRESHOLD);
             validateNotNegative(params, errorCollection, OSA_LOW_THRESHOLD);
-            validateNotNegative(params, errorCollection, OSA_CRITICAL_THRESHOLD);
         }
         if (errorCollection.hasAnyErrors()) {
             errorCollection.addError(ERROR_OCCURRED, ERROR_OCCURRED_MESSAGE);

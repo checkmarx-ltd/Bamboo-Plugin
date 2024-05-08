@@ -61,7 +61,7 @@ public class CxRestResource {
     @Path("test/connection")
     @Consumes({"application/json"})
     @Produces({"application/json"})
-    public Response testConnection(@NotNull Map<Object, Object> data) {
+    public Response testConnection(Map<Object, Object> data) {
 
         TestConnectionResponse tcResponse;
         result = "";

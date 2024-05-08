@@ -1,7 +1,7 @@
 (function ($) {
 	
     $(document).on("click", "#test_connection", function (event) {
-        $('#testConnectionMessage').html("i m at 1");
+        $('#testConnectionMessage').html("");
         restRequest();
     });
 
@@ -31,33 +31,32 @@
         }
 
         var xhr = createRestRequest("POST", "/rest/checkmarx/1.0/test/connection");
-        alert("i am at 3"+xhr);
-        console.log('XHR Object', xhr);
         if (!xhr) {
             console.log("Request Failed");
             return;
         }
-        xhr.onload = function () {
-            var parsed = JSON.parse(xhr.responseText);
-                var sastVersion = parsed.cxVersion;
-                alert("inside onload function"+ sastVersion);
-                if (sastVersion != null && sastVersion.trim() != "") {
-	   				var versionComponents = sastVersion.split(".");
-	   				
-				alert('version Components'+versionComponents);
-	   				if (versionComponents.length >= 2) {
-		       			var currentVersion = versionComponents[0] + "." + versionComponents[1];
-		       			var currentVersionFloat = parseFloat(currentVersion);
-		       			alert('before enable Critical Severity' + $('#enableCriticalSeverity').val());
-		       			if (currentVersionFloat >= parseFloat("9.7")) {
-							showCriticalSeverity();
-					}else {
-                       disableCriticalSeverity();
-                   }
-		       	alert('after enable Critical Severity' + $('#enableCriticalSeverity').val());
-		       	alert("sastVersionSplit: " + sastVersion + ', majorVersion: ' + versionComponents[0] + ', minorVersion: ' + versionComponents[1]);
-	   				}
-				}
+        xhr.onload = function() {
+		  var parsed = JSON.parse(xhr.responseText);
+		  var sastVersion = parsed.cxVersion;
+		    if (sastVersion != null && sastVersion.trim() != "") {
+		      var versionComponents = sastVersion.split(".");
+		      if (versionComponents.length >= 2) {
+		        var currentVersion = versionComponents[0] + "." + versionComponents[1];
+		        var currentVersionFloat = parseFloat(currentVersion);
+		        if (currentVersionFloat >= parseFloat("9.7")) {
+		
+		          document.getElementById("enableCriticalSeverity").value = "true";
+		          document.getElementById("criticalThresholdSection").style.display = 'block';
+		          document.getElementById("criticalThreshold").style.display = 'block';
+		          document.getElementById("fieldLabelArea_criticalThreshold").style.display = 'block';
+		        } else {
+		          document.getElementById("enableCriticalSeverity").value = "false";
+		          document.getElementById("criticalThresholdSection").style.display = 'none';
+		          document.getElementById("criticalThreshold").style.display = 'none';
+		          document.getElementById("fieldLabelArea_criticalThreshold").style.display = 'none';
+		        }
+		      }
+		    }
             if (xhr.status == 200) {
                 $('#testConnectionMessage').css('color', 'green');
                 populateDropdownList(parsed.presetList, "#presetListId");
@@ -68,7 +67,7 @@
                 $('#testConnectionMessage').css('color', '#d22020');
                 populateEmptyDropdownList();
             }
-            $('#testConnectionMessage').html('connection successful test');
+            $('#testConnectionMessage').html(parsed.loginResponse);
         };
 
 
@@ -78,19 +77,6 @@
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.send(request);
     }
-    
-    function showCriticalSeverity() {
-       document.getElementById("enableCriticalSeverity").value = "true";
-       document.getElementById("criticalThresholdSection").style.display = 'block';
-       document.getElementById("criticalThreshold").style.display = 'block';
-       document.getElementById("fieldLabelArea_criticalThreshold").style.display = 'block';
-   }
-   function disableCriticalSeverity() {
-       document.getElementById("enableCriticalSeverity").value = "false";
-       document.getElementById("criticalThresholdSection").style.display = 'none';
-       document.getElementById("criticalThreshold").style.display = 'none';
-       document.getElementById("fieldLabelArea_criticalThreshold").style.display = 'none';
-   }
 
     function validateFields() {
 
