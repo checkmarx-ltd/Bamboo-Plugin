@@ -13,6 +13,7 @@ public class TestConnectionResponse {
     public String loginResponse;
     public List<Preset> presetList;
     public List<Team> teamPathList;
+    public String cxVersion;
 
 
     public TestConnectionResponse(String loginResponse, List<Preset> presetList, List<Team> teamPathList) {
@@ -21,7 +22,15 @@ public class TestConnectionResponse {
         this.teamPathList = teamPathList;
     }
 
-    public TestConnectionResponse(String loginResponse) {
+    public String getCxVersion() {
+		return cxVersion;
+	}
+
+	public void setCxVersion(String cxVersion) {
+		this.cxVersion = cxVersion;
+	}
+
+	public TestConnectionResponse(String loginResponse) {
         this.loginResponse = loginResponse;
     }
 

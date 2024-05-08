@@ -76,8 +76,8 @@ public class CxRestResource {
         try {
             urlToCheck = StringUtils.defaultString(data.get("url"));
             url = new URL(urlToCheck);
-            
-        	if (loginToServer(url, username, decrypt(pas), proxyEnable)) {
+            String version = loginToServer(url, username, decrypt(pas), proxyEnable);
+        	if (version!=null) {
                 try {
                     teams = commonClient.getTeamList();
                 } catch (Exception e) {
@@ -89,6 +89,7 @@ public class CxRestResource {
                 }
                 result = "Connection successful";
                 tcResponse = new TestConnectionResponse(result, presets, teams);
+                tcResponse.setCxVersion(version);
                 statusCode = 200;
 
             } else {
@@ -181,7 +182,8 @@ public class CxRestResource {
         return new TestConnectionResponse(result, presets, teams);
     }
 
-    private boolean loginToServer(URL url, String username, String password, String proxyEnable) {
+    private String loginToServer(URL url, String username, String password, String proxyEnable) {
+    	String version = null;
         try {
             
         	ProxyConfig proxyConfig = HttpHelper.getProxyConfig();        	
@@ -202,13 +204,13 @@ public class CxRestResource {
 			}
 			
             commonClient = CommonClientFactory.getInstance(scanConfig, logger);
-            commonClient.login();
+            version = commonClient.login(true);
 
-            return true;
+            return version;
         } catch (Exception cxClientException) {
             logger.error("Fail to login: ", cxClientException);
             result = cxClientException.getMessage();
-            return false;
+            return version;
         }
     }
 }

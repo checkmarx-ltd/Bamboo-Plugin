@@ -44,6 +44,7 @@ import static com.cx.plugin.utils.CxParam.GLOBAL_HIDE_RESULTS;
 import static com.cx.plugin.utils.CxParam.GLOBAL_HIGH_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.GLOBAL_IS_SYNCHRONOUS;
 import static com.cx.plugin.utils.CxParam.GLOBAL_LOW_THRESHOLD;
+import static com.cx.plugin.utils.CxParam.GLOBAL_CRITICAL_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.GLOBAL_MEDIUM_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS;
 import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_HIGH_THRESHOLD;
@@ -66,6 +67,7 @@ import static com.cx.plugin.utils.CxParam.FORCE_SCAN;
 import static com.cx.plugin.utils.CxParam.IS_INTERVALS;
 import static com.cx.plugin.utils.CxParam.IS_SYNCHRONOUS;
 import static com.cx.plugin.utils.CxParam.LOW_THRESHOLD;
+import static com.cx.plugin.utils.CxParam.CRITICAL_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.MEDIUM_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.OPTION_TRUE;
 import static com.cx.plugin.utils.CxParam.OSA_ARCHIVE_INCLUDE_PATTERNS;
@@ -87,6 +89,7 @@ import static com.cx.plugin.utils.CxParam.SERVER_URL;
 import static com.cx.plugin.utils.CxParam.TEAM_PATH_ID;
 import static com.cx.plugin.utils.CxParam.TEAM_PATH_NAME;
 import static com.cx.plugin.utils.CxParam.THRESHOLDS_ENABLED;
+import static com.cx.plugin.utils.CxParam.ENABLE_CRITICAL_SEVERITY;
 import static com.cx.plugin.utils.CxParam.USER_NAME;
 import static com.cx.plugin.utils.CxParam.ENABLE_SAST_SCAN;
 import static com.cx.plugin.utils.CxPluginUtils.decrypt;
@@ -317,11 +320,12 @@ public class CxConfigHelper {
             scanConfig.setSastHighThreshold(resolveInt(configMap.get(HIGH_THRESHOLD), log));
             scanConfig.setSastMediumThreshold(resolveInt(configMap.get(MEDIUM_THRESHOLD), log));
             scanConfig.setSastLowThreshold(resolveInt(configMap.get(LOW_THRESHOLD), log));
+            scanConfig.setSastCriticalThreshold(resolveInt(configMap.get(CRITICAL_THRESHOLD), log));
         	}
             scanConfig.setOsaThresholdsEnabled(resolveBool(configMap, OSA_THRESHOLDS_ENABLED));
             scanConfig.setOsaHighThreshold(resolveInt(configMap.get(OSA_HIGH_THRESHOLD), log));
             scanConfig.setOsaMediumThreshold(resolveInt(configMap.get(OSA_MEDIUM_THRESHOLD), log));
-            scanConfig.setOsaLowThreshold(resolveInt(configMap.get(OSA_LOW_THRESHOLD), log));            
+            scanConfig.setOsaLowThreshold(resolveInt(configMap.get(OSA_LOW_THRESHOLD), log));  
             setUsingGlobalScanControlSettings(false);
         	} 
         	else {
@@ -333,11 +337,12 @@ public class CxConfigHelper {
             scanConfig.setSastHighThreshold(resolveInt(getAdminConfig(GLOBAL_HIGH_THRESHOLD), log));
             scanConfig.setSastMediumThreshold(resolveInt(getAdminConfig(GLOBAL_MEDIUM_THRESHOLD), log));
             scanConfig.setSastLowThreshold(resolveInt(getAdminConfig(GLOBAL_LOW_THRESHOLD), log));
+            scanConfig.setSastCriticalThreshold(resolveInt(getAdminConfig(GLOBAL_CRITICAL_THRESHOLD), log));
         		}
             scanConfig.setOsaThresholdsEnabled(resolveGlobalBool(GLOBAL_OSA_THRESHOLDS_ENABLED));
             scanConfig.setOsaHighThreshold(resolveInt(getAdminConfig(GLOBAL_OSA_HIGH_THRESHOLD), log));
             scanConfig.setOsaMediumThreshold(resolveInt(getAdminConfig(GLOBAL_OSA_MEDIUM_THRESHOLD), log));
-            scanConfig.setOsaLowThreshold(resolveInt(getAdminConfig(GLOBAL_OSA_LOW_THRESHOLD), log));            
+            scanConfig.setOsaLowThreshold(resolveInt(getAdminConfig(GLOBAL_OSA_LOW_THRESHOLD), log));  
             setUsingGlobalScanControlSettings(true);        
       }        
         scanConfig.setDenyProject(resolveGlobalBool(GLOBAL_DENY_PROJECT));
