@@ -41,6 +41,7 @@ public class CxParam {
     public static final String THRESHOLDS_ENABLED = "thresholdsEnabled";
     public static final String ENABLE_CRITICAL_SEVERITY = "enableCriticalSeverity";
     public static final String HIGH_THRESHOLD = "highThreshold";
+    
     public static final String MEDIUM_THRESHOLD = "mediumThreshold";
     public static final String LOW_THRESHOLD = "lowThreshold";
     public static final String CRITICAL_THRESHOLD = "criticalThreshold";

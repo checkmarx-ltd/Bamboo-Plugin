@@ -145,6 +145,8 @@ public class CxGlobalConfig extends GlobalAdminAction {
 
     public String save() {
         boolean error = isURLInvalid(globalServerUrl, GLOBAL_SERVER_URL);
+        globalEnableCriticalSeverity = OPTION_TRUE;
+        float version = (float) 9.7;
         
         error |= isScanTimeoutInvalid();
         if ("true".equals(globalEnableDependencyScan)) {
@@ -159,7 +161,13 @@ public class CxGlobalConfig extends GlobalAdminAction {
                 error |= isNegative(getGlobalHighThreshold(), GLOBAL_HIGH_THRESHOLD);
                 error |= isNegative(getGlobalMediumThreshold(), GLOBAL_MEDIUM_THRESHOLD);
                 error |= isNegative(getGlobalLowThreshold(), GLOBAL_LOW_THRESHOLD);
+                if(version >= 9.7 && OPTION_FALSE.equalsIgnoreCase(globalEnableCriticalSeverity)) {
+                	globalEnableCriticalSeverity = OPTION_TRUE;
+                	error |= isCriticalSupported("9.7",GLOBAL_CRITICAL_THRESHOLD);
+                	
+                }else {
                 error |= isNegative(getGlobalCriticalThreshold(), GLOBAL_CRITICAL_THRESHOLD);
+                }
             }
             if ("true".equals(globalOsaThresholdsEnabled)) {
                 error |= isNegative(getGlobalOsaHighThreshold(), GLOBAL_OSA_HIGH_THRESHOLD);
@@ -225,6 +233,24 @@ public class CxGlobalConfig extends GlobalAdminAction {
 
         addActionMessage(getText("cxDefaultConfigSuccess.label"));
         return SUCCESS;
+    }
+    
+    private boolean isCriticalSupported(@Nonnull String value, @Nonnull String key) {
+        boolean ret = false;
+        if (!StringUtils.isEmpty(value)) {
+            try {
+                double num = Double.parseDouble(value);
+                if (num >= 9.7) {
+                    addFieldError(key, getText(key + ".supported"));
+                    ret = true;
+                }
+
+            } catch (Exception e) {
+                addFieldError(key, getText(key + ".supported"));
+                ret = true;
+            }
+        }
+        return ret;
     }
 
     private boolean isURLInvalid(final String value, final String fieldName) {
