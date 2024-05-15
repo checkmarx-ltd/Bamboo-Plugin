@@ -148,7 +148,7 @@
     [@ui.bambooSection title='Control Checkmarx Scan' cssClass="cx center"]
 
         [@ww.checkbox labelKey="isSynchronous.label" name="globalIsSynchronous" descriptionKey="isSynchronous.description" toggle='true' /]
-
+		[@ww.hidden name="globalEnableCriticalSeverity"/]
         [@ui.bambooSection dependsOn='globalIsSynchronous' showOn='true']
             [@ww.checkbox labelKey="enablePolicyViolations.label" name="globalEnablePolicyViolations" descriptionKey="enablePolicyViolations.description" toggle='true' /]
             [@ww.checkbox labelKey="enablePolicyViolationsSCA.label" name="globalEnablePolicyViolationsSCA" descriptionKey="enablePolicyViolationsSCA.description" toggle='true' /]
