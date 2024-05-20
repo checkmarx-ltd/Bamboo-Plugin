@@ -41,10 +41,10 @@ import static com.cx.plugin.utils.CxParam.GLOBAL_ENABLE_PROXY;
 import static com.cx.plugin.utils.CxParam.GLOBAL_FILTER_PATTERN;
 import static com.cx.plugin.utils.CxParam.GLOBAL_FOLDER_EXCLUSION;
 import static com.cx.plugin.utils.CxParam.GLOBAL_HIDE_RESULTS;
+import static com.cx.plugin.utils.CxParam.GLOBAL_CRITICAL_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.GLOBAL_HIGH_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.GLOBAL_IS_SYNCHRONOUS;
 import static com.cx.plugin.utils.CxParam.GLOBAL_LOW_THRESHOLD;
-import static com.cx.plugin.utils.CxParam.GLOBAL_CRITICAL_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.GLOBAL_MEDIUM_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS;
 import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_HIGH_THRESHOLD;
@@ -317,10 +317,10 @@ public class CxConfigHelper {
                 scanConfig.setEnablePolicyViolationsSCA(resolveBool(configMap, POLICY_VIOLATION_ENABLED_SCA));
         		if(enableSAST) {
             scanConfig.setSastThresholdsEnabled(resolveBool(configMap, THRESHOLDS_ENABLED));
+            scanConfig.setSastCriticalThreshold(resolveInt(configMap.get(CRITICAL_THRESHOLD), log));
             scanConfig.setSastHighThreshold(resolveInt(configMap.get(HIGH_THRESHOLD), log));
             scanConfig.setSastMediumThreshold(resolveInt(configMap.get(MEDIUM_THRESHOLD), log));
             scanConfig.setSastLowThreshold(resolveInt(configMap.get(LOW_THRESHOLD), log));
-            scanConfig.setSastCriticalThreshold(resolveInt(configMap.get(CRITICAL_THRESHOLD), log));
         	}
             scanConfig.setOsaThresholdsEnabled(resolveBool(configMap, OSA_THRESHOLDS_ENABLED));
             scanConfig.setOsaHighThreshold(resolveInt(configMap.get(OSA_HIGH_THRESHOLD), log));
@@ -334,10 +334,10 @@ public class CxConfigHelper {
                 scanConfig.setEnablePolicyViolationsSCA(resolveGlobalBool(GLOBAL_POLICY_VIOLATION_ENABLED_SCA));
         		if(enableSAST) {
             scanConfig.setSastThresholdsEnabled(resolveGlobalBool(GLOBAL_THRESHOLDS_ENABLED));
+            scanConfig.setSastCriticalThreshold(resolveInt(getAdminConfig(GLOBAL_CRITICAL_THRESHOLD), log));
             scanConfig.setSastHighThreshold(resolveInt(getAdminConfig(GLOBAL_HIGH_THRESHOLD), log));
             scanConfig.setSastMediumThreshold(resolveInt(getAdminConfig(GLOBAL_MEDIUM_THRESHOLD), log));
             scanConfig.setSastLowThreshold(resolveInt(getAdminConfig(GLOBAL_LOW_THRESHOLD), log));
-            scanConfig.setSastCriticalThreshold(resolveInt(getAdminConfig(GLOBAL_CRITICAL_THRESHOLD), log));
         		}
             scanConfig.setOsaThresholdsEnabled(resolveGlobalBool(GLOBAL_OSA_THRESHOLDS_ENABLED));
             scanConfig.setOsaHighThreshold(resolveInt(getAdminConfig(GLOBAL_OSA_HIGH_THRESHOLD), log));

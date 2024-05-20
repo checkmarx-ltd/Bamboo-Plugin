@@ -148,24 +148,18 @@
     [@ui.bambooSection title='Control Checkmarx Scan' cssClass="cx center"]
 
         [@ww.checkbox labelKey="isSynchronous.label" name="globalIsSynchronous" descriptionKey="isSynchronous.description" toggle='true' /]
-
+		[@ww.hidden name="globalEnableCriticalSeverity"/]
         [@ui.bambooSection dependsOn='globalIsSynchronous' showOn='true']
             [@ww.checkbox labelKey="enablePolicyViolations.label" name="globalEnablePolicyViolations" descriptionKey="enablePolicyViolations.description" toggle='true' /]
             [@ww.checkbox labelKey="enablePolicyViolationsSCA.label" name="globalEnablePolicyViolationsSCA" descriptionKey="enablePolicyViolationsSCA.description" toggle='true' /]
             [@ww.checkbox labelKey="thresholdsEnabled.label" name="globalThresholdsEnabled" descriptionKey="thresholdsEnabled.description" toggle='true' /]
             [@ui.bambooSection dependsOn='globalThresholdsEnabled' showOn='true']
+            	[@ui.bambooSection dependsOn="globalEnableCriticalSeverity" showOn="true"]
+                [@ww.textfield labelKey="sastCriticalThreshold.label" name="globalCriticalThreshold" required='false'/]
+                [/@ui.bambooSection]
                 [@ww.textfield labelKey="sastHighThreshold.label" name="globalHighThreshold" required='false'/]
                 [@ww.textfield labelKey="sastMediumThreshold.label" name="globalMediumThreshold" required='false'/]
                 [@ww.textfield labelKey="sastLowThreshold.label" name="globalLowThreshold" required='false'/]
-                [#if (globalEnableCriticalSeverity.attribute)??]
-                [@ui.bambooSection dependsOn="globalEnableCriticalSeverity" showOn="true"]
-                [@ww.textfield labelKey="sastCriticalThreshold.label" name="globalCriticalThreshold" required='false' toggle='true'/]
-                [/@ui.bambooSection]
-                [#else] 
-                [@ui.bambooSection dependsOn="globalEnableCriticalSeverity" showOn="false"]
-                [@ww.textfield labelKey="sastCriticalThreshold.label" name="globalCriticalThreshold" required='false' toggle='true'/]
-                [/@ui.bambooSection]
-                [/#if]
             [/@ui.bambooSection]
 
             [@ui.bambooSection dependsOn='globalEnableDependencyScan' showOn='true']
@@ -345,32 +339,6 @@ function connectToScaServer() {
             xhr.onload = function () {
            
                 var parsed = JSON.parse(xhr.responseText);
-                var sastVersion = parsed.cxVersion;
-                if (sastVersion !== null && sastVersion.trim() !== "") {
-	   				var versionComponents = sastVersion.split(".");
-	   				if (versionComponents.length >= 2) {
-		       			var currentVersion = versionComponents[0] + "." + versionComponents[1];
-		       			var currentVersionFloat = parseFloat(currentVersion);
-		       			if (currentVersionFloat >= parseFloat("9.7")) {
-		           			globalEnableCriticalSeverity = "true";
-		           			localStorage.setItem("criticalVisibility", "true");
-		           			document.getElementById("checkmarxDefaultConfiguration_globalCriticalThreshold").style.display='block';
-		           			const input = document.getElementById("checkmarxDefaultConfiguration_globalCriticalThreshold");
-		           			for (const label of input.labels) { 
-		           			label.style.display='block'
-		           			
-		           			}
-		       			}else{
-		       				globalEnableCriticalSeverity = "false";
-		       				localStorage.setItem("criticalVisibility", "false");
-		       				document.getElementById("checkmarxDefaultConfiguration_globalCriticalThreshold").style.display='none';
-               				const input = document.getElementById("checkmarxDefaultConfiguration_globalCriticalThreshold");
-		           			for (const label of input.labels) { 
-		           			label.style.display='none'
-		           			}
-		       			}
-	   				}
-				}
                  
                 
                 var message = document.getElementById("gtestConnectionMessage");
@@ -421,23 +389,5 @@ function connectToScaServer() {
             }
 
         }
-        
-       window.onload = function() {
-       var criticalVisibility = localStorage.getItem("criticalVisibility");
-       if (criticalVisibility === "true") {
-           document.getElementById("checkmarxDefaultConfiguration_globalCriticalThreshold").style.display = 'block';
-           const input = document.getElementById("checkmarxDefaultConfiguration_globalCriticalThreshold");
-		           			for (const label of input.labels) { 
-		           			label.style.display='block'
-		           			
-		           			}
-       } else {
-           document.getElementById("checkmarxDefaultConfiguration_globalCriticalThreshold").style.display = 'none';
-           const input = document.getElementById("checkmarxDefaultConfiguration_globalCriticalThreshold");
-		           			for (const label of input.labels) { 
-		           			label.style.display='none'
-		           			}
-       }
-   };
 </script>
 

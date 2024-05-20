@@ -8,6 +8,7 @@ import com.atlassian.bamboo.utils.error.ErrorCollection;
 import com.atlassian.bamboo.ww2.actions.build.admin.config.task.ConfigureBuildTasks;
 import com.atlassian.spring.container.ContainerManager;
 import com.cx.plugin.utils.HttpHelper;
+import com.cx.plugin.utils.SASTUtils;
 import com.cx.restclient.configuration.CxScanConfig;
 import com.cx.restclient.dto.ProxyConfig;
 import com.cx.restclient.dto.ScannerType;
@@ -60,7 +61,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     //create task configuration
     @Override
     public void populateContextForCreate(@NotNull final Map<String, Object> context) {
-        super.populateContextForCreate(context);
+    	super.populateContextForCreate(context);
         context.put("configurationModeTypesServer", CONFIGURATION_MODE_TYPES_MAP_SERVER);
         context.put("configurationModeTypesCxSAST", CONFIGURATION_MODE_TYPES_MAP_CXSAST);
         context.put("configurationModeTypesControl", CONFIGURATION_MODE_TYPES_MAP_CONTROL);
@@ -156,8 +157,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     //edit task configuration
     @Override
     public void populateContextForEdit(@NotNull final Map<String, Object> context, @NotNull final TaskDefinition taskDefinition) {
-
-        super.populateContextForEdit(context, taskDefinition);
+    	super.populateContextForEdit(context, taskDefinition);
         Map<String, String> configMap = taskDefinition.getConfiguration();
 
         context.put("configurationModeTypesServer", CONFIGURATION_MODE_TYPES_MAP_SERVER);
@@ -399,10 +399,10 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
             context.put(POLICY_VIOLATION_ENABLED_SCA, OPTION_FALSE);
             context.put(THRESHOLDS_ENABLED, OPTION_FALSE);
             context.put(ENABLE_CRITICAL_SEVERITY, OPTION_FALSE);
+            context.put(CRITICAL_THRESHOLD, "");
             context.put(HIGH_THRESHOLD, "");
             context.put(MEDIUM_THRESHOLD, "");
             context.put(LOW_THRESHOLD, "");
-            context.put(CRITICAL_THRESHOLD, "");
             context.put(OSA_THRESHOLDS_ENABLED, OPTION_FALSE);
             context.put(OSA_HIGH_THRESHOLD, "");
             context.put(OSA_MEDIUM_THRESHOLD, "");
@@ -414,10 +414,10 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
             context.put(POLICY_VIOLATION_ENABLED_SCA, configMap.get(POLICY_VIOLATION_ENABLED_SCA));
             context.put(THRESHOLDS_ENABLED, configMap.get(THRESHOLDS_ENABLED));
             context.put(ENABLE_CRITICAL_SEVERITY, configMap.get(ENABLE_CRITICAL_SEVERITY));
+            context.put(CRITICAL_THRESHOLD, configMap.get(CRITICAL_THRESHOLD));
             context.put(HIGH_THRESHOLD, configMap.get(HIGH_THRESHOLD));
             context.put(MEDIUM_THRESHOLD, configMap.get(MEDIUM_THRESHOLD));
             context.put(LOW_THRESHOLD, configMap.get(LOW_THRESHOLD));
-            context.put(CRITICAL_THRESHOLD, configMap.get(CRITICAL_THRESHOLD));
             context.put(OSA_THRESHOLDS_ENABLED, configMap.get(OSA_THRESHOLDS_ENABLED));
             context.put(OSA_HIGH_THRESHOLD, configMap.get(OSA_HIGH_THRESHOLD));
             context.put(OSA_MEDIUM_THRESHOLD, configMap.get(OSA_MEDIUM_THRESHOLD));
@@ -428,10 +428,10 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         context.put(GLOBAL_POLICY_VIOLATION_ENABLED, getAdminConfig(GLOBAL_POLICY_VIOLATION_ENABLED));
         context.put(GLOBAL_POLICY_VIOLATION_ENABLED_SCA, getAdminConfig(GLOBAL_POLICY_VIOLATION_ENABLED_SCA));
         context.put(GLOBAL_THRESHOLDS_ENABLED, getAdminConfig(GLOBAL_THRESHOLDS_ENABLED));
+        context.put(GLOBAL_CRITICAL_THRESHOLD, getAdminConfig(GLOBAL_CRITICAL_THRESHOLD));
         context.put(GLOBAL_HIGH_THRESHOLD, getAdminConfig(GLOBAL_HIGH_THRESHOLD));
         context.put(GLOBAL_MEDIUM_THRESHOLD, getAdminConfig(GLOBAL_MEDIUM_THRESHOLD));
         context.put(GLOBAL_LOW_THRESHOLD, getAdminConfig(GLOBAL_LOW_THRESHOLD));
-        context.put(GLOBAL_CRITICAL_THRESHOLD, getAdminConfig(GLOBAL_CRITICAL_THRESHOLD));
         context.put(GLOBAL_OSA_THRESHOLDS_ENABLED, getAdminConfig(GLOBAL_OSA_THRESHOLDS_ENABLED));
         context.put(GLOBAL_OSA_HIGH_THRESHOLD, getAdminConfig(GLOBAL_OSA_HIGH_THRESHOLD));
         context.put(GLOBAL_OSA_MEDIUM_THRESHOLD, getAdminConfig(GLOBAL_OSA_MEDIUM_THRESHOLD));
@@ -444,8 +444,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     @NotNull
     @Override
     public Map<String, String> generateTaskConfigMap(@NotNull final ActionParametersMap params, @javax.annotation.Nullable final TaskDefinition previousTaskDefinition) {
-
-        Map<String, String> config = super.generateTaskConfigMap(params, previousTaskDefinition);
+    	Map<String, String> config = super.generateTaskConfigMap(params, previousTaskDefinition);
         config = generateCredentialsFields(params, config);
         config.put(ENABLE_SAST_SCAN, params.getString(ENABLE_SAST_SCAN));
         config.put(PROJECT_NAME, getDefaultString(params, PROJECT_NAME).trim());
@@ -591,10 +590,10 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         config.put(SCAN_CONTROL_SECTION, configType);
         config.put(THRESHOLDS_ENABLED, params.getString(THRESHOLDS_ENABLED));
         config.put(ENABLE_CRITICAL_SEVERITY, params.getString(ENABLE_CRITICAL_SEVERITY));
+        config.put(CRITICAL_THRESHOLD, getDefaultString(params, CRITICAL_THRESHOLD));
         config.put(HIGH_THRESHOLD, getDefaultString(params, HIGH_THRESHOLD));
         config.put(MEDIUM_THRESHOLD, getDefaultString(params, MEDIUM_THRESHOLD));
         config.put(LOW_THRESHOLD, getDefaultString(params, LOW_THRESHOLD));
-        config.put(CRITICAL_THRESHOLD, getDefaultString(params, CRITICAL_THRESHOLD));
         config.put(OSA_THRESHOLDS_ENABLED, params.getString(OSA_THRESHOLDS_ENABLED));
         config.put(OSA_HIGH_THRESHOLD, getDefaultString(params, OSA_HIGH_THRESHOLD));
         config.put(OSA_MEDIUM_THRESHOLD, getDefaultString(params, OSA_MEDIUM_THRESHOLD));
@@ -667,7 +666,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     //validate configuration fields
     @Override
     public void validate(@NotNull final ActionParametersMap params, @NotNull final ErrorCollection errorCollection) {
-        super.validate(params, errorCollection);
+    	super.validate(params, errorCollection);
         if (params.getBoolean(IS_INCREMENTAL) && params.getBoolean(FORCE_SCAN)) {
         	errorCollection.addError(FORCE_SCAN, ((ConfigureBuildTasks) errorCollection).getText("errorForceIncrementalScan.equals"));
         	errorCollection.addError(IS_INCREMENTAL, ((ConfigureBuildTasks) errorCollection).getText("errorForceIncrementalScan.equals"));
@@ -706,10 +705,11 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 
         useSpecific = params.getString(SCAN_CONTROL_SECTION);
         if (CUSTOM_CONFIGURATION_CONTROL.equals(useSpecific)) {
+            validateNotNegative(params, errorCollection, CRITICAL_THRESHOLD);
+            validateCriticalSupport(params, errorCollection, CRITICAL_THRESHOLD);
             validateNotNegative(params, errorCollection, HIGH_THRESHOLD);
             validateNotNegative(params, errorCollection, MEDIUM_THRESHOLD);
             validateNotNegative(params, errorCollection, LOW_THRESHOLD);
-            validateNotNegative(params, errorCollection, CRITICAL_THRESHOLD);
             validateNotNegative(params, errorCollection, OSA_HIGH_THRESHOLD);
             validateNotNegative(params, errorCollection, OSA_MEDIUM_THRESHOLD);
             validateNotNegative(params, errorCollection, OSA_LOW_THRESHOLD);
@@ -787,6 +787,62 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
             } catch (Exception e) {
                 errorCollection.addError(key, ((ConfigureBuildTasks) errorCollection).getText(key + ".notPositive"));
             }
+        }
+    }
+    
+    private void validateCriticalSupport(@NotNull ActionParametersMap params, @NotNull final ErrorCollection errorCollection, @NotNull String key) {
+    	Double version = 9.0;
+    	if(OPTION_TRUE.equalsIgnoreCase(params.getString(IS_SYNCHRONOUS)) 
+    			&& OPTION_TRUE.equalsIgnoreCase(params.getString(THRESHOLDS_ENABLED))){        	
+        		String cxServerUrl = "";
+                String cxUser = "";
+                String cxPass = "";
+                String proxyEnable = "";
+                if(GLOBAL_CONFIGURATION_SERVER.equalsIgnoreCase(params.getString(SERVER_CREDENTIALS_SECTION))) {//For global configuration case        			
+        			cxServerUrl = getAdminConfig(GLOBAL_SERVER_URL);
+        	        cxUser = getAdminConfig(GLOBAL_USER_NAME);
+        	        cxPass = getAdminConfig(GLOBAL_PWD);
+        	        proxyEnable = getAdminConfig(GLOBAL_ENABLE_PROXY);        			
+        		}
+        		else { // For use specific case
+        			cxUser = params.getString(USER_NAME);
+        			cxPass = params.getString(PASSWORD);
+        			cxServerUrl = params.getString(SERVER_URL);
+        			proxyEnable = params.getString(ENABLE_PROXY);        			
+        		}
+        		String sastVersion;
+    			//fetch SAST version using api call
+				try {
+					sastVersion = SASTUtils.loginToServer(new URL(cxServerUrl),cxUser,decrypt(cxPass),proxyEnable);
+					String[] sastVersionSplit = sastVersion.split("\\.");
+					version = Double.parseDouble(sastVersionSplit[0]+"."+sastVersionSplit[1]);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				//check if SAST version support critical threshold
+        		if(version >= 9.7) {
+        			if(OPTION_FALSE.equalsIgnoreCase(params.getString(ENABLE_CRITICAL_SEVERITY))) {//This condition represents version of SAST is changed from SAST < 9.7 to SAST >=9.7
+        				//following param will make critical threshold visible in UI
+        				params.put(ENABLE_CRITICAL_SEVERITY, OPTION_TRUE);
+        				//reset the value of critical threshold
+        				params.put(CRITICAL_THRESHOLD,"");
+            			errorCollection.addError(CRITICAL_THRESHOLD,"The configured SAST version supports Critical severity. Critical threshold can also be configured.");
+            		} else {
+        				//This condition represents version of SAST remains same as before i.e SAST >=9.7. Thus no change is needed.
+            		}
+        		}else {
+        			if( OPTION_TRUE.equalsIgnoreCase(params.getString(ENABLE_CRITICAL_SEVERITY))){//This condition represents version of SAST is changed from SAST >= 9.7 to SAST < 9.7
+        				//if SAST version is prior to 9.7 then do not show critical threshold on UI
+        				params.put(ENABLE_CRITICAL_SEVERITY, OPTION_FALSE);
+        				//reset the critical threshold value to empty
+        				params.put(CRITICAL_THRESHOLD,"");
+        				// following message is displayed on UI to make user aware of the critical threshold is not supported by this version of SAST.
+        				errorCollection.addError(HIGH_THRESHOLD,"The configured SAST version does not support Critical severity. Critical threshold will not be applicable.");
+        				}else {
+        					//This condition represents version of SAST remains same as before i.e SAST < 9.7. Thus no change is needed.
+        					}        			
+        		}        		        		
+        	        	
         }
     }
 

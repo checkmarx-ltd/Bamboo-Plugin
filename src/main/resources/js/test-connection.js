@@ -37,26 +37,6 @@
         }
         xhr.onload = function() {
 		  var parsed = JSON.parse(xhr.responseText);
-		  var sastVersion = parsed.cxVersion;
-		    if (sastVersion != null && sastVersion.trim() != "") {
-		      var versionComponents = sastVersion.split(".");
-		      if (versionComponents.length >= 2) {
-		        var currentVersion = versionComponents[0] + "." + versionComponents[1];
-		        var currentVersionFloat = parseFloat(currentVersion);
-		        if (currentVersionFloat >= parseFloat("9.7")) {
-		
-		          document.getElementById("enableCriticalSeverity").value = "true";
-		          document.getElementById("criticalThresholdSection").style.display = 'block';
-		          document.getElementById("criticalThreshold").style.display = 'block';
-		          document.getElementById("fieldLabelArea_criticalThreshold").style.display = 'block';
-		        } else {
-		          document.getElementById("enableCriticalSeverity").value = "false";
-		          document.getElementById("criticalThresholdSection").style.display = 'none';
-		          document.getElementById("criticalThreshold").style.display = 'none';
-		          document.getElementById("fieldLabelArea_criticalThreshold").style.display = 'none';
-		        }
-		      }
-		    }
             if (xhr.status == 200) {
                 $('#testConnectionMessage').css('color', 'green');
                 populateDropdownList(parsed.presetList, "#presetListId");

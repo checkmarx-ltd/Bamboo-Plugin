@@ -40,10 +40,11 @@ public class CxParam {
     public static final String IS_SYNCHRONOUS = "isSynchronous";
     public static final String THRESHOLDS_ENABLED = "thresholdsEnabled";
     public static final String ENABLE_CRITICAL_SEVERITY = "enableCriticalSeverity";
+    public static final String CRITICAL_THRESHOLD = "criticalThreshold";
     public static final String HIGH_THRESHOLD = "highThreshold";
+    
     public static final String MEDIUM_THRESHOLD = "mediumThreshold";
     public static final String LOW_THRESHOLD = "lowThreshold";
-    public static final String CRITICAL_THRESHOLD = "criticalThreshold";
     public static final String POLICY_VIOLATION_ENABLED = "enablePolicyViolations";
     public static final String POLICY_VIOLATION_ENABLED_SCA = "enablePolicyViolationsSCA";
     public static final String OSA_ENABLED = "osaEnabled";
@@ -118,10 +119,10 @@ public class CxParam {
     public static final String GLOBAL_SCAN_TIMEOUT_IN_MINUTES = "globalScanTimeoutInMinutes";
     public static final String GLOBAL_IS_SYNCHRONOUS = "globalIsSynchronous";
     public static final String GLOBAL_THRESHOLDS_ENABLED = "globalThresholdsEnabled";
+    public static final String GLOBAL_CRITICAL_THRESHOLD = "globalCriticalThreshold";
     public static final String GLOBAL_HIGH_THRESHOLD = "globalHighThreshold";
     public static final String GLOBAL_MEDIUM_THRESHOLD = "globalMediumThreshold";
     public static final String GLOBAL_LOW_THRESHOLD = "globalLowThreshold";
-    public static final String GLOBAL_CRITICAL_THRESHOLD = "globalCriticalThreshold";
     public static final String GLOBAL_OSA_THRESHOLDS_ENABLED = "globalOsaThresholdsEnabled";
     public static final String GLOBAL_OSA_HIGH_THRESHOLD = "globalOsaHighThreshold";
     public static final String GLOBAL_OSA_MEDIUM_THRESHOLD = "globalOsaMediumThreshold";
