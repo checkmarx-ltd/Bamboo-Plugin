@@ -43,10 +43,10 @@ public class CxGlobalConfig extends GlobalAdminAction {
     private String globalEnablePolicyViolationsSCA;
     private String globalScanTimeoutInMinutes;
     private String globalThresholdsEnabled;
+    private String globalCriticalThreshold;
     private String globalHighThreshold;
     private String globalMediumThreshold;
     private String globalLowThreshold;
-    private String globalCriticalThreshold;
     private String globalOsaThresholdsEnabled;
     private String globalOsaHighThreshold;
     private String globalOsaMediumThreshold;
@@ -131,10 +131,10 @@ public class CxGlobalConfig extends GlobalAdminAction {
         globalEnablePolicyViolations = adminConfig.getSystemProperty(GLOBAL_POLICY_VIOLATION_ENABLED);
         globalEnablePolicyViolationsSCA = adminConfig.getSystemProperty(GLOBAL_POLICY_VIOLATION_ENABLED_SCA);
         globalThresholdsEnabled = adminConfig.getSystemProperty(GLOBAL_THRESHOLDS_ENABLED);
+        globalCriticalThreshold = adminConfig.getSystemProperty(GLOBAL_CRITICAL_THRESHOLD);
         globalHighThreshold = adminConfig.getSystemProperty(GLOBAL_HIGH_THRESHOLD);
         globalMediumThreshold = adminConfig.getSystemProperty(GLOBAL_MEDIUM_THRESHOLD);
         globalLowThreshold = adminConfig.getSystemProperty(GLOBAL_LOW_THRESHOLD);
-        globalCriticalThreshold = adminConfig.getSystemProperty(GLOBAL_CRITICAL_THRESHOLD);
         globalOsaThresholdsEnabled = adminConfig.getSystemProperty(GLOBAL_OSA_THRESHOLDS_ENABLED);
         globalOsaHighThreshold = adminConfig.getSystemProperty(GLOBAL_OSA_HIGH_THRESHOLD);
         globalOsaMediumThreshold = adminConfig.getSystemProperty(GLOBAL_OSA_MEDIUM_THRESHOLD);
@@ -160,11 +160,11 @@ public class CxGlobalConfig extends GlobalAdminAction {
         }
         if ("true".equals(globalIsSynchronous)) {
             if ("true".equals(globalThresholdsEnabled)) {
+                
+                error |= isNegative(getGlobalCriticalThreshold(), GLOBAL_CRITICAL_THRESHOLD);
                 error |= isNegative(getGlobalHighThreshold(), GLOBAL_HIGH_THRESHOLD);
                 error |= isNegative(getGlobalMediumThreshold(), GLOBAL_MEDIUM_THRESHOLD);
                 error |= isNegative(getGlobalLowThreshold(), GLOBAL_LOW_THRESHOLD);
-                
-                error |= isNegative(getGlobalCriticalThreshold(), GLOBAL_CRITICAL_THRESHOLD);
                 
             }
             if ("true".equals(globalOsaThresholdsEnabled)) {
@@ -436,6 +436,14 @@ public class CxGlobalConfig extends GlobalAdminAction {
     public void setGlobalThresholdsEnabled(String globalThresholdsEnabled) {
         this.globalThresholdsEnabled = globalThresholdsEnabled;
     }
+    
+    public String getGlobalCriticalThreshold() {
+        return globalCriticalThreshold;
+    }
+
+    public void setGlobalCriticalThreshold(String globalCriticalThreshold) {
+        this.globalCriticalThreshold = globalCriticalThreshold;
+    }
 
     public String getGlobalHighThreshold() {
         return globalHighThreshold;
@@ -459,14 +467,6 @@ public class CxGlobalConfig extends GlobalAdminAction {
 
     public void setGlobalLowThreshold(String globalLowThreshold) {
         this.globalLowThreshold = globalLowThreshold;
-    }
-    
-    public String getGlobalCriticalThreshold() {
-        return globalCriticalThreshold;
-    }
-
-    public void setGlobalCriticalThreshold(String globalCriticalThreshold) {
-        this.globalCriticalThreshold = globalCriticalThreshold;
     }
 
     public String getGlobalOsaThresholdsEnabled() {

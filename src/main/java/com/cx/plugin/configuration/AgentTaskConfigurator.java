@@ -399,10 +399,10 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
             context.put(POLICY_VIOLATION_ENABLED_SCA, OPTION_FALSE);
             context.put(THRESHOLDS_ENABLED, OPTION_FALSE);
             context.put(ENABLE_CRITICAL_SEVERITY, OPTION_FALSE);
+            context.put(CRITICAL_THRESHOLD, "");
             context.put(HIGH_THRESHOLD, "");
             context.put(MEDIUM_THRESHOLD, "");
             context.put(LOW_THRESHOLD, "");
-            context.put(CRITICAL_THRESHOLD, "");
             context.put(OSA_THRESHOLDS_ENABLED, OPTION_FALSE);
             context.put(OSA_HIGH_THRESHOLD, "");
             context.put(OSA_MEDIUM_THRESHOLD, "");
@@ -414,10 +414,10 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
             context.put(POLICY_VIOLATION_ENABLED_SCA, configMap.get(POLICY_VIOLATION_ENABLED_SCA));
             context.put(THRESHOLDS_ENABLED, configMap.get(THRESHOLDS_ENABLED));
             context.put(ENABLE_CRITICAL_SEVERITY, configMap.get(ENABLE_CRITICAL_SEVERITY));
+            context.put(CRITICAL_THRESHOLD, configMap.get(CRITICAL_THRESHOLD));
             context.put(HIGH_THRESHOLD, configMap.get(HIGH_THRESHOLD));
             context.put(MEDIUM_THRESHOLD, configMap.get(MEDIUM_THRESHOLD));
             context.put(LOW_THRESHOLD, configMap.get(LOW_THRESHOLD));
-            context.put(CRITICAL_THRESHOLD, configMap.get(CRITICAL_THRESHOLD));
             context.put(OSA_THRESHOLDS_ENABLED, configMap.get(OSA_THRESHOLDS_ENABLED));
             context.put(OSA_HIGH_THRESHOLD, configMap.get(OSA_HIGH_THRESHOLD));
             context.put(OSA_MEDIUM_THRESHOLD, configMap.get(OSA_MEDIUM_THRESHOLD));
@@ -428,10 +428,10 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         context.put(GLOBAL_POLICY_VIOLATION_ENABLED, getAdminConfig(GLOBAL_POLICY_VIOLATION_ENABLED));
         context.put(GLOBAL_POLICY_VIOLATION_ENABLED_SCA, getAdminConfig(GLOBAL_POLICY_VIOLATION_ENABLED_SCA));
         context.put(GLOBAL_THRESHOLDS_ENABLED, getAdminConfig(GLOBAL_THRESHOLDS_ENABLED));
+        context.put(GLOBAL_CRITICAL_THRESHOLD, getAdminConfig(GLOBAL_CRITICAL_THRESHOLD));
         context.put(GLOBAL_HIGH_THRESHOLD, getAdminConfig(GLOBAL_HIGH_THRESHOLD));
         context.put(GLOBAL_MEDIUM_THRESHOLD, getAdminConfig(GLOBAL_MEDIUM_THRESHOLD));
         context.put(GLOBAL_LOW_THRESHOLD, getAdminConfig(GLOBAL_LOW_THRESHOLD));
-        context.put(GLOBAL_CRITICAL_THRESHOLD, getAdminConfig(GLOBAL_CRITICAL_THRESHOLD));
         context.put(GLOBAL_OSA_THRESHOLDS_ENABLED, getAdminConfig(GLOBAL_OSA_THRESHOLDS_ENABLED));
         context.put(GLOBAL_OSA_HIGH_THRESHOLD, getAdminConfig(GLOBAL_OSA_HIGH_THRESHOLD));
         context.put(GLOBAL_OSA_MEDIUM_THRESHOLD, getAdminConfig(GLOBAL_OSA_MEDIUM_THRESHOLD));
@@ -590,10 +590,10 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         config.put(SCAN_CONTROL_SECTION, configType);
         config.put(THRESHOLDS_ENABLED, params.getString(THRESHOLDS_ENABLED));
         config.put(ENABLE_CRITICAL_SEVERITY, params.getString(ENABLE_CRITICAL_SEVERITY));
+        config.put(CRITICAL_THRESHOLD, getDefaultString(params, CRITICAL_THRESHOLD));
         config.put(HIGH_THRESHOLD, getDefaultString(params, HIGH_THRESHOLD));
         config.put(MEDIUM_THRESHOLD, getDefaultString(params, MEDIUM_THRESHOLD));
         config.put(LOW_THRESHOLD, getDefaultString(params, LOW_THRESHOLD));
-        config.put(CRITICAL_THRESHOLD, getDefaultString(params, CRITICAL_THRESHOLD));
         config.put(OSA_THRESHOLDS_ENABLED, params.getString(OSA_THRESHOLDS_ENABLED));
         config.put(OSA_HIGH_THRESHOLD, getDefaultString(params, OSA_HIGH_THRESHOLD));
         config.put(OSA_MEDIUM_THRESHOLD, getDefaultString(params, OSA_MEDIUM_THRESHOLD));
@@ -705,11 +705,11 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 
         useSpecific = params.getString(SCAN_CONTROL_SECTION);
         if (CUSTOM_CONFIGURATION_CONTROL.equals(useSpecific)) {
+            validateNotNegative(params, errorCollection, CRITICAL_THRESHOLD);
+            validateCriticalSupport(params, errorCollection, CRITICAL_THRESHOLD);
             validateNotNegative(params, errorCollection, HIGH_THRESHOLD);
             validateNotNegative(params, errorCollection, MEDIUM_THRESHOLD);
             validateNotNegative(params, errorCollection, LOW_THRESHOLD);
-            validateNotNegative(params, errorCollection, CRITICAL_THRESHOLD);
-            validateCriticalSupport(params, errorCollection, CRITICAL_THRESHOLD);
             validateNotNegative(params, errorCollection, OSA_HIGH_THRESHOLD);
             validateNotNegative(params, errorCollection, OSA_MEDIUM_THRESHOLD);
             validateNotNegative(params, errorCollection, OSA_LOW_THRESHOLD);
