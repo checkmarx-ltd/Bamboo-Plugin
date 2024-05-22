@@ -5,6 +5,7 @@ import com.atlassian.bamboo.security.EncryptionServiceImpl;
 import com.cx.restclient.configuration.CxScanConfig;
 import com.cx.restclient.dto.ProxyConfig;
 import com.cx.restclient.dto.ScanResults;
+import com.cx.restclient.dto.CxVersion;
 
 import static com.cx.plugin.utils.CxParam.CUSTOM_CONFIGURATION_SERVER;
 import static com.cx.plugin.utils.CxParam.SERVER_CREDENTIALS_SECTION;
@@ -91,7 +92,18 @@ public abstract class CxPluginUtils {
             log.info("Source code encoding id: " + config.getEngineConfigurationId());
             log.info("CxSAST thresholds enabled: " + config.getSastThresholdsEnabled());
             if (config.getSastThresholdsEnabled()) {
+            	 CxVersion cxVersion = config.getCxVersion();
+                 String sastVersion = cxVersion != null ? cxVersion.getVersion() : null;
+         		if (sastVersion != null && !sastVersion.isEmpty()) {
+         			String[] versionComponents = sastVersion.split("\\.");
+         			if (versionComponents.length >= 2) {
+         				String currentVersion = versionComponents[0] + "." + versionComponents[1];
+         				float currentVersionFloat = Float.parseFloat(currentVersion);
+         				if (currentVersionFloat == Float.parseFloat("9.7")) {
                 log.info("CxSAST critical threshold: " + (config.getSastCriticalThreshold() == null ? "[No Threshold]" : config.getSastCriticalThreshold()));
+         				}
+         			}
+         		}
                 log.info("CxSAST high threshold: " + (config.getSastHighThreshold() == null ? "[No Threshold]" : config.getSastHighThreshold()));
                 log.info("CxSAST medium threshold: " + (config.getSastMediumThreshold() == null ? "[No Threshold]" : config.getSastMediumThreshold()));
                 log.info("CxSAST low threshold: " + (config.getSastLowThreshold() == null ? "[No Threshold]" : config.getSastLowThreshold()));
