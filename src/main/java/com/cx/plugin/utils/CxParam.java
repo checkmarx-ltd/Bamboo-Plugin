@@ -39,10 +39,14 @@ public class CxParam {
     public static final String GENERATE_PDF_REPORT = "generatePDFReport";
     public static final String IS_SYNCHRONOUS = "isSynchronous";
     public static final String THRESHOLDS_ENABLED = "thresholdsEnabled";
+    public static final String ENABLE_CRITICAL_SEVERITY = "enableCriticalSeverity";
+    public static final String CRITICAL_THRESHOLD = "criticalThreshold";
     public static final String HIGH_THRESHOLD = "highThreshold";
+    
     public static final String MEDIUM_THRESHOLD = "mediumThreshold";
     public static final String LOW_THRESHOLD = "lowThreshold";
     public static final String POLICY_VIOLATION_ENABLED = "enablePolicyViolations";
+    public static final String POLICY_VIOLATION_ENABLED_SCA = "enablePolicyViolationsSCA";
     public static final String OSA_ENABLED = "osaEnabled";
     public static final String DEPENDENCY_SCAN_FILTER_PATTERNS = "cxDependencyScanFilterPatterns";
     public static final String DEPENDENCY_SCAN_FOLDER_EXCLUDE = "cxDependencyScanfolderExclusions";
@@ -115,6 +119,7 @@ public class CxParam {
     public static final String GLOBAL_SCAN_TIMEOUT_IN_MINUTES = "globalScanTimeoutInMinutes";
     public static final String GLOBAL_IS_SYNCHRONOUS = "globalIsSynchronous";
     public static final String GLOBAL_THRESHOLDS_ENABLED = "globalThresholdsEnabled";
+    public static final String GLOBAL_CRITICAL_THRESHOLD = "globalCriticalThreshold";
     public static final String GLOBAL_HIGH_THRESHOLD = "globalHighThreshold";
     public static final String GLOBAL_MEDIUM_THRESHOLD = "globalMediumThreshold";
     public static final String GLOBAL_LOW_THRESHOLD = "globalLowThreshold";
@@ -127,6 +132,7 @@ public class CxParam {
     public static final String IS_GLOBAL_HIDE_RESULTS = "isglobalHideResults";
     public static final String GLOBAL_HIDE_RESULTS = "globalHideResults";
     public static final String GLOBAL_POLICY_VIOLATION_ENABLED = "globalEnablePolicyViolations";
+    public static final String GLOBAL_POLICY_VIOLATION_ENABLED_SCA = "globalEnablePolicyViolationsSCA";
     public static final String DEFAULT_FILTER_PATTERNS = "!**/_cvs/**/*, !**/.svn/**/*,   !**/.hg/**/*,   !**/.git/**/*,  !**/.bzr/**/*, !**/bin/**/*," +
             "!**/obj/**/*,  !**/backup/**/*, !**/.idea/**/*, !**/*.DS_Store, !**/*.ipr,     !**/*.iws,   " +
             "!**/*.bak,     !**/*.tmp,       !**/*.aac,      !**/*.aif,      !**/*.iff,     !**/*.m3u,   !**/*.mid,   !**/*.mp3,  " +
@@ -148,4 +154,5 @@ public class CxParam {
             "Validate the provided login credentials and server URL are correct.\n" +
             "In addition, make sure the installed plugin version is compatible with the CxSAST version according to CxSAST release notes.";
     public static final String ENABLE_SAST_SCAN = "enableSASTScan";
+    public static final String  GLOBAL_ENABLE_CRITICAL_SEVERITY = "globalEnableCriticalSeverity";
 }

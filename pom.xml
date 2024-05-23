@@ -5,7 +5,7 @@
     <groupId>com.cx</groupId>
     <artifactId>checkmarx-bamboo-plugin</artifactId>
 
-    <version>2023.1.4</version>
+    <version>2024.2.3</version>
 
     <organization>
         <name>Checkmarx LTD</name>
@@ -38,7 +38,7 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-        
+
     </repositories>
 
     <build>
@@ -55,7 +55,7 @@
                 <version>6.3.21</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <productVersion>5.14.3</productVersion>
+                    <productVersion>9.2.10</productVersion>
                     <productDataVersion>5.7.2</productDataVersion>
                     <enableQuickReload>true</enableQuickReload>
                     <allowGoogleTracking>false</allowGoogleTracking>
@@ -79,8 +79,8 @@
     </build>
 
     <properties>
-        <bamboo.version>5.14.3</bamboo.version>
-        <bamboo.data.version>5.14.3</bamboo.data.version>
+        <bamboo.version>9.2.10</bamboo.version>
+        <bamboo.data.version>9.2.10</bamboo.data.version>
         <amps.version>6.3.21</amps.version>
         <jersey.version>1.0.3</jersey.version>
         <!--     <atlassian.spring.scanner.version>1.2.13</atlassian.spring.scanner.version>-->
@@ -88,374 +88,304 @@
         <atlassian.plugin.key>${project.groupId}.${project.artifactId}</atlassian.plugin.key>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    
-        <common.client.version>2023.1.7</common.client.version>
 
-         <slf4jVersion>1.7.16</slf4jVersion>
+        <common.client.version>2024.2.6</common.client.version>
+
+        <slf4jVersion>1.7.16</slf4jVersion>
 
     </properties>
 
     <dependencies>
-     
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.13</version>
-			<exclusions> 
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.dataformat</groupId>
-					<artifactId>jackson-dataformat-cbor</artifactId>
-                </exclusion>
-			</exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.opensymphony.propertyset.providers</groupId>
-            <artifactId>hibernate4</artifactId>
-            <version>1.6.0-atlassian-3</version>
-        </dependency>
+
         <dependency>
             <groupId>com.atlassian.bamboo</groupId>
             <artifactId>atlassian-bamboo-web</artifactId>
             <version>${bamboo.version}</version>
             <scope>provided</scope>
-            <exclusions> 
-                <exclusion>
-                    <groupId>com.opensymphony.propertyset.providers</groupId>
-                    <artifactId>hibernate4</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.dataformat</groupId>
-                    <artifactId>jackson-dataformat-cbor</artifactId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>bcprov-jdk15on</artifactId>
-                    <groupId>org.bouncycastle</groupId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-jms</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-fileupload</groupId>
-                    <artifactId>commons-fileupload</artifactId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>bcprov-jdk15on</artifactId>
-                    <groupId>org.bouncycastle</groupId>
-                </exclusion>
-                 <exclusion>
-                    <artifactId>commons-collections4</artifactId>
-                    <groupId>org.apache.commons</groupId>
-                </exclusion>
-<!--                <exclusion>-->
-<!--                    <groupId>dom4j</groupId>-->
-<!--                    <artifactId>dom4j</artifactId>-->
-<!--                </exclusion> -->
-                <exclusion>
-                    <artifactId>spring-web</artifactId>
-                    <groupId>org.springframework</groupId>
-                </exclusion>
-                <exclusion>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
-                </exclusion>
-                
+            <exclusions>
                 <exclusion>
                     <groupId>org.apache.commons</groupId>
                     <artifactId>commons-compress</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>bouncycastle</groupId>
-                    <artifactId>bcprov-jdk14</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.bouncycastle</groupId>
-                    <artifactId>bcprov-jdk14</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.yaml</groupId>
-                    <artifactId>snakeyaml</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.thoughtworks.xstream</groupId>
-                    <artifactId>xstream</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.jcraft</groupId>
-                    <artifactId>jsch</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.igniterealtime.smack</groupId>
-                    <artifactId>smack-core</artifactId>
-                </exclusion>
-                <exclusion>
-                	<groupId>org.igniterealtime.smack</groupId>
-            		<artifactId>smack-tcp</artifactId>
-            	</exclusion>
-                <!--<exclusion>-->
-                <!--<groupId>commons-fileupload</groupId>-->
-                <!--<artifactId>commons-fileupload</artifactId>-->
-                <!--</exclusion>-->
-                <!--test-->
-                <exclusion>
-                    <groupId>com.mchange</groupId>
-                    <artifactId>c3p0</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>xerces</groupId>
-                    <artifactId>xercesImpl</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.activemq</groupId>
-                    <artifactId>activemq-mqtt</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-core</artifactId>
+                    <groupId>org.apache.struts</groupId>
+                    <artifactId>struts2-core</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>com.google.guava</groupId>
                     <artifactId>guava</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>org.apache.logging.log4j</groupId>
-    				<artifactId>log4j-api</artifactId>
+                    <groupId>org.codehaus.plexus</groupId>
+                    <artifactId>plexus-utils</artifactId>
                 </exclusion>
-				<exclusion>
-                    <groupId>org.dom4j</groupId>
-					<artifactId>dom4j</artifactId>
-                </exclusion>
-				<exclusion>
-                    <groupId>org.apache.logging.log4j</groupId>
-    				<artifactId>log4j-api</artifactId>
-                </exclusion>
-				<exclusion>
-                    <groupId>org.springframework</groupId>
-					<artifactId>spring-beans</artifactId>
-                </exclusion>
-                <!-- exclusion>
-                    <groupId>org.acegisecurity</groupId>
-    				<artifactId>acegi-security</artifactId>
-                </exclusion-->
-            </exclusions>
-        </dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-beans</artifactId>
-			<version>5.3.19</version>
-		</dependency>
-		<dependency>
-			<groupId>org.dom4j</groupId>
-			<artifactId>dom4j</artifactId>
-			<version>2.1.3</version>
-		</dependency>
-        <!-- dependency>
-           <groupId>org.acegisecurity</groupId>
-    	   <artifactId>acegi-security</artifactId>
-    	   <version>1.0.7</version>
-        </dependency-->
-        <dependency>
-         <groupId>com.jcraft</groupId>
-         <artifactId>jsch</artifactId>
-         <version>0.1.55</version>
-        </dependency>
-         <dependency>
-           <groupId>org.apache.activemq</groupId>
-           <artifactId>activemq-broker</artifactId>
-           <version>5.16.1</version>
-         </dependency>
-         <dependency>
-            <groupId>org.igniterealtime.smack</groupId>
-            <artifactId>smack-core</artifactId>
-            <version>4.4.2</version>
-         </dependency>
-         <dependency>
-            <groupId>org.igniterealtime.smack</groupId>
-            <artifactId>smack-tcp</artifactId>
-            <version>4.4.2</version>
-         </dependency>
-        <dependency>
-           <artifactId>commons-collections4</artifactId>
-           <groupId>org.apache.commons</groupId>
-           <version>4.4</version>
-        </dependency>
-         <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>1.33</version>
-         </dependency>
-         <dependency>
-              <groupId>org.quartz-scheduler</groupId>
-              <artifactId>quartz</artifactId>
-              <version>2.3.2</version>
-         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jms</artifactId>
-            <version>5.3.5</version>
-			<exclusions>
                 <exclusion>
-                        <groupId>org.springframework</groupId>
-						<artifactId>spring-core</artifactId>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-web</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.sshd</groupId>
+                    <artifactId>sshd-common</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.sshd</groupId>
+                    <artifactId>sshd-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>bcprov-jdk15on</artifactId>
+                    <groupId>org.bouncycastle</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-beans</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.bouncycastle</groupId>
+                    <artifactId>bcprov-jdk14</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-collections4</artifactId>
+                    <groupId>org.apache.commons</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
-			<version>5.3.19</version>
-		</dependency>
-         <dependency>
-              <groupId>commons-fileupload</groupId>
-              <artifactId>commons-fileupload</artifactId>
-              <version>1.4</version>
-              <exclusions>
-              <exclusion>
-              	<groupId>commons-io</groupId>
-            	<artifactId>commons-io</artifactId>
-            	</exclusion>
-              </exclusions>
-         </dependency>
-         <dependency>
-         	<groupId>commons-io</groupId>
+        <dependency>
+            <artifactId>commons-collections4</artifactId>
+            <groupId>org.apache.commons</groupId>
+            <version>4.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.13</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-codec</groupId>
+                    <artifactId>commons-codec</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.dataformat</groupId>
+                    <artifactId>jackson-dataformat-cbor</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.16.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>33.0.0-jre</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sshd</groupId>
+            <artifactId>sshd-common</artifactId>
+            <version>2.10.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sshd</groupId>
+            <artifactId>sshd-core</artifactId>
+            <version>2.9.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>1.26.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.struts</groupId>
+            <artifactId>struts2-core</artifactId>
+            <version>2.5.33</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.8.0</version>
-         </dependency>
+            <version>2.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-utils</artifactId>
+            <version>3.5.1</version>
+        </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-cbor</artifactId>
             <version>2.13.2</version>
             <exclusions>
                 <exclusion>
-                        <groupId>com.fasterxml.jackson.core</groupId>
-                        <artifactId>jackson-core</artifactId>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>5.3.31</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>5.3.31</version>
+        </dependency>
+        <!--  <dependency>
+              <groupId>org.springframework</groupId>
+              <artifactId>spring-beans</artifactId>
+              <version>5.3.19</version>
+          </dependency>
+          <dependency>
+              <groupId>org.dom4j</groupId>
+              <artifactId>dom4j</artifactId>
+              <version>2.1.3</version>
+          </dependency>
+          &lt;!&ndash; dependency>
+             <groupId>org.acegisecurity</groupId>
+             <artifactId>acegi-security</artifactId>
+             <version>1.0.7</version>
+          </dependency&ndash;&gt;
+          <dependency>
+              <groupId>com.jcraft</groupId>
+              <artifactId>jsch</artifactId>
+              <version>0.1.55</version>
+          </dependency>-->
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-broker</artifactId>
+            <version>5.16.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.activemq</groupId>
+                    <artifactId>activemq-openwire-legacy</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.activemq</groupId>
+                    <artifactId>activemq-client</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <version>5.3.19</version>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-client</artifactId>
+            <version>5.16.7</version>
         </dependency>
         <dependency>
             <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-mqtt</artifactId>
-            <version>5.15.9</version>
-            <exclusions>
-            <exclusion>
-	      		<groupId>com.fasterxml.jackson.core</groupId>
-            	<artifactId>jackson-databind</artifactId>
-	     	</exclusion>
-	     	<exclusion>
-               <groupId>org.apache.activemq</groupId>
-               <artifactId>activemq-broker</artifactId>
-            </exclusion>
-	     	</exclusions>
+            <artifactId>activemq-openwire-legacy</artifactId>
+            <version>5.16.7</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.14.1	</version>
+            <version>2.12.7.1</version>
         </dependency>
-	    <dependency>
-			<groupId>com.sun.xml.parsers</groupId>
-			<artifactId>jaxp-ri</artifactId>
-			<version>1.4.5</version>			
-			<exclusions>
-				<exclusion>
-					<groupId>javax.xml.parsers</groupId>
-    				<artifactId>jaxp-api</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
         <dependency>
-            <groupId>com.mchange</groupId>
-            <artifactId>c3p0</artifactId>
-            <version>0.9.5.4</version>
+            <groupId>com.sun.xml.parsers</groupId>
+            <artifactId>jaxp-ri</artifactId>
+            <version>1.4.5</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.xml.parsers</groupId>
+                    <artifactId>jaxp-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk14</artifactId>
-            <version>1.72</version>
+            <version>1.77</version>
         </dependency>
         <dependency>
             <groupId>xalan</groupId>
             <artifactId>xalan</artifactId>
-            <version>2.7.2</version>
-                        <exclusions>
-            <exclusion>
+            <version>2.7.3</version>
+            <exclusions>
+                <exclusion>
                     <groupId>xml-apis</groupId>
                     <artifactId>xml-apis</artifactId>
-            </exclusion>
+                </exclusion>
             </exclusions>
         </dependency>
-        <!--<dependency>-->
-        <!--<groupId>commons-fileupload</groupId>-->
-        <!--<artifactId>commons-fileupload</artifactId>-->
-        <!--<version>1.4</version>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4jVersion}</version>
-        </dependency>  
-           
+        </dependency>
+
         <dependency>
             <groupId>com.atlassian.templaterenderer</groupId>
             <artifactId>atlassian-template-renderer-api</artifactId>
             <version>1.1.1</version>
             <scope>provided</scope>
         </dependency>
-        
-        		<!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
-		<dependency>
-		    <groupId>javax.xml.bind</groupId>
-		    <artifactId>jaxb-api</artifactId>
-		    <version>2.2.11</version>
-		    <scope>provided</scope>
-		</dependency>
-        		    
-        		
-        		 <dependency>
-            		<groupId>org.glassfish.jaxb</groupId>
-            		<artifactId>jaxb-runtime</artifactId>
-            		 <version>2.3.1</version>
-        		</dependency>
-        		<dependency>
+
+        <!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.2.11</version>
+            <scope>provided</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+        <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
             <version>3.0.1</version>
         </dependency>
-        		
+
         <dependency>
             <groupId>com.checkmarx</groupId>
             <artifactId>cx-client-common</artifactId>
             <version>${common.client.version}</version>
             <exclusions>
-                  
+
                 <exclusion>
-            		<groupId>jakarta.xml.bind</groupId>
-            		<artifactId>jakarta.xml.bind-api</artifactId>
-        		</exclusion>    
-        		
-        		 <exclusion>
-            		<groupId>org.glassfish.jaxb</groupId>
-            		<artifactId>jaxb-runtime</artifactId>
-        		</exclusion>
-        		  
-            <exclusion>
+                    <groupId>jakarta.xml.bind</groupId>
+                    <artifactId>jakarta.xml.bind-api</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>org.glassfish.jaxb</groupId>
+                    <artifactId>jaxb-runtime</artifactId>
+                </exclusion>
+
+                <exclusion>
                     <groupId>xml-apis</groupId>
                     <artifactId>xml-apis</artifactId>
-            </exclusion>
-            
-            <exclusion>
+                </exclusion>
+
+                <exclusion>
                     <groupId>io.netty</groupId>
                     <artifactId>netty-codec-http</artifactId>
-            </exclusion>
-            <exclusion>
+                </exclusion>
+                <exclusion>
                     <groupId>io.vertx</groupId>
                     <artifactId>vertx-web</artifactId>
-            </exclusion>
+                </exclusion>
                 <exclusion>
                     <artifactId>spring-web</artifactId>
                     <groupId>org.springframework</groupId>
@@ -480,47 +410,57 @@
                     <groupId>com.google.code.gson</groupId>
                     <artifactId>gson</artifactId>
                 </exclusion>
-				<exclusion>
-                    <groupId>com.google.code.gson</groupId>
-                    <artifactId>gson</artifactId>
-                </exclusion>
-				<exclusion>
+                <exclusion>
                     <groupId>com.github.junrar</groupId>
-					<artifactId>junrar</artifactId>
+                    <artifactId>junrar</artifactId>
                 </exclusion>
                 <exclusion>
-				    <groupId>ch.qos.logback</groupId>
-				    <artifactId>logback-classic</artifactId>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.mozilla</groupId>
+                    <artifactId>rhino</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
         <dependency>
-			<groupId>com.github.junrar</groupId>
-			<artifactId>junrar</artifactId>
-			<version>7.5.0</version>
-		</dependency>
-        <dependency>
-             <groupId>io.netty</groupId>
-             <artifactId>netty-codec-http</artifactId>
-             <version>4.1.86.Final</version>
+            <groupId>org.mozilla</groupId>
+            <artifactId>rhino</artifactId>
+            <version>1.7.14</version>
         </dependency>
         <dependency>
-             <groupId>io.netty</groupId>
-             <artifactId>netty-codec-http2</artifactId>
-             <version>4.1.63.Final</version>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-core</artifactId>
+            <version>4.5.4</version>
         </dependency>
         <dependency>
-          <groupId>io.vertx</groupId>
-          <artifactId>vertx-web</artifactId>
-          <version>4.1.0.Beta1</version>
-          <exclusions>
-	          <exclusion>
-	            <groupId>io.netty</groupId>
-	            <artifactId>netty-codec-http2</artifactId>
-	          </exclusion>
-          </exclusions>
-         </dependency>
-         <dependency>
+            <groupId>com.github.junrar</groupId>
+            <artifactId>junrar</artifactId>
+            <version>7.5.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-http</artifactId>
+            <version>4.1.104.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-http2</artifactId>
+            <version>4.1.104.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-web</artifactId>
+            <version>4.3.8</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.netty</groupId>
+                    <artifactId>netty-codec-http2</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.10.1</version>
@@ -529,11 +469,15 @@
         <dependency>
             <groupId>commons-validator</groupId>
             <artifactId>commons-validator</artifactId>
-            <version>1.6</version>
+            <version>1.8.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-beanutils</groupId>
                     <artifactId>commons-beanutils</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-collections</groupId>
+                    <artifactId>commons-collections</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -541,12 +485,29 @@
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
             <version>1.9.4</version>
+            <exclusions>
+            <exclusion>
+                <groupId>commons-collections</groupId>
+                <artifactId>commons-collections</artifactId>
+            </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.atlassian.plugins.rest</groupId>
             <artifactId>atlassian-rest-common</artifactId>
             <version>1.0.2</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.codehaus.jettison</groupId>
+                    <artifactId>jettison</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jettison</groupId>
+            <artifactId>jettison</artifactId>
+            <version>1.5.4</version>
         </dependency>
     </dependencies>
 

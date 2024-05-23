@@ -83,7 +83,7 @@ public class CheckmarxTask implements TaskType {
                 }
             }
 
-            if (!config.isSastEnabled() && !configHelper.isDependencyScanEnabled()) {
+            if (!config.isSastEnabled() && !(config.isOsaEnabled() || config.isAstScaEnabled())) { //if SAST and Dependency Scans are disabled at both global and config level 
                 log.error("Both SAST and Dependency Scan are disabled. Exiting.");
                 taskResultBuilder.failed().build();
             }
@@ -126,7 +126,7 @@ public class CheckmarxTask implements TaskType {
             }
             results.add(scanResults);
 
-            if (config.getEnablePolicyViolations()) {
+            if (((config.isSastEnabled()||config.isOsaEnabled()) && config.getEnablePolicyViolations()) || (config.isAstScaEnabled() && config.getEnablePolicyViolationsSCA())) {
                 delegator.printIsProjectViolated(scanResults);
             }
 
@@ -146,33 +146,70 @@ public class CheckmarxTask implements TaskType {
                 if (config.isAstScaEnabled() && (ret.getScaResults() == null || !ret.getScaResults().isScaResultReady()))
                     scanFailedAtServer.append("CxAST SCA scan results are not found. Scan might have failed at the server or aborted by the server.\n");
 
-                if (scanSummary.hasErrors() && scanFailedAtServer.toString().isEmpty())
+                if (scanSummary.hasErrors() && scanFailedAtServer.toString().isEmpty()) {
                     scanFailedAtServer.append(scanSummary.toString());
-                else if (scanSummary.hasErrors())
+                    printBuildFailure(scanFailedAtServer.toString(), ret, log);}
+                else if (scanSummary.hasErrors()) {
                     scanFailedAtServer.append("\n").append(scanSummary.toString());
+                    printBuildFailure(scanFailedAtServer.toString(), ret, log);}
 
-                printBuildFailure(scanFailedAtServer.toString(), ret, log);
+                
 
                 //handle hard failures. In case of threshold or policy failure, we still need to generate report before returning.
                 //Hence, cannot return yet
-                if (!scanSummary.hasErrors())
+                //Business level errors, to be checked only in case of synchronous scans
+                if(!scanSummary.hasErrors() && config.getSynchronous())
                     return taskResultBuilder.failed().build();
             }
 
-            //Asynchronous MODE
-            if (!config.getSynchronous()) {
-                log.info("Running in Asynchronous mode. Not waiting for scan to finish.");
-                ScanResults finalScanResults = getFinalScanResults(results);
-                String scanHTMLSummary = delegator.generateHTMLSummary(finalScanResults);
-                ret.getSummary().put(HTML_REPORT, scanHTMLSummary);
-                buildContext.getBuildResult().getCustomBuildData().putAll(ret.getSummary());
+			/*For asynchronous scan, if reports are not ready or previous reports is not
+			 found, HTML Report is not generated */
 
-                if (ret.getException() != null || ret.getGeneralException() != null) {
-                    printBuildFailure(null, ret, log);
-                    return taskResultBuilder.failed().build();
-                }
-                return taskResultBuilder.success().build();
-            }
+			boolean generateAsyncReport = false;
+			if (config.isSastEnabled() && ret.getSastResults() != null && ret.getSastResults().isSastResultsReady()) {
+				generateAsyncReport = true;
+			}
+			
+			/*If a combination scan is run(SAST + OSA/SCA), 
+			HTML report is generated only if, previous reports are available for both the scans*/
+			if (config.isOsaEnabled() || config.isAstScaEnabled()) {
+				if ((config.isOsaEnabled() && (ret.getOsaResults() == null || !ret.getOsaResults().isOsaResultsReady()))
+						|| (config.isAstScaEnabled()
+								&& (ret.getScaResults() == null || !ret.getScaResults().isScaResultReady()))
+						|| (config.isSastEnabled()
+								&& (ret.getSastResults() == null || !ret.getSastResults().isSastResultsReady()))) {
+					generateAsyncReport = false;
+				} else {
+					generateAsyncReport = true;
+				}
+			}
+
+			if (!config.getSynchronous()) {
+				log.info("Running in Asynchronous mode. Not waiting for scan to finish.");
+
+				if(config.isSastEnabled() || config.isOsaEnabled() || config.isAstScaEnabled()) {
+				if (generateAsyncReport) {
+					ScanResults finalScanResults = getFinalScanResults(results);
+					String scanHTMLSummary = delegator.generateHTMLSummary(finalScanResults);
+					ret.getSummary().put(HTML_REPORT, scanHTMLSummary);
+					buildContext.getBuildResult().getCustomBuildData().putAll(ret.getSummary());
+					
+					if (ret.getException() != null || ret.getGeneralException() != null) {
+						printBuildFailure(null, ret, log);
+						return taskResultBuilder.failed().build();
+					}
+					return taskResultBuilder.success().build();
+				} else {
+					String message = "<br><br><br><b>Job is configured to run Checkmarx scan asynchronously. Previous report not found.</b>";
+					ret.getSummary().put(HTML_REPORT, message);
+					buildContext.getBuildResult().getCustomBuildData().putAll(ret.getSummary());
+				}
+				}else {
+					String message = "<br><br><br><b>Both SAST and Dependency Scan are disabled.</b>";
+					ret.getSummary().put(HTML_REPORT, message);
+					buildContext.getBuildResult().getCustomBuildData().putAll(ret.getSummary());
+				}
+			}
 
             if (config.getSynchronous() && config.isSastEnabled() &&
                     ((createScanResults.getSastResults() != null && createScanResults.getSastResults().getException() != null && createScanResults.getSastResults().getScanId() > 0) || (scanResults.getSastResults() != null && scanResults.getSastResults().getException() != null))) {
@@ -190,18 +227,21 @@ public class CheckmarxTask implements TaskType {
                     int buildNumber = buildContext.getParentBuildContext().getResultKey().getResultNumber();
                     String buildPath = buildContext.getPlanResultKey().getPlanKey().getKey()
                             .substring(buildContext.getPlanResultKey().getPlanKey().getKey().lastIndexOf("-") + 1);
-
+                    String pdfBaseUrl ="";
+                    if(config.getCxOriginUrl() != null) {
+                    pdfBaseUrl = extractPDFBaseUrlFromCxOriginUrl(config.getCxOriginUrl());
+                    }
                     ArtifactDefinitionContext pdfArt = getPDFArt(taskContext);
                     if (pdfArt != null) {
                         if (pdfArt.isSharedArtifact()) {
-                            sastResults.setSastPDFLink("/browse/" + buildKey + "-" + buildNumber + "/artifact/shared/" + pdfArt.getName()
+                            sastResults.setSastPDFLink(pdfBaseUrl +"/browse/" + buildKey + "-" + buildNumber + "/artifact/shared/" + pdfArt.getName()
                                     + "/" + pdfName);
                         } else {
-                            sastResults.setSastPDFLink("/browse/" + buildKey + "-" + buildNumber + "/artifact/" + buildPath
+                            sastResults.setSastPDFLink(pdfBaseUrl +"/browse/" + buildKey + "-" + buildNumber + "/artifact/" + buildPath
                                     + "/" + pdfArt.getName() + "/" + pdfName);
                         }
                     } else {
-                        sastResults.setSastPDFLink("/browse/" + buildKey + "-" + buildNumber + "/artifact/" + buildPath
+                        sastResults.setSastPDFLink(pdfBaseUrl +"/browse/" + buildKey + "-" + buildNumber + "/artifact/" + buildPath
                                 + "/Checkmarx-PDF-Report/" + pdfName);
                         ArtifactDefinitionContext artifact = new ArtifactDefinitionContextImpl("Checkmarx PDF Report", false, null);
                         artifact.setCopyPattern("**/" + pdfName);
@@ -216,9 +256,11 @@ public class CheckmarxTask implements TaskType {
                     }
                 }
 
-                String showSummaryStr = delegator.generateHTMLSummary(finalScanResults);
-                ret.getSummary().put(HTML_REPORT, showSummaryStr);
-                buildContext.getBuildResult().getCustomBuildData().putAll(ret.getSummary());
+				if (config.getSynchronous()) {
+					String showSummaryStr = delegator.generateHTMLSummary(finalScanResults);
+					ret.getSummary().put(HTML_REPORT, showSummaryStr);
+					buildContext.getBuildResult().getCustomBuildData().putAll(ret.getSummary());
+				}
             }
 
             if (scanSummary.hasErrors()) {
@@ -240,7 +282,31 @@ public class CheckmarxTask implements TaskType {
         }
     }
 
-    private ArtifactDefinitionContext getPDFArt(TaskContext taskContext) {
+	private String extractPDFBaseUrlFromCxOriginUrl(String cxOriginUrl) {
+		try {
+			if (cxOriginUrl.contains("/browse")) {
+				int browseIndex = cxOriginUrl.indexOf("/browse");
+				if (browseIndex != -1) {
+					String baseUrl = cxOriginUrl.substring(0, browseIndex);
+					if (!StringUtils.isEmpty(baseUrl)) {
+						int slashIndex = baseUrl.indexOf("://");
+						int nextSlashIndex = baseUrl.indexOf("/", slashIndex + 3);
+						if (nextSlashIndex != -1) {
+							String path = baseUrl.substring(nextSlashIndex);
+							if (!path.isEmpty()) {
+								return path;
+							}
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "";
+	}
+
+	private ArtifactDefinitionContext getPDFArt(TaskContext taskContext) {
         if (!taskContext.getBuildContext().getArtifactContext().getDefinitionContexts().isEmpty()) {
             for (ArtifactDefinitionContext artDef : taskContext.getBuildContext().getArtifactContext().getDefinitionContexts()) {
                 if (StringUtils.isNotEmpty(artDef.getCopyPattern()) &&

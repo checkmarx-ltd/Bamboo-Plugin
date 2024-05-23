@@ -5,9 +5,12 @@ import com.atlassian.bamboo.security.EncryptionServiceImpl;
 import com.cx.restclient.configuration.CxScanConfig;
 import com.cx.restclient.dto.ProxyConfig;
 import com.cx.restclient.dto.ScanResults;
+import com.cx.restclient.dto.CxVersion;
 
 import static com.cx.plugin.utils.CxParam.CUSTOM_CONFIGURATION_SERVER;
 import static com.cx.plugin.utils.CxParam.SERVER_CREDENTIALS_SECTION;
+
+import java.net.URL;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -86,10 +89,29 @@ public abstract class CxPluginUtils {
             log.info("is force scan: " + config.getForceScan());
             log.info("Is generate full XML report: " + config.getGenerateXmlReport());
             log.info("Is generate PDF report: " + config.getGeneratePDFReport());
-            log.info("Policy violations enabled: " + config.getEnablePolicyViolations());
+            log.info("SAST and OSA Policy violations enabled: " + config.getEnablePolicyViolations());
+            log.info("SCA Policy violations enabled: " + config.getEnablePolicyViolationsSCA());
             log.info("Source code encoding id: " + config.getEngineConfigurationId());
             log.info("CxSAST thresholds enabled: " + config.getSastThresholdsEnabled());
             if (config.getSastThresholdsEnabled()) {
+            	String cxServerUrl = config.getUrl();
+            	String cxUser = config.getUsername();
+            	String cxPass = config.getPassword();
+            	String proxyEnable = config.isProxy().toString(); 
+            	Double version = 9.0;
+    	        String sastVersion;
+    			//fetch SAST version using api call
+				try {
+					sastVersion = SASTUtils.loginToServer(new URL(cxServerUrl),cxUser,decrypt(cxPass),proxyEnable);
+					String[] sastVersionSplit = sastVersion.split("\\.");
+					version = Double.parseDouble(sastVersionSplit[0]+"."+sastVersionSplit[1]);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				//check if SAST version support critical threshold
+        		if(version >= 9.7) {
+                log.info("CxSAST critical threshold: " + (config.getSastCriticalThreshold() == null ? "[No Threshold]" : config.getSastCriticalThreshold()));
+         				}
                 log.info("CxSAST high threshold: " + (config.getSastHighThreshold() == null ? "[No Threshold]" : config.getSastHighThreshold()));
                 log.info("CxSAST medium threshold: " + (config.getSastMediumThreshold() == null ? "[No Threshold]" : config.getSastMediumThreshold()));
                 log.info("CxSAST low threshold: " + (config.getSastLowThreshold() == null ? "[No Threshold]" : config.getSastLowThreshold()));
@@ -105,7 +127,7 @@ public abstract class CxPluginUtils {
         }
         
         log.info("Dependency Scan enabled : " + configBFF.isDependencyScanEnabled());        
-        if(configBFF.isDependencyScanEnabled()) {
+        if(config.isOsaEnabled() || config.isAstScaEnabled()) {
 	        log.info("Dependency Scan type : " + configBFF.getDependencyScanType().getDisplayName() );
 	        log.info("Dependency scan configuration:");
 	        log.info(" Folder exclusions: " + config.getOsaFolderExclusions());
@@ -119,6 +141,9 @@ public abstract class CxPluginUtils {
 	        if (config.isOsaEnabled()) {	            
 	            log.info(" CxOSA archive extract patterns: " + config.getOsaArchiveIncludePatterns());
 	            log.info(" Execute dependency managers 'install packages' command before CxOSA Scan: " + config.getOsaRunInstall());            
+	        } else if(config.isAstScaEnabled())	{
+	        	log.info(" CxSCA Tenant: " + config.getAstScaConfig().getTenant());
+	        	log.info(" CxSCA TeamPath: " + config.getAstScaConfig().getTeamPath());
 	        }	        
         }
 

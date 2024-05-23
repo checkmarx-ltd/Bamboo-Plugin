@@ -1,4 +1,5 @@
 (function ($) {
+	
     $(document).on("click", "#test_connection", function (event) {
         $('#testConnectionMessage').html("");
         restRequest();
@@ -34,14 +35,14 @@
             console.log("Request Failed");
             return;
         }
-
-        xhr.onload = function () {
-            var parsed = JSON.parse(xhr.responseText);
+        xhr.onload = function() {
+		  var parsed = JSON.parse(xhr.responseText);
             if (xhr.status == 200) {
                 $('#testConnectionMessage').css('color', 'green');
                 populateDropdownList(parsed.presetList, "#presetListId");
-                populateDropdownList(parsed.teamPathList, "#teamPathListId");
-            }
+                populateDropdownList(parsed.teamPathList, "#teamPathListId"); 
+   				
+   				}
             else {
                 $('#testConnectionMessage').css('color', '#d22020');
                 populateEmptyDropdownList();

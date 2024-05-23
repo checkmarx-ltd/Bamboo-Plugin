@@ -1,8 +1,25 @@
 package com.cx.plugin.configuration;
 
-import static com.cx.plugin.utils.CxPluginUtils.encrypt;
-import static com.cx.plugin.utils.CxParam.*;
-import static com.cx.plugin.utils.CxPluginUtils.decrypt;
+import com.atlassian.bamboo.collections.ActionParametersMap;
+import com.atlassian.bamboo.configuration.AdministrationConfiguration;
+import com.atlassian.bamboo.task.AbstractTaskConfigurator;
+import com.atlassian.bamboo.task.TaskDefinition;
+import com.atlassian.bamboo.utils.error.ErrorCollection;
+import com.atlassian.bamboo.ww2.actions.build.admin.config.task.ConfigureBuildTasks;
+import com.atlassian.spring.container.ContainerManager;
+import com.cx.plugin.utils.HttpHelper;
+import com.cx.plugin.utils.SASTUtils;
+import com.cx.restclient.configuration.CxScanConfig;
+import com.cx.restclient.dto.ProxyConfig;
+import com.cx.restclient.dto.ScannerType;
+import com.cx.restclient.dto.Team;
+import com.cx.restclient.sast.dto.Preset;
+import com.cx.restclient.sast.utils.LegacyClient;
+import com.google.common.collect.ImmutableMap;
+import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -14,32 +31,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
-import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-/**
- * Created by galn
- * Date: 20/12/2016.
- */
-
-import com.atlassian.bamboo.collections.ActionParametersMap;
-import com.atlassian.bamboo.configuration.AdministrationConfiguration;
-import com.atlassian.bamboo.task.AbstractTaskConfigurator;
-import com.atlassian.bamboo.task.TaskDefinition;
-import com.atlassian.bamboo.utils.error.ErrorCollection;
-import com.atlassian.bamboo.ww2.actions.build.admin.config.task.ConfigureBuildTasks;
-import com.atlassian.spring.container.ContainerManager;
-import com.atlassian.util.concurrent.Nullable;
-import com.cx.plugin.utils.HttpHelper;
-import com.cx.restclient.configuration.CxScanConfig;
-import com.cx.restclient.dto.ProxyConfig;
-import com.cx.restclient.dto.ScannerType;
-import com.cx.restclient.dto.Team;
-import com.cx.restclient.sast.dto.Preset;
-import com.cx.restclient.sast.utils.LegacyClient;
-import com.google.common.collect.ImmutableMap;
+import static com.cx.plugin.utils.CxParam.*;
+import static com.cx.plugin.utils.CxPluginUtils.decrypt;
+import static com.cx.plugin.utils.CxPluginUtils.encrypt;
 
 
 public class AgentTaskConfigurator extends AbstractTaskConfigurator {
@@ -49,12 +43,14 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     private LegacyClient commonClient = null;
     private AdministrationConfiguration adminConfig;
 
-    private final static String DEFAULT_SETTING_LABEL = "Use Global Setting";
+	private final static String DEFAULT_SETTING_LABEL = "Use Global Setting";
     private final static String SPECIFIC_SETTING_LABEL = "Use Specific Setting";
     private final static String DEFAULT_SERVER_URL = "http://";
     private final static int MAX_PROJECT_NAME_LENGTH = 200;
     private static final String DEFAULT_INTERVAL_BEGINS = "01:00";
     private static final String DEFAULT_INTERVAL_ENDS = "04:00";
+    
+    private boolean criticalSupported = false;
 
     private Map<String, String> CONFIGURATION_MODE_TYPES_MAP_SERVER = ImmutableMap.of(GLOBAL_CONFIGURATION_SERVER, DEFAULT_SETTING_LABEL, CUSTOM_CONFIGURATION_SERVER, SPECIFIC_SETTING_LABEL);
     private Map<String, String> CONFIGURATION_MODE_TYPES_MAP_CXSAST = ImmutableMap.of(GLOBAL_CONFIGURATION_CXSAST, DEFAULT_SETTING_LABEL, CUSTOM_CONFIGURATION_CXSAST, SPECIFIC_SETTING_LABEL);
@@ -65,7 +61,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     //create task configuration
     @Override
     public void populateContextForCreate(@NotNull final Map<String, Object> context) {
-        super.populateContextForCreate(context);
+    	super.populateContextForCreate(context);
         context.put("configurationModeTypesServer", CONFIGURATION_MODE_TYPES_MAP_SERVER);
         context.put("configurationModeTypesCxSAST", CONFIGURATION_MODE_TYPES_MAP_CXSAST);
         context.put("configurationModeTypesControl", CONFIGURATION_MODE_TYPES_MAP_CONTROL);
@@ -161,8 +157,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     //edit task configuration
     @Override
     public void populateContextForEdit(@NotNull final Map<String, Object> context, @NotNull final TaskDefinition taskDefinition) {
-
-        super.populateContextForEdit(context, taskDefinition);
+    	super.populateContextForEdit(context, taskDefinition);
         Map<String, String> configMap = taskDefinition.getConfiguration();
 
         context.put("configurationModeTypesServer", CONFIGURATION_MODE_TYPES_MAP_SERVER);
@@ -401,7 +396,10 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
             context.put(SCAN_CONTROL_SECTION, GLOBAL_CONFIGURATION_CONTROL);
             context.put(IS_SYNCHRONOUS, OPTION_TRUE);
             context.put(POLICY_VIOLATION_ENABLED, OPTION_FALSE);
+            context.put(POLICY_VIOLATION_ENABLED_SCA, OPTION_FALSE);
             context.put(THRESHOLDS_ENABLED, OPTION_FALSE);
+            context.put(ENABLE_CRITICAL_SEVERITY, OPTION_FALSE);
+            context.put(CRITICAL_THRESHOLD, "");
             context.put(HIGH_THRESHOLD, "");
             context.put(MEDIUM_THRESHOLD, "");
             context.put(LOW_THRESHOLD, "");
@@ -413,7 +411,10 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
             context.put(SCAN_CONTROL_SECTION, configMap.get(SCAN_CONTROL_SECTION));
             context.put(IS_SYNCHRONOUS, configMap.get(IS_SYNCHRONOUS));
             context.put(POLICY_VIOLATION_ENABLED, configMap.get(POLICY_VIOLATION_ENABLED));
+            context.put(POLICY_VIOLATION_ENABLED_SCA, configMap.get(POLICY_VIOLATION_ENABLED_SCA));
             context.put(THRESHOLDS_ENABLED, configMap.get(THRESHOLDS_ENABLED));
+            context.put(ENABLE_CRITICAL_SEVERITY, configMap.get(ENABLE_CRITICAL_SEVERITY));
+            context.put(CRITICAL_THRESHOLD, configMap.get(CRITICAL_THRESHOLD));
             context.put(HIGH_THRESHOLD, configMap.get(HIGH_THRESHOLD));
             context.put(MEDIUM_THRESHOLD, configMap.get(MEDIUM_THRESHOLD));
             context.put(LOW_THRESHOLD, configMap.get(LOW_THRESHOLD));
@@ -425,7 +426,9 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 
         context.put(GLOBAL_IS_SYNCHRONOUS, getAdminConfig(GLOBAL_IS_SYNCHRONOUS));
         context.put(GLOBAL_POLICY_VIOLATION_ENABLED, getAdminConfig(GLOBAL_POLICY_VIOLATION_ENABLED));
+        context.put(GLOBAL_POLICY_VIOLATION_ENABLED_SCA, getAdminConfig(GLOBAL_POLICY_VIOLATION_ENABLED_SCA));
         context.put(GLOBAL_THRESHOLDS_ENABLED, getAdminConfig(GLOBAL_THRESHOLDS_ENABLED));
+        context.put(GLOBAL_CRITICAL_THRESHOLD, getAdminConfig(GLOBAL_CRITICAL_THRESHOLD));
         context.put(GLOBAL_HIGH_THRESHOLD, getAdminConfig(GLOBAL_HIGH_THRESHOLD));
         context.put(GLOBAL_MEDIUM_THRESHOLD, getAdminConfig(GLOBAL_MEDIUM_THRESHOLD));
         context.put(GLOBAL_LOW_THRESHOLD, getAdminConfig(GLOBAL_LOW_THRESHOLD));
@@ -440,9 +443,8 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     //save task configuration
     @NotNull
     @Override
-    public Map<String, String> generateTaskConfigMap(@NotNull final ActionParametersMap params, @Nullable final TaskDefinition previousTaskDefinition) {
-
-        Map<String, String> config = super.generateTaskConfigMap(params, previousTaskDefinition);
+    public Map<String, String> generateTaskConfigMap(@NotNull final ActionParametersMap params, @javax.annotation.Nullable final TaskDefinition previousTaskDefinition) {
+    	Map<String, String> config = super.generateTaskConfigMap(params, previousTaskDefinition);
         config = generateCredentialsFields(params, config);
         config.put(ENABLE_SAST_SCAN, params.getString(ENABLE_SAST_SCAN));
         config.put(PROJECT_NAME, getDefaultString(params, PROJECT_NAME).trim());
@@ -489,6 +491,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 
         config.put(IS_SYNCHRONOUS, params.getString(IS_SYNCHRONOUS));
         config.put(POLICY_VIOLATION_ENABLED, params.getString(POLICY_VIOLATION_ENABLED));
+        config.put(POLICY_VIOLATION_ENABLED_SCA, params.getString(POLICY_VIOLATION_ENABLED_SCA));
 
         config.put(IS_INCREMENTAL, params.getString(IS_INCREMENTAL));
         config.put(FORCE_SCAN, params.getString(FORCE_SCAN));
@@ -586,6 +589,8 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         final String configType = getDefaultString(params, SCAN_CONTROL_SECTION);
         config.put(SCAN_CONTROL_SECTION, configType);
         config.put(THRESHOLDS_ENABLED, params.getString(THRESHOLDS_ENABLED));
+        config.put(ENABLE_CRITICAL_SEVERITY, params.getString(ENABLE_CRITICAL_SEVERITY));
+        config.put(CRITICAL_THRESHOLD, getDefaultString(params, CRITICAL_THRESHOLD));
         config.put(HIGH_THRESHOLD, getDefaultString(params, HIGH_THRESHOLD));
         config.put(MEDIUM_THRESHOLD, getDefaultString(params, MEDIUM_THRESHOLD));
         config.put(LOW_THRESHOLD, getDefaultString(params, LOW_THRESHOLD));
@@ -661,7 +666,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     //validate configuration fields
     @Override
     public void validate(@NotNull final ActionParametersMap params, @NotNull final ErrorCollection errorCollection) {
-        super.validate(params, errorCollection);
+    	super.validate(params, errorCollection);
         if (params.getBoolean(IS_INCREMENTAL) && params.getBoolean(FORCE_SCAN)) {
         	errorCollection.addError(FORCE_SCAN, ((ConfigureBuildTasks) errorCollection).getText("errorForceIncrementalScan.equals"));
         	errorCollection.addError(IS_INCREMENTAL, ((ConfigureBuildTasks) errorCollection).getText("errorForceIncrementalScan.equals"));
@@ -700,6 +705,8 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 
         useSpecific = params.getString(SCAN_CONTROL_SECTION);
         if (CUSTOM_CONFIGURATION_CONTROL.equals(useSpecific)) {
+            validateNotNegative(params, errorCollection, CRITICAL_THRESHOLD);
+            validateCriticalSupport(params, errorCollection, CRITICAL_THRESHOLD);
             validateNotNegative(params, errorCollection, HIGH_THRESHOLD);
             validateNotNegative(params, errorCollection, MEDIUM_THRESHOLD);
             validateNotNegative(params, errorCollection, LOW_THRESHOLD);
@@ -780,6 +787,62 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
             } catch (Exception e) {
                 errorCollection.addError(key, ((ConfigureBuildTasks) errorCollection).getText(key + ".notPositive"));
             }
+        }
+    }
+    
+    private void validateCriticalSupport(@NotNull ActionParametersMap params, @NotNull final ErrorCollection errorCollection, @NotNull String key) {
+    	Double version = 9.0;
+    	if(OPTION_TRUE.equalsIgnoreCase(params.getString(IS_SYNCHRONOUS)) 
+    			&& OPTION_TRUE.equalsIgnoreCase(params.getString(THRESHOLDS_ENABLED))){        	
+        		String cxServerUrl = "";
+                String cxUser = "";
+                String cxPass = "";
+                String proxyEnable = "";
+                if(GLOBAL_CONFIGURATION_SERVER.equalsIgnoreCase(params.getString(SERVER_CREDENTIALS_SECTION))) {//For global configuration case        			
+        			cxServerUrl = getAdminConfig(GLOBAL_SERVER_URL);
+        	        cxUser = getAdminConfig(GLOBAL_USER_NAME);
+        	        cxPass = getAdminConfig(GLOBAL_PWD);
+        	        proxyEnable = getAdminConfig(GLOBAL_ENABLE_PROXY);        			
+        		}
+        		else { // For use specific case
+        			cxUser = params.getString(USER_NAME);
+        			cxPass = params.getString(PASSWORD);
+        			cxServerUrl = params.getString(SERVER_URL);
+        			proxyEnable = params.getString(ENABLE_PROXY);        			
+        		}
+        		String sastVersion;
+    			//fetch SAST version using api call
+				try {
+					sastVersion = SASTUtils.loginToServer(new URL(cxServerUrl),cxUser,decrypt(cxPass),proxyEnable);
+					String[] sastVersionSplit = sastVersion.split("\\.");
+					version = Double.parseDouble(sastVersionSplit[0]+"."+sastVersionSplit[1]);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				//check if SAST version support critical threshold
+        		if(version >= 9.7) {
+        			if(OPTION_FALSE.equalsIgnoreCase(params.getString(ENABLE_CRITICAL_SEVERITY))) {//This condition represents version of SAST is changed from SAST < 9.7 to SAST >=9.7
+        				//following param will make critical threshold visible in UI
+        				params.put(ENABLE_CRITICAL_SEVERITY, OPTION_TRUE);
+        				//reset the value of critical threshold
+        				params.put(CRITICAL_THRESHOLD,"");
+            			errorCollection.addError(CRITICAL_THRESHOLD,"The configured SAST version supports Critical severity. Critical threshold can also be configured.");
+            		} else {
+        				//This condition represents version of SAST remains same as before i.e SAST >=9.7. Thus no change is needed.
+            		}
+        		}else {
+        			if( OPTION_TRUE.equalsIgnoreCase(params.getString(ENABLE_CRITICAL_SEVERITY))){//This condition represents version of SAST is changed from SAST >= 9.7 to SAST < 9.7
+        				//if SAST version is prior to 9.7 then do not show critical threshold on UI
+        				params.put(ENABLE_CRITICAL_SEVERITY, OPTION_FALSE);
+        				//reset the critical threshold value to empty
+        				params.put(CRITICAL_THRESHOLD,"");
+        				// following message is displayed on UI to make user aware of the critical threshold is not supported by this version of SAST.
+        				errorCollection.addError(HIGH_THRESHOLD,"The configured SAST version does not support Critical severity. Critical threshold will not be applicable.");
+        				}else {
+        					//This condition represents version of SAST remains same as before i.e SAST < 9.7. Thus no change is needed.
+        					}        			
+        		}        		        		
+        	        	
         }
     }
 

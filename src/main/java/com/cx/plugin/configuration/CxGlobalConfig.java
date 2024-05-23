@@ -4,21 +4,19 @@ import com.atlassian.bamboo.configuration.AdministrationConfiguration;
 import com.atlassian.bamboo.configuration.AdministrationConfigurationPersister;
 import com.atlassian.bamboo.configuration.GlobalAdminAction;
 import com.atlassian.spring.container.ContainerManager;
-import com.atlassian.util.concurrent.NotNull;
 import com.cx.plugin.utils.CxParam;
-import com.cx.restclient.exception.CxClientException;
+import com.cx.plugin.utils.SASTUtils;
 import com.google.common.collect.ImmutableMap;
-
-import org.apache.commons.lang3.SystemUtils;
 import org.codehaus.plexus.util.StringUtils;
 
-import java.io.File;
+import javax.annotation.Nonnull;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Map;
 
 import static com.cx.plugin.utils.CxParam.*;
+import static com.cx.plugin.utils.CxPluginUtils.decrypt;
 import static com.cx.plugin.utils.CxPluginUtils.encrypt;
 
 
@@ -42,8 +40,10 @@ public class CxGlobalConfig extends GlobalAdminAction {
     private String globalIsSynchronous;
     private String globalEnableProxy;
     private String globalEnablePolicyViolations;
+    private String globalEnablePolicyViolationsSCA;
     private String globalScanTimeoutInMinutes;
     private String globalThresholdsEnabled;
+    private String globalCriticalThreshold;
     private String globalHighThreshold;
     private String globalMediumThreshold;
     private String globalLowThreshold;
@@ -53,12 +53,16 @@ public class CxGlobalConfig extends GlobalAdminAction {
     private String globalOsaLowThreshold;
     private String globalDenyProject;
     private String globalHideResults;
+    private String globalEnableCriticalSeverity = OPTION_FALSE;
     
     private String globalEnableDependencyScan = OPTION_FALSE;
+
 	private String globalDependencyScanType;
 	
     private String globalDependencyScanFilterPatterns="";
     
+    private boolean criticalSupported = false;
+
 	private String globalDependencyScanfolderExclusions;
 	private String globalOsaArchiveIncludePatterns = DEFAULT_OSA_ARCHIVE_INCLUDE_PATTERNS;
     private String globalOsaInstallBeforeScan;
@@ -119,12 +123,15 @@ public class CxGlobalConfig extends GlobalAdminAction {
             globalFilterPatterns = filterProperty;
         }
 
+        globalEnableCriticalSeverity = adminConfig.getSystemProperty(GLOBAL_ENABLE_CRITICAL_SEVERITY);
         globalScanTimeoutInMinutes = adminConfig.getSystemProperty(GLOBAL_SCAN_TIMEOUT_IN_MINUTES);
         globalIsSynchronous = adminConfig.getSystemProperty(GLOBAL_IS_SYNCHRONOUS);
         globalEnableProxy=adminConfig.getSystemProperty(GLOBAL_ENABLE_PROXY);
         globalHideResults = adminConfig.getSystemProperty(GLOBAL_HIDE_RESULTS);
         globalEnablePolicyViolations = adminConfig.getSystemProperty(GLOBAL_POLICY_VIOLATION_ENABLED);
+        globalEnablePolicyViolationsSCA = adminConfig.getSystemProperty(GLOBAL_POLICY_VIOLATION_ENABLED_SCA);
         globalThresholdsEnabled = adminConfig.getSystemProperty(GLOBAL_THRESHOLDS_ENABLED);
+        globalCriticalThreshold = adminConfig.getSystemProperty(GLOBAL_CRITICAL_THRESHOLD);
         globalHighThreshold = adminConfig.getSystemProperty(GLOBAL_HIGH_THRESHOLD);
         globalMediumThreshold = adminConfig.getSystemProperty(GLOBAL_MEDIUM_THRESHOLD);
         globalLowThreshold = adminConfig.getSystemProperty(GLOBAL_LOW_THRESHOLD);
@@ -141,7 +148,8 @@ public class CxGlobalConfig extends GlobalAdminAction {
 
     public String save() {
         boolean error = isURLInvalid(globalServerUrl, GLOBAL_SERVER_URL);
-        
+        //setActionMessages(new ArrayList<String>());
+        final AdministrationConfiguration adminConfig = (AdministrationConfiguration) ContainerManager.getComponent(ADMINISTRATION_CONFIGURATION);
         error |= isScanTimeoutInvalid();
         if ("true".equals(globalEnableDependencyScan)) {
         	if("AST_SCA".equals(globalDependencyScanType)){
@@ -152,9 +160,12 @@ public class CxGlobalConfig extends GlobalAdminAction {
         }
         if ("true".equals(globalIsSynchronous)) {
             if ("true".equals(globalThresholdsEnabled)) {
+                
+                error |= isNegative(getGlobalCriticalThreshold(), GLOBAL_CRITICAL_THRESHOLD);
                 error |= isNegative(getGlobalHighThreshold(), GLOBAL_HIGH_THRESHOLD);
                 error |= isNegative(getGlobalMediumThreshold(), GLOBAL_MEDIUM_THRESHOLD);
                 error |= isNegative(getGlobalLowThreshold(), GLOBAL_LOW_THRESHOLD);
+                
             }
             if ("true".equals(globalOsaThresholdsEnabled)) {
                 error |= isNegative(getGlobalOsaHighThreshold(), GLOBAL_OSA_HIGH_THRESHOLD);
@@ -165,7 +176,6 @@ public class CxGlobalConfig extends GlobalAdminAction {
         if (error) {
             return ERROR;
         }
-        final AdministrationConfiguration adminConfig = (AdministrationConfiguration) ContainerManager.getComponent(ADMINISTRATION_CONFIGURATION);
         adminConfig.setSystemProperty(GLOBAL_SERVER_URL, globalServerUrl);
         adminConfig.setSystemProperty(GLOBAL_USER_NAME, globalUsername);
         adminConfig.setSystemProperty(GLOBAL_PWD, encrypt(globalPss));
@@ -199,8 +209,11 @@ public class CxGlobalConfig extends GlobalAdminAction {
             globalThresholdsEnabled = null;
             globalOsaThresholdsEnabled = null;
             globalEnablePolicyViolations = null;
+            globalEnablePolicyViolationsSCA = null;
         }
+        
         adminConfig.setSystemProperty(GLOBAL_POLICY_VIOLATION_ENABLED, globalEnablePolicyViolations);
+        adminConfig.setSystemProperty(GLOBAL_POLICY_VIOLATION_ENABLED_SCA, globalEnablePolicyViolationsSCA);
         adminConfig.setSystemProperty(GLOBAL_THRESHOLDS_ENABLED, globalThresholdsEnabled);
         adminConfig.setSystemProperty(GLOBAL_HIGH_THRESHOLD, globalHighThreshold);
         adminConfig.setSystemProperty(GLOBAL_MEDIUM_THRESHOLD, globalMediumThreshold);
@@ -211,13 +224,57 @@ public class CxGlobalConfig extends GlobalAdminAction {
         adminConfig.setSystemProperty(GLOBAL_OSA_LOW_THRESHOLD, globalOsaLowThreshold);
         adminConfig.setSystemProperty(GLOBAL_DENY_PROJECT, globalDenyProject);
         adminConfig.setSystemProperty(GLOBAL_HIDE_RESULTS, globalHideResults);
+        if ("true".equals(globalIsSynchronous)) {
+        	if ("true".equals(globalThresholdsEnabled)) {
+        		Double version=9.0; 
+        		//invoke api to fetch SAST version
+        		try {
+        			String sastVersion = SASTUtils.loginToServer(new URL(globalServerUrl),globalUsername,decrypt(globalPss),globalEnableProxy);        			
+        			String[] sastVersionSplit = sastVersion.split("\\.");        			
+        			version = Double.parseDouble(sastVersionSplit[0]+"."+sastVersionSplit[1]);
+        		} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        		if(version >= 9.7) {
+        			if( OPTION_FALSE.equalsIgnoreCase(globalEnableCriticalSeverity)){
+        				//This condition represents version of SAST is changed from SAST < 9.7 to SAST >=9.7
+        				
+        			//following property will make critical threshold visible in UI
+                	globalEnableCriticalSeverity = OPTION_TRUE;
+                	//reset the critical threshold value to empty
+                	globalCriticalThreshold = "";
+                	// following message is displayed on UI to make user aware of the critical threshold being supported by this version of SAST.
+                	addActionError("The configured SAST version supports Critical severity. Critical threshold can also be configured.");
+        			} else {
+        				//This condition represents version of SAST remains same as before i.e SAST >=9.7. Thus no change is needed.
+        			}
+                }else {
+                	if( OPTION_TRUE.equalsIgnoreCase(globalEnableCriticalSeverity)){
+                		//This condition represents version of SAST is changed from SAST >= 9.7 to SAST < 9.7
+                	
+                	//if SAST version is prior to 9.7 then do not show critical threshold on UI
+                	globalEnableCriticalSeverity = OPTION_FALSE;
+                	//reset the critical threshold value to empty
+                	globalCriticalThreshold = "";
+                	// following message is displayed on UI to make user aware of the critical threshold is not supported by this version of SAST.
+                	addActionError("The configured SAST version does not support Critical severity. Critical threshold will not be applicable.");
+                	}
+                	else {
+                		//This condition represents version of SAST remains same as before i.e SAST < 9.7. Thus no change is needed.
+                	}
+                }            	
+            }
+        }
+        adminConfig.setSystemProperty(GLOBAL_CRITICAL_THRESHOLD, globalCriticalThreshold);
+        adminConfig.setSystemProperty(GLOBAL_ENABLE_CRITICAL_SEVERITY, globalEnableCriticalSeverity);
 
         ((AdministrationConfigurationPersister) ContainerManager.getComponent("administrationConfigurationPersister")).saveAdministrationConfiguration(adminConfig);
 
         addActionMessage(getText("cxDefaultConfigSuccess.label"));
         return SUCCESS;
     }
-
+    
     private boolean isURLInvalid(final String value, final String fieldName) {
         boolean ret = false;
         if (!StringUtils.isEmpty(value)) {
@@ -255,7 +312,7 @@ public class CxGlobalConfig extends GlobalAdminAction {
 
     }
 
-    private boolean isNegative(@NotNull String value, @NotNull String key) {
+    private boolean isNegative(@Nonnull String value, @Nonnull String key) {
         boolean ret = false;
         if (!StringUtils.isEmpty(value)) {
             try {
@@ -351,6 +408,14 @@ public class CxGlobalConfig extends GlobalAdminAction {
     public void setGlobalEnablePolicyViolations(String globalEnablePolicyViolations) {
         this.globalEnablePolicyViolations = globalEnablePolicyViolations;
     }
+    
+    public String getGlobalEnablePolicyViolationsSCA() {
+        return globalEnablePolicyViolationsSCA;
+    }
+
+    public void setGlobalEnablePolicyViolationsSCA(String globalEnablePolicyViolationsSCA) {
+        this.globalEnablePolicyViolationsSCA = globalEnablePolicyViolationsSCA;
+    }
 
     public void setGlobalIsSynchronous(String globalIsSynchronous) {
         this.globalIsSynchronous = globalIsSynchronous;
@@ -370,6 +435,14 @@ public class CxGlobalConfig extends GlobalAdminAction {
 
     public void setGlobalThresholdsEnabled(String globalThresholdsEnabled) {
         this.globalThresholdsEnabled = globalThresholdsEnabled;
+    }
+    
+    public String getGlobalCriticalThreshold() {
+        return globalCriticalThreshold;
+    }
+
+    public void setGlobalCriticalThreshold(String globalCriticalThreshold) {
+        this.globalCriticalThreshold = globalCriticalThreshold;
     }
 
     public String getGlobalHighThreshold() {
@@ -443,6 +516,14 @@ public class CxGlobalConfig extends GlobalAdminAction {
     public void setGlobalHideResults(String globalHideResults) {
         this.globalHideResults = globalHideResults;
     }
+    
+    public String getGlobalEnableCriticalSeverity() {
+		return globalEnableCriticalSeverity;
+	}
+
+	public void setGlobalEnableCriticalSeverity(String globalEnableCriticalSeverity) {
+		this.globalEnableCriticalSeverity = globalEnableCriticalSeverity;
+	}
     
 
 	public String getGlobalEnableDependencyScan() {

@@ -18,6 +18,7 @@ import static com.cx.plugin.utils.CxParam.CXSCA_RESOLVER_PATH_GLOBAL;
 import static com.cx.plugin.utils.CxParam.CXSCA_USERNAME;
 import static com.cx.plugin.utils.CxParam.CXSCA_WEBAPP_URL;
 import static com.cx.plugin.utils.CxParam.CX_USE_CUSTOM_DEPENDENCY_SETTINGS;
+import static com.cx.plugin.utils.CxParam.GLOBAL_ENABLE_DEPENDENCY_SCAN;
 import static com.cx.plugin.utils.CxParam.DEPENDENCY_SCAN_FILTER_PATTERNS;
 import static com.cx.plugin.utils.CxParam.DEPENDENCY_SCAN_FOLDER_EXCLUDE;
 import static com.cx.plugin.utils.CxParam.DEPENDENCY_SCAN_TYPE;
@@ -40,6 +41,7 @@ import static com.cx.plugin.utils.CxParam.GLOBAL_ENABLE_PROXY;
 import static com.cx.plugin.utils.CxParam.GLOBAL_FILTER_PATTERN;
 import static com.cx.plugin.utils.CxParam.GLOBAL_FOLDER_EXCLUSION;
 import static com.cx.plugin.utils.CxParam.GLOBAL_HIDE_RESULTS;
+import static com.cx.plugin.utils.CxParam.GLOBAL_CRITICAL_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.GLOBAL_HIGH_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.GLOBAL_IS_SYNCHRONOUS;
 import static com.cx.plugin.utils.CxParam.GLOBAL_LOW_THRESHOLD;
@@ -51,6 +53,7 @@ import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_LOW_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_MEDIUM_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_THRESHOLDS_ENABLED;
 import static com.cx.plugin.utils.CxParam.GLOBAL_POLICY_VIOLATION_ENABLED;
+import static com.cx.plugin.utils.CxParam.GLOBAL_POLICY_VIOLATION_ENABLED_SCA;
 import static com.cx.plugin.utils.CxParam.GLOBAL_PWD;
 import static com.cx.plugin.utils.CxParam.GLOBAL_SCAN_TIMEOUT_IN_MINUTES;
 import static com.cx.plugin.utils.CxParam.GLOBAL_SERVER_URL;
@@ -64,6 +67,7 @@ import static com.cx.plugin.utils.CxParam.FORCE_SCAN;
 import static com.cx.plugin.utils.CxParam.IS_INTERVALS;
 import static com.cx.plugin.utils.CxParam.IS_SYNCHRONOUS;
 import static com.cx.plugin.utils.CxParam.LOW_THRESHOLD;
+import static com.cx.plugin.utils.CxParam.CRITICAL_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.MEDIUM_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.OPTION_TRUE;
 import static com.cx.plugin.utils.CxParam.OSA_ARCHIVE_INCLUDE_PATTERNS;
@@ -74,6 +78,7 @@ import static com.cx.plugin.utils.CxParam.OSA_MEDIUM_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.OSA_THRESHOLDS_ENABLED;
 import static com.cx.plugin.utils.CxParam.PASSWORD;
 import static com.cx.plugin.utils.CxParam.POLICY_VIOLATION_ENABLED;
+import static com.cx.plugin.utils.CxParam.POLICY_VIOLATION_ENABLED_SCA;
 import static com.cx.plugin.utils.CxParam.PRESET_ID;
 import static com.cx.plugin.utils.CxParam.PRESET_NAME;
 import static com.cx.plugin.utils.CxParam.PROJECT_NAME;
@@ -84,6 +89,7 @@ import static com.cx.plugin.utils.CxParam.SERVER_URL;
 import static com.cx.plugin.utils.CxParam.TEAM_PATH_ID;
 import static com.cx.plugin.utils.CxParam.TEAM_PATH_NAME;
 import static com.cx.plugin.utils.CxParam.THRESHOLDS_ENABLED;
+import static com.cx.plugin.utils.CxParam.ENABLE_CRITICAL_SEVERITY;
 import static com.cx.plugin.utils.CxParam.USER_NAME;
 import static com.cx.plugin.utils.CxParam.ENABLE_SAST_SCAN;
 import static com.cx.plugin.utils.CxPluginUtils.decrypt;
@@ -255,6 +261,7 @@ public class CxConfigHelper {
         //add AST_SCA or OSA based on what user has selected
         ScannerType scannerType = null;
         if(resolveBool(configMap, ENABLE_DEPENDENCY_SCAN)) {
+        	
         	setDependencyScanEnabled(true);
         	String useCustomdependencyScanSettings = configMap.get(CX_USE_CUSTOM_DEPENDENCY_SETTINGS);
     		if(!StringUtils.isEmpty(useCustomdependencyScanSettings) && useCustomdependencyScanSettings.equalsIgnoreCase("true")) {
@@ -274,7 +281,10 @@ public class CxConfigHelper {
                     scanConfig.setOsaRunInstall(resolveBool(configMap, OSA_INSTALL_BEFORE_SCAN));
             	}
     		}else {
-    			setUsingGlobalDependencyScan(true);    			
+//    			setUsingGlobalDependencyScan(true);
+    			//Global level configurations for dependency scan are used only when "Enable Dependency Scan" checkbox is enabled in global configurations
+    			String useGlobalependencyScanSettings = getAdminConfig(GLOBAL_ENABLE_DEPENDENCY_SCAN);
+    			if(!StringUtils.isEmpty(useGlobalependencyScanSettings) && useGlobalependencyScanSettings.equalsIgnoreCase("true")) {
             	scanConfig.setOsaFilterPattern(getAdminConfig(GLOBAL_DEPENDENCY_SCAN_FILTER_PATTERNS));
             	scanConfig.setOsaFolderExclusions(getAdminConfig(GLOBAL_DEPENDENCY_SCAN_FOLDER_EXCLUDE));
             	if(getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE).equalsIgnoreCase(ScannerType.AST_SCA.toString())) {        		
@@ -289,6 +299,7 @@ public class CxConfigHelper {
                     scanConfig.setOsaArchiveIncludePatterns(getAdminConfig(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS));
                     scanConfig.setOsaRunInstall(resolveGlobalBool(GLOBAL_OSA_INSTALL_BEFORE_SCAN));
             	}
+    			}
     		}
     		
 
@@ -303,8 +314,10 @@ public class CxConfigHelper {
         	if (isCustomConfSect) { 
         		scanConfig.setSynchronous(resolveBool(configMap, IS_SYNCHRONOUS));
                 scanConfig.setEnablePolicyViolations(resolveBool(configMap, POLICY_VIOLATION_ENABLED));
+                scanConfig.setEnablePolicyViolationsSCA(resolveBool(configMap, POLICY_VIOLATION_ENABLED_SCA));
         		if(enableSAST) {
             scanConfig.setSastThresholdsEnabled(resolveBool(configMap, THRESHOLDS_ENABLED));
+            scanConfig.setSastCriticalThreshold(resolveInt(configMap.get(CRITICAL_THRESHOLD), log));
             scanConfig.setSastHighThreshold(resolveInt(configMap.get(HIGH_THRESHOLD), log));
             scanConfig.setSastMediumThreshold(resolveInt(configMap.get(MEDIUM_THRESHOLD), log));
             scanConfig.setSastLowThreshold(resolveInt(configMap.get(LOW_THRESHOLD), log));
@@ -312,14 +325,16 @@ public class CxConfigHelper {
             scanConfig.setOsaThresholdsEnabled(resolveBool(configMap, OSA_THRESHOLDS_ENABLED));
             scanConfig.setOsaHighThreshold(resolveInt(configMap.get(OSA_HIGH_THRESHOLD), log));
             scanConfig.setOsaMediumThreshold(resolveInt(configMap.get(OSA_MEDIUM_THRESHOLD), log));
-            scanConfig.setOsaLowThreshold(resolveInt(configMap.get(OSA_LOW_THRESHOLD), log));            
+            scanConfig.setOsaLowThreshold(resolveInt(configMap.get(OSA_LOW_THRESHOLD), log));  
             setUsingGlobalScanControlSettings(false);
         	} 
         	else {
         		scanConfig.setSynchronous(resolveGlobalBool(GLOBAL_IS_SYNCHRONOUS));
                 scanConfig.setEnablePolicyViolations(resolveGlobalBool(GLOBAL_POLICY_VIOLATION_ENABLED));
+                scanConfig.setEnablePolicyViolationsSCA(resolveGlobalBool(GLOBAL_POLICY_VIOLATION_ENABLED_SCA));
         		if(enableSAST) {
             scanConfig.setSastThresholdsEnabled(resolveGlobalBool(GLOBAL_THRESHOLDS_ENABLED));
+            scanConfig.setSastCriticalThreshold(resolveInt(getAdminConfig(GLOBAL_CRITICAL_THRESHOLD), log));
             scanConfig.setSastHighThreshold(resolveInt(getAdminConfig(GLOBAL_HIGH_THRESHOLD), log));
             scanConfig.setSastMediumThreshold(resolveInt(getAdminConfig(GLOBAL_MEDIUM_THRESHOLD), log));
             scanConfig.setSastLowThreshold(resolveInt(getAdminConfig(GLOBAL_LOW_THRESHOLD), log));
@@ -327,7 +342,7 @@ public class CxConfigHelper {
             scanConfig.setOsaThresholdsEnabled(resolveGlobalBool(GLOBAL_OSA_THRESHOLDS_ENABLED));
             scanConfig.setOsaHighThreshold(resolveInt(getAdminConfig(GLOBAL_OSA_HIGH_THRESHOLD), log));
             scanConfig.setOsaMediumThreshold(resolveInt(getAdminConfig(GLOBAL_OSA_MEDIUM_THRESHOLD), log));
-            scanConfig.setOsaLowThreshold(resolveInt(getAdminConfig(GLOBAL_OSA_LOW_THRESHOLD), log));            
+            scanConfig.setOsaLowThreshold(resolveInt(getAdminConfig(GLOBAL_OSA_LOW_THRESHOLD), log));  
             setUsingGlobalScanControlSettings(true);        
       }        
         scanConfig.setDenyProject(resolveGlobalBool(GLOBAL_DENY_PROJECT));

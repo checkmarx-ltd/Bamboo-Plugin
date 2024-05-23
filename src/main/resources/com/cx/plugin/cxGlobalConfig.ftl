@@ -37,6 +37,10 @@
     .aui-page-focused .aui-page-panel-content h3:not(.collapsible-header) {
         margin-top: 0;
     }
+    
+   .hidden{
+   visibility:hidden;
+   }
 
     h3 {
         color: #3b73af;
@@ -144,11 +148,15 @@
     [@ui.bambooSection title='Control Checkmarx Scan' cssClass="cx center"]
 
         [@ww.checkbox labelKey="isSynchronous.label" name="globalIsSynchronous" descriptionKey="isSynchronous.description" toggle='true' /]
-
+		[@ww.hidden name="globalEnableCriticalSeverity"/]
         [@ui.bambooSection dependsOn='globalIsSynchronous' showOn='true']
             [@ww.checkbox labelKey="enablePolicyViolations.label" name="globalEnablePolicyViolations" descriptionKey="enablePolicyViolations.description" toggle='true' /]
+            [@ww.checkbox labelKey="enablePolicyViolationsSCA.label" name="globalEnablePolicyViolationsSCA" descriptionKey="enablePolicyViolationsSCA.description" toggle='true' /]
             [@ww.checkbox labelKey="thresholdsEnabled.label" name="globalThresholdsEnabled" descriptionKey="thresholdsEnabled.description" toggle='true' /]
             [@ui.bambooSection dependsOn='globalThresholdsEnabled' showOn='true']
+            	[@ui.bambooSection dependsOn="globalEnableCriticalSeverity" showOn="true"]
+                [@ww.textfield labelKey="sastCriticalThreshold.label" name="globalCriticalThreshold" required='false'/]
+                [/@ui.bambooSection]
                 [@ww.textfield labelKey="sastHighThreshold.label" name="globalHighThreshold" required='false'/]
                 [@ww.textfield labelKey="sastMediumThreshold.label" name="globalMediumThreshold" required='false'/]
                 [@ww.textfield labelKey="sastLowThreshold.label" name="globalLowThreshold" required='false'/]
@@ -179,7 +187,6 @@ function connectToScaServer() {
 
         function restScaRequest() {
 			var request;
-			
 			var scaServerUrl = document.getElementById("checkmarxDefaultConfiguration_globalcxScaAPIUrl").value;
             var scaAccessControlUrl = document.getElementById("checkmarxDefaultConfiguration_globalcxScaAccessControlServerUrl").value;
             var scaWebAppUrl = document.getElementById("checkmarxDefaultConfiguration_globalcxScaWebAppUrl").value;
@@ -330,7 +337,10 @@ function connectToScaServer() {
             }
 
             xhr.onload = function () {
+           
                 var parsed = JSON.parse(xhr.responseText);
+                 
+                
                 var message = document.getElementById("gtestConnectionMessage");
                 if (xhr.status == 200) {
                     message.style.color = "green";
