@@ -404,6 +404,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
             context.put(MEDIUM_THRESHOLD, "");
             context.put(LOW_THRESHOLD, "");
             context.put(OSA_THRESHOLDS_ENABLED, OPTION_FALSE);
+            context.put(OSA_CRITICAL_THRESHOLD, "");
             context.put(OSA_HIGH_THRESHOLD, "");
             context.put(OSA_MEDIUM_THRESHOLD, "");
             context.put(OSA_LOW_THRESHOLD, "");
@@ -419,6 +420,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
             context.put(MEDIUM_THRESHOLD, configMap.get(MEDIUM_THRESHOLD));
             context.put(LOW_THRESHOLD, configMap.get(LOW_THRESHOLD));
             context.put(OSA_THRESHOLDS_ENABLED, configMap.get(OSA_THRESHOLDS_ENABLED));
+            context.put(OSA_CRITICAL_THRESHOLD, configMap.get(OSA_CRITICAL_THRESHOLD));
             context.put(OSA_HIGH_THRESHOLD, configMap.get(OSA_HIGH_THRESHOLD));
             context.put(OSA_MEDIUM_THRESHOLD, configMap.get(OSA_MEDIUM_THRESHOLD));
             context.put(OSA_LOW_THRESHOLD, configMap.get(OSA_LOW_THRESHOLD));
@@ -433,6 +435,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         context.put(GLOBAL_MEDIUM_THRESHOLD, getAdminConfig(GLOBAL_MEDIUM_THRESHOLD));
         context.put(GLOBAL_LOW_THRESHOLD, getAdminConfig(GLOBAL_LOW_THRESHOLD));
         context.put(GLOBAL_OSA_THRESHOLDS_ENABLED, getAdminConfig(GLOBAL_OSA_THRESHOLDS_ENABLED));
+        context.put(GLOBAL_OSA_CRITICAL_THRESHOLD, getAdminConfig(GLOBAL_OSA_CRITICAL_THRESHOLD));
         context.put(GLOBAL_OSA_HIGH_THRESHOLD, getAdminConfig(GLOBAL_OSA_HIGH_THRESHOLD));
         context.put(GLOBAL_OSA_MEDIUM_THRESHOLD, getAdminConfig(GLOBAL_OSA_MEDIUM_THRESHOLD));
         context.put(GLOBAL_OSA_LOW_THRESHOLD, getAdminConfig(GLOBAL_OSA_LOW_THRESHOLD));
@@ -595,6 +598,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         config.put(MEDIUM_THRESHOLD, getDefaultString(params, MEDIUM_THRESHOLD));
         config.put(LOW_THRESHOLD, getDefaultString(params, LOW_THRESHOLD));
         config.put(OSA_THRESHOLDS_ENABLED, params.getString(OSA_THRESHOLDS_ENABLED));
+        config.put(OSA_CRITICAL_THRESHOLD, getDefaultString(params, OSA_CRITICAL_THRESHOLD));
         config.put(OSA_HIGH_THRESHOLD, getDefaultString(params, OSA_HIGH_THRESHOLD));
         config.put(OSA_MEDIUM_THRESHOLD, getDefaultString(params, OSA_MEDIUM_THRESHOLD));
         config.put(OSA_LOW_THRESHOLD, getDefaultString(params, OSA_LOW_THRESHOLD));
@@ -710,6 +714,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
             validateNotNegative(params, errorCollection, HIGH_THRESHOLD);
             validateNotNegative(params, errorCollection, MEDIUM_THRESHOLD);
             validateNotNegative(params, errorCollection, LOW_THRESHOLD);
+            validateNotNegative(params, errorCollection, OSA_CRITICAL_THRESHOLD);
             validateNotNegative(params, errorCollection, OSA_HIGH_THRESHOLD);
             validateNotNegative(params, errorCollection, OSA_MEDIUM_THRESHOLD);
             validateNotNegative(params, errorCollection, OSA_LOW_THRESHOLD);

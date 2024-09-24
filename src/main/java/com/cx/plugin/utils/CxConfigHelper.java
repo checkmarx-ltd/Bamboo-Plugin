@@ -49,6 +49,7 @@ import static com.cx.plugin.utils.CxParam.GLOBAL_MEDIUM_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS;
 import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_HIGH_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_INSTALL_BEFORE_SCAN;
+import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_CRITICAL_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_LOW_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_MEDIUM_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.GLOBAL_OSA_THRESHOLDS_ENABLED;
@@ -73,6 +74,7 @@ import static com.cx.plugin.utils.CxParam.OPTION_TRUE;
 import static com.cx.plugin.utils.CxParam.OSA_ARCHIVE_INCLUDE_PATTERNS;
 import static com.cx.plugin.utils.CxParam.OSA_HIGH_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.OSA_INSTALL_BEFORE_SCAN;
+import static com.cx.plugin.utils.CxParam.OSA_CRITICAL_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.OSA_LOW_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.OSA_MEDIUM_THRESHOLD;
 import static com.cx.plugin.utils.CxParam.OSA_THRESHOLDS_ENABLED;
@@ -323,6 +325,7 @@ public class CxConfigHelper {
             scanConfig.setSastLowThreshold(resolveInt(configMap.get(LOW_THRESHOLD), log));
         	}
             scanConfig.setOsaThresholdsEnabled(resolveBool(configMap, OSA_THRESHOLDS_ENABLED));
+            scanConfig.setOsaCriticalThreshold(resolveInt(configMap.get(OSA_CRITICAL_THRESHOLD), log));
             scanConfig.setOsaHighThreshold(resolveInt(configMap.get(OSA_HIGH_THRESHOLD), log));
             scanConfig.setOsaMediumThreshold(resolveInt(configMap.get(OSA_MEDIUM_THRESHOLD), log));
             scanConfig.setOsaLowThreshold(resolveInt(configMap.get(OSA_LOW_THRESHOLD), log));  
@@ -340,6 +343,7 @@ public class CxConfigHelper {
             scanConfig.setSastLowThreshold(resolveInt(getAdminConfig(GLOBAL_LOW_THRESHOLD), log));
         		}
             scanConfig.setOsaThresholdsEnabled(resolveGlobalBool(GLOBAL_OSA_THRESHOLDS_ENABLED));
+            scanConfig.setOsaCriticalThreshold(resolveInt(getAdminConfig(GLOBAL_OSA_CRITICAL_THRESHOLD), log));
             scanConfig.setOsaHighThreshold(resolveInt(getAdminConfig(GLOBAL_OSA_HIGH_THRESHOLD), log));
             scanConfig.setOsaMediumThreshold(resolveInt(getAdminConfig(GLOBAL_OSA_MEDIUM_THRESHOLD), log));
             scanConfig.setOsaLowThreshold(resolveInt(getAdminConfig(GLOBAL_OSA_LOW_THRESHOLD), log));  

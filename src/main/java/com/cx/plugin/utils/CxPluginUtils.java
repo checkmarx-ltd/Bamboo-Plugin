@@ -134,6 +134,9 @@ public abstract class CxPluginUtils {
 	        log.info(" Include/Exclude Filter patterns: " + config.getOsaFilterPattern());	        
 	        log.info(" Dependency Scan thresholds enabled: " + config.getOsaThresholdsEnabled());
 	        if (config.getOsaThresholdsEnabled()) {
+	        	if(config.isAstScaEnabled()) { 
+	        	log.info(" Dependency Scan critical threshold: " + (config.getOsaCriticalThreshold() == null ? "[No Threshold]" : config.getOsaCriticalThreshold()));
+	        	}
 	            log.info(" Dependency Scan high threshold: " + (config.getOsaHighThreshold() == null ? "[No Threshold]" : config.getOsaHighThreshold()));
 	            log.info(" Dependency Scan medium threshold: " + (config.getOsaMediumThreshold() == null ? "[No Threshold]" : config.getOsaMediumThreshold()));
 	            log.info(" Dependency Scan low threshold: " + (config.getOsaLowThreshold() == null ? "[No Threshold]" : config.getOsaLowThreshold()));

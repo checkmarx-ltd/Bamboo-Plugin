@@ -55,6 +55,7 @@ public class CxParam {
     public static final String OSA_INSTALL_BEFORE_SCAN = "cxOsaInstallBeforeScan";
     public static final String OSA_THRESHOLDS_ENABLED = "osaThresholdsEnabled";
     public static final String OSA_HIGH_THRESHOLD = "osaHighThreshold";
+    public static final String OSA_CRITICAL_THRESHOLD = "osaCriticalThreshold";
     public static final String OSA_MEDIUM_THRESHOLD = "osaMediumThreshold";
     public static final String OSA_LOW_THRESHOLD = "osaLowThreshold";
     public static final String SERVER_CREDENTIALS_SECTION = "serverCredentialsSection";
@@ -124,6 +125,7 @@ public class CxParam {
     public static final String GLOBAL_MEDIUM_THRESHOLD = "globalMediumThreshold";
     public static final String GLOBAL_LOW_THRESHOLD = "globalLowThreshold";
     public static final String GLOBAL_OSA_THRESHOLDS_ENABLED = "globalOsaThresholdsEnabled";
+    public static final String GLOBAL_OSA_CRITICAL_THRESHOLD = "globalOsaCriticalThreshold";
     public static final String GLOBAL_OSA_HIGH_THRESHOLD = "globalOsaHighThreshold";
     public static final String GLOBAL_OSA_MEDIUM_THRESHOLD = "globalOsaMediumThreshold";
     public static final String GLOBAL_OSA_LOW_THRESHOLD = "globalOsaLowThreshold";
