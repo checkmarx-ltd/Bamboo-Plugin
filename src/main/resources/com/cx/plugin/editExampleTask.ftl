@@ -310,7 +310,6 @@
 				[/@ui.bambooSection]
 				[@ui.bambooSection dependsOn='cxDependencySettingsCustom' showOn='false']
 				[@ui.bambooSection dependsOn='globalDependencyScanType' showOn='AST_SCA']
-				 	[@ww.textfield labelKey="osaHighThreshold.label" name="osaHighThreshold"/]
 				[@ww.textfield labelKey="osaCriticalThreshold.label" name="osaCriticalThreshold" /]
 				[/@ui.bambooSection]
 				[/@ui.bambooSection]
