@@ -48,6 +48,7 @@ public class CxGlobalConfig extends GlobalAdminAction {
     private String globalMediumThreshold;
     private String globalLowThreshold;
     private String globalOsaThresholdsEnabled;
+    private String globalOsaCriticalThreshold;
     private String globalOsaHighThreshold;
     private String globalOsaMediumThreshold;
     private String globalOsaLowThreshold;
@@ -136,6 +137,7 @@ public class CxGlobalConfig extends GlobalAdminAction {
         globalMediumThreshold = adminConfig.getSystemProperty(GLOBAL_MEDIUM_THRESHOLD);
         globalLowThreshold = adminConfig.getSystemProperty(GLOBAL_LOW_THRESHOLD);
         globalOsaThresholdsEnabled = adminConfig.getSystemProperty(GLOBAL_OSA_THRESHOLDS_ENABLED);
+        globalOsaCriticalThreshold = adminConfig.getSystemProperty(GLOBAL_OSA_CRITICAL_THRESHOLD);
         globalOsaHighThreshold = adminConfig.getSystemProperty(GLOBAL_OSA_HIGH_THRESHOLD);
         globalOsaMediumThreshold = adminConfig.getSystemProperty(GLOBAL_OSA_MEDIUM_THRESHOLD);
         globalOsaLowThreshold = adminConfig.getSystemProperty(GLOBAL_OSA_LOW_THRESHOLD);
@@ -168,6 +170,7 @@ public class CxGlobalConfig extends GlobalAdminAction {
                 
             }
             if ("true".equals(globalOsaThresholdsEnabled)) {
+            	error |= isNegative(getGlobalOsaCriticalThreshold(), GLOBAL_OSA_CRITICAL_THRESHOLD);
                 error |= isNegative(getGlobalOsaHighThreshold(), GLOBAL_OSA_HIGH_THRESHOLD);
                 error |= isNegative(getGlobalOsaMediumThreshold(), GLOBAL_OSA_MEDIUM_THRESHOLD);
                 error |= isNegative(getGlobalOsaLowThreshold(), GLOBAL_OSA_LOW_THRESHOLD);
@@ -219,6 +222,7 @@ public class CxGlobalConfig extends GlobalAdminAction {
         adminConfig.setSystemProperty(GLOBAL_MEDIUM_THRESHOLD, globalMediumThreshold);
         adminConfig.setSystemProperty(GLOBAL_LOW_THRESHOLD, globalLowThreshold);
         adminConfig.setSystemProperty(GLOBAL_OSA_THRESHOLDS_ENABLED, globalOsaThresholdsEnabled);
+        adminConfig.setSystemProperty(GLOBAL_OSA_CRITICAL_THRESHOLD, globalOsaCriticalThreshold);
         adminConfig.setSystemProperty(GLOBAL_OSA_HIGH_THRESHOLD, globalOsaHighThreshold);
         adminConfig.setSystemProperty(GLOBAL_OSA_MEDIUM_THRESHOLD, globalOsaMediumThreshold);
         adminConfig.setSystemProperty(GLOBAL_OSA_LOW_THRESHOLD, globalOsaLowThreshold);
@@ -475,6 +479,14 @@ public class CxGlobalConfig extends GlobalAdminAction {
 
     public void setGlobalOsaThresholdsEnabled(String globalOsaThresholdsEnabled) {
         this.globalOsaThresholdsEnabled = globalOsaThresholdsEnabled;
+    }
+    
+    public String getGlobalOsaCriticalThreshold() {
+        return globalOsaCriticalThreshold;
+    }
+
+    public void setGlobalOsaCriticalThreshold(String globalOsaCriticalThreshold) {
+        this.globalOsaCriticalThreshold = globalOsaCriticalThreshold;
     }
 
     public String getGlobalOsaHighThreshold() {
