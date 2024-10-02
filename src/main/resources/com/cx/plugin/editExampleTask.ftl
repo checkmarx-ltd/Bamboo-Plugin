@@ -174,12 +174,12 @@
 [@ui.bambooSection title='Dependency Scan' cssClass="cx center"]
 	[@ww.checkbox labelKey="enableDependencyScan.label" name="enableDependencyScan" descriptionKey="enableDependencyScan.description" toggle='true' /]
     [@ui.bambooSection dependsOn="enableDependencyScan" showOn="true"]
-    [@ww.checkbox labelKey="cxDependencySettingsCustom.label" name="cxDependencySettingsCustom" descriptionKey="cxDependencySettingsCustom.description" toggle='true' /]
+    [@ww.checkbox labelKey="cxDependencySettingsCustom.label" name="cxDependencySettingsCustom" descriptionKey="cxDependencySettingsCustom.description" toggle='true' onchange="checkVisibility()"/]
     [@ui.bambooSection dependsOn="cxDependencySettingsCustom" showOn="true"]
 			[@ww.textarea labelKey="cxDependencyScanFilterPatterns.label" name="cxDependencyScanFilterPatterns" descriptionKey="cxDependencyScanFilterPatterns.description" rows="4" cssClass="long-field"/]
 			[@ww.textfield labelKey="cxDependencyScanfolderExclusions.label" name="cxDependencyScanfolderExclusions" descriptionKey="cxDependencyScanfolderExclusions.description" cssClass="long-field"/]
 			
-		[@ww.radio id = 'radioGroup' name='dependencyScanType' listKey='key' listValue='value' toggle='true' list=dependencyScanTypeValues /]
+		[@ww.radio id = 'radioGroup' name='dependencyScanType' listKey='key' listValue='value'  onchange="checkVisibility()" toggle='true' list=dependencyScanTypeValues /]
 		
 		[@ui.bambooSection title='Checkmarx Scan CxOSA' dependsOn='dependencyScanType' showOn='OSA' cssClass="cx center" ]
 			<p class="description">
@@ -223,7 +223,7 @@
 		[@ww.label labelKey="cxDependencyScanFilterPatterns.label" name="globalDependencyScanFilterPatterns" descriptionKey="cxDependencyScanFilterPatterns.description" rows="4" cssClass="long-field"/]
 		[@ww.label labelKey="cxDependencyScanfolderExclusions.label" name="globalDependencyScanfolderExclusions" descriptionKey="cxDependencyScanfolderExclusions.description" cssClass="long-field"/]
 				
-		[@ww.radio id = 'radioGroup' name='globalDependencyScanType' listKey='key' listValue='value' toggle='true' list=dependencyScanTypeValues disabled="true" /]
+		[@ww.radio id = 'radioGroup' name='globalDependencyScanType' listKey='key' listValue='value' toggle='true' list=dependencyScanTypeValues disabled="true"  onchange="checkVisibility()" /]
 		
 		[@ui.bambooSection title='Checkmarx Scan CxOSA' dependsOn='globalDependencyScanType' showOn='OSA' cssClass="cx center" ]
 			<p class="description">
@@ -301,17 +301,12 @@
             [/@ui.bambooSection]
 			[/@ui.bambooSection]
             [@ui.bambooSection dependsOn='enableDependencyScan' showOn='true']
-                [@ww.checkbox labelKey="osaThresholdsEnabled.label" name="osaThresholdsEnabled"  descriptionKey="thresholdsEnabled.description"toggle='true' /]
+                [@ww.checkbox labelKey="osaThresholdsEnabled.label" name="osaThresholdsEnabled"  descriptionKey="thresholdsEnabled.description"toggle='true' onchange="checkVisibility()" /]
 				[@ui.bambooSection dependsOn='osaThresholdsEnabled' showOn='true']
-                [@ui.bambooSection dependsOn='cxDependencySettingsCustom' showOn='true']
-				[@ui.bambooSection dependsOn='dependencyScanType' showOn='AST_SCA']
-					[@ww.textfield labelKey="osaCriticalThreshold.label" name="osaCriticalThreshold" /]
-				[/@ui.bambooSection]
-				[/@ui.bambooSection]
-				[@ui.bambooSection dependsOn='cxDependencySettingsCustom' showOn='false']
-				[@ui.bambooSection dependsOn='globalDependencyScanType' showOn='AST_SCA']
-				[@ww.textfield labelKey="osaCriticalThreshold.label" name="osaCriticalThreshold" /]
-				[/@ui.bambooSection]
+                 
+				[@ww.textfield name="checkVisiblityOfSca" /]
+                [@ui.bambooSection dependsOn='checkVisiblityOfSca' showOn='true']
+   					[@ww.textfield labelKey="osaCriticalThreshold.label" name="osaCriticalThreshold"  visibility=osaCriticalThresholdVisibility.text/]
 				[/@ui.bambooSection]
                     [@ww.textfield labelKey="osaHighThreshold.label" name="osaHighThreshold"/]
                     [@ww.textfield labelKey="osaMediumThreshold.label" name="osaMediumThreshold"/]
@@ -433,4 +428,16 @@
     [/@ui.bambooSection]
 
 [/@ui.bambooSection]
+
+<script>
+	<#function checkVisibility>
+	
+		<#if ((cxDependencySettingsCustom.attribute == 'true' && dependencyScanType.attribute == 'AST_SCA') ||
+		         (cxDependencySettingsCustom.attribute == 'false' && globalDependencyScanType.attribute == 'AST_SCA'))>
+			checkVisiblityOfSca.text = 'true'
+		<#else>
+			checkVisiblityOfSca.text = 'false'
+		</#if>
+	</#function>
+</script>
 
