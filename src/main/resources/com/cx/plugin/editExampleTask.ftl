@@ -175,12 +175,12 @@
 [@ui.bambooSection title='Dependency Scan' cssClass="cx center"]
 	[@ww.checkbox labelKey="enableDependencyScan.label" name="enableDependencyScan" descriptionKey="enableDependencyScan.description" toggle='true' /]
     [@ui.bambooSection dependsOn="enableDependencyScan" showOn="true"]
-    [@ww.checkbox labelKey="cxDependencySettingsCustom.label" name="cxDependencySettingsCustom" descriptionKey="cxDependencySettingsCustom.description" toggle='true' onchange="checkVisibility()"/]
+    [@ww.checkbox labelKey="cxDependencySettingsCustom.label" name="cxDependencySettingsCustom" descriptionKey="cxDependencySettingsCustom.description" toggle='true' onchange='showAlert()'/]
     [@ui.bambooSection dependsOn="cxDependencySettingsCustom" showOn="true"]
 			[@ww.textarea labelKey="cxDependencyScanFilterPatterns.label" name="cxDependencyScanFilterPatterns" descriptionKey="cxDependencyScanFilterPatterns.description" rows="4" cssClass="long-field"/]
 			[@ww.textfield labelKey="cxDependencyScanfolderExclusions.label" name="cxDependencyScanfolderExclusions" descriptionKey="cxDependencyScanfolderExclusions.description" cssClass="long-field"/]
 			
-		[@ww.radio id = 'radioGroup' name='dependencyScanType' listKey='key' listValue='value'  onchange="checkVisibility()" toggle='true' list=dependencyScanTypeValues /]
+		[@ww.radio id = 'radioGroup' name='dependencyScanType' listKey='key' listValue='value' toggle='true' list=dependencyScanTypeValues /]
 		
 		[@ui.bambooSection title='Checkmarx Scan CxOSA' dependsOn='dependencyScanType' showOn='OSA' cssClass="cx center" ]
 			<p class="description">
@@ -224,7 +224,7 @@
 		[@ww.label labelKey="cxDependencyScanFilterPatterns.label" name="globalDependencyScanFilterPatterns" descriptionKey="cxDependencyScanFilterPatterns.description" rows="4" cssClass="long-field"/]
 		[@ww.label labelKey="cxDependencyScanfolderExclusions.label" name="globalDependencyScanfolderExclusions" descriptionKey="cxDependencyScanfolderExclusions.description" cssClass="long-field"/]
 				
-		[@ww.radio id = 'radioGroup' name='globalDependencyScanType' listKey='key' listValue='value' toggle='true' list=dependencyScanTypeValues disabled="true"  onchange="checkVisibility()" /]
+		[@ww.radio id = 'radioGroup' name='globalDependencyScanType' listKey='key' listValue='value' toggle='true' list=dependencyScanTypeValues disabled="true" /]
 		
 		[@ui.bambooSection title='Checkmarx Scan CxOSA' dependsOn='globalDependencyScanType' showOn='OSA' cssClass="cx center" ]
 			<p class="description">
@@ -302,13 +302,13 @@
             [/@ui.bambooSection]
 			[/@ui.bambooSection]
             [@ui.bambooSection dependsOn='enableDependencyScan' showOn='true']
-                [@ww.checkbox labelKey="osaThresholdsEnabled.label" name="osaThresholdsEnabled"  descriptionKey="thresholdsEnabled.description"toggle='true' onchange="checkVisibility()" /]
+                [@ww.checkbox labelKey="osaThresholdsEnabled.label" name="osaThresholdsEnabled"  descriptionKey="thresholdsEnabled.description" toggle='true' onclick='checkVisibility()' /]
 				[@ui.bambooSection dependsOn='osaThresholdsEnabled' showOn='true']
                  
-				[@ww.textfield name="checkVisiblityOfSca" /]
+				[@ww.checkbox name="checkVisiblityOfSca" toggle='true'/]
 				
-                [@ui.bambooSection dependsOn='checkVisiblityOfSca' showOn='true']
-    				[@ww.textfield labelKey="osaCriticalThreshold.label" name="osaCriticalThreshold" /]
+                [@ui.bambooSection dependsOn='osaThresholdsEnabled' showOn='true']
+    				[@ww.textfield labelKey="osaCriticalThreshold.label" name="osaCriticalThreshold"  /]
 				[/@ui.bambooSection]
                     [@ww.textfield labelKey="osaHighThreshold.label" name="osaHighThreshold"/]
                     [@ww.textfield labelKey="osaMediumThreshold.label" name="osaMediumThreshold"/]
@@ -431,23 +431,7 @@
 
 [/@ui.bambooSection]
 
-<script>
-		function checkVisibility(){
-		var dependencySettingsCustom = document.getElementById("cxDependencySettingsCustom").value;
-		var dependencyScanTypeVar = document.getElementById("dependencyScanType").value;
-		var globalDependencyScanTypeVar = document.getElementById("globalDependencyScanType").value;
-		
-				if((dependencySettingsCustom == 'true' && dependencyScanTypeVar == 'AST_SCA') ||
-		         (dependencySettingsCustom == 'false' && globalDependencyScanTypeVar == 'AST_SCA'))
-		         {
-		         document.getElementById("checkVisiblityOfSca").value = 'true';
-		         }
-					else{
-				document.getElementById("checkVisiblityOfSca").value = 'false';
-							
-							}
-							}
-				</script>
+
 
 
 

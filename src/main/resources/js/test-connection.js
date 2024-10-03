@@ -78,6 +78,45 @@
         return true;
     }
 
+	window.onload = function() {
+            alert('Page is loaded');
+        };
+    
+    
+    $(document).on("change", "#osaThresholdsEnabled", function (event) {
+        alert('onchange event alert');
+        checkVisibility();
+    });
+    
+	function checkVisibility() {
+		alert('inside checkVisibility funtion');
+		var cxDependencySettingsCustomVar = $('#cxDependencySettingsCustom').prop('checked');
+		var checkVisiblityOfScaVar = $('#checkVisiblityOfSca');
+		var dependencyScanTypeVar = $("input[name='dependencyScanType']:checked").val();
+		var dependencyScanTypeVar2 = $("#dependencyScanType:checked").val();
+		var globalDependencyScanTypeVar = $("input[name='globalDependencyScanType']:checked").val();
+		
+		alert('cxDependencySettingsCustomVar:' + cxDependencySettingsCustomVar);
+		alert('checkVisiblityOfScaVar:' + checkVisiblityOfScaVar.prop('value')  + ':'+ checkVisiblityOfScaVar.value);
+		alert('dependencyScanTypeVar' + dependencyScanTypeVar);
+		alert('dependencyScanTypeVar2' + dependencyScanTypeVar2);
+		alert('globalDependencyScanTypeVar' + globalDependencyScanTypeVar);
+
+		if ((cxDependencySettingsCustomVar == true && dependencyScanTypeVar == 'AST_SCA') ||
+			(cxDependencySettingsCustomVar == false && globalDependencyScanTypeVar == 'AST_SCA')) {
+			alert('inside checkVisibility funtion checkVisiblityOfSca set true');
+			document.getElementById("checkVisiblityOfSca").value = 'true';
+			checkVisiblityOfScaVar.prop('checked')=true;
+		} else {
+			alert('inside checkVisibility funtion checkVisiblityOfSca set false');
+			checkVisiblityOfScaVar.prop('checked')=false;
+		}
+	}
+        
+        function showAlert() {
+			alert('inside alert funtion *****');
+		}
+
     function getInputData() {
         return {
             "url": $("#serverUrl").val(),
