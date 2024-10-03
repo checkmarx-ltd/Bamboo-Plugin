@@ -305,9 +305,9 @@
                 [@ww.checkbox labelKey="osaThresholdsEnabled.label" name="osaThresholdsEnabled"  descriptionKey="thresholdsEnabled.description" toggle='true' onclick='checkVisibility()' /]
 				[@ui.bambooSection dependsOn='osaThresholdsEnabled' showOn='true']
                  
-				[@ww.checkbox name="checkVisiblityOfSca" toggle='true'/]
+				[@ww.checkbox labelKey="checkVisiblityOfSca.label" name="checkVisiblityOfSca" toggle='true'/]
 				
-                [@ui.bambooSection dependsOn='osaThresholdsEnabled' showOn='true']
+                [@ui.bambooSection dependsOn='checkVisiblityOfSca' showOn='true']
     				[@ww.textfield labelKey="osaCriticalThreshold.label" name="osaCriticalThreshold"  /]
 				[/@ui.bambooSection]
                     [@ww.textfield labelKey="osaHighThreshold.label" name="osaHighThreshold"/]

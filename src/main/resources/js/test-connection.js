@@ -105,11 +105,10 @@
 		if ((cxDependencySettingsCustomVar == true && dependencyScanTypeVar == 'AST_SCA') ||
 			(cxDependencySettingsCustomVar == false && globalDependencyScanTypeVar == 'AST_SCA')) {
 			alert('inside checkVisibility funtion checkVisiblityOfSca set true');
-			document.getElementById("checkVisiblityOfSca").value = 'true';
-			checkVisiblityOfScaVar.prop('checked')=true;
+			checkVisiblityOfScaVar.prop('checked',true);
 		} else {
 			alert('inside checkVisibility funtion checkVisiblityOfSca set false');
-			checkVisiblityOfScaVar.prop('checked')=false;
+			checkVisiblityOfScaVar.prop('checked',false);
 		}
 	}
         
