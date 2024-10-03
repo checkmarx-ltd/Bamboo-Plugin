@@ -97,6 +97,7 @@
     }
 
 </style>
+
 [@ww.textfield labelKey="" id="errorOccurred" name="errorOccurred"  required='false' /]
 [@ui.bambooSection title='Checkmarx Server' cssClass="cx center"]
     [@ww.radio id = 'radioGroup' name='serverCredentialsSection' listKey='key' listValue='value' toggle='true' list=configurationModeTypesServer /]
@@ -305,8 +306,9 @@
 				[@ui.bambooSection dependsOn='osaThresholdsEnabled' showOn='true']
                  
 				[@ww.textfield name="checkVisiblityOfSca" /]
+				
                 [@ui.bambooSection dependsOn='checkVisiblityOfSca' showOn='true']
-   					[@ww.textfield labelKey="osaCriticalThreshold.label" name="osaCriticalThreshold"  visibility=osaCriticalThresholdVisibility.text/]
+    				[@ww.textfield labelKey="osaCriticalThreshold.label" name="osaCriticalThreshold" /]
 				[/@ui.bambooSection]
                     [@ww.textfield labelKey="osaHighThreshold.label" name="osaHighThreshold"/]
                     [@ww.textfield labelKey="osaMediumThreshold.label" name="osaMediumThreshold"/]
@@ -430,14 +432,22 @@
 [/@ui.bambooSection]
 
 <script>
-	<#function checkVisibility>
-	
-		<#if ((cxDependencySettingsCustom.attribute == 'true' && dependencyScanType.attribute == 'AST_SCA') ||
-		         (cxDependencySettingsCustom.attribute == 'false' && globalDependencyScanType.attribute == 'AST_SCA'))>
-			checkVisiblityOfSca.text = 'true'
-		<#else>
-			checkVisiblityOfSca.text = 'false'
-		</#if>
-	</#function>
-</script>
+		function checkVisibility(){
+		var dependencySettingsCustom = document.getElementById("cxDependencySettingsCustom").value;
+		var dependencyScanTypeVar = document.getElementById("dependencyScanType").value;
+		var globalDependencyScanTypeVar = document.getElementById("globalDependencyScanType").value;
+		
+				if((dependencySettingsCustom == 'true' && dependencyScanTypeVar == 'AST_SCA') ||
+		         (dependencySettingsCustom == 'false' && globalDependencyScanTypeVar == 'AST_SCA'))
+		         {
+		         document.getElementById("checkVisiblityOfSca").value = 'true';
+		         }
+					else{
+				document.getElementById("checkVisiblityOfSca").value = 'false';
+							
+							}
+							}
+				</script>
+
+
 
