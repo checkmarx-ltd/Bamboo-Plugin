@@ -77,44 +77,46 @@
 
         return true;
     }
-
-	window.onload = function() {
-            alert('Page is loaded');
-        };
-    
     
     $(document).on("change", "#osaThresholdsEnabled", function (event) {
-        alert('onchange event alert');
         checkVisibility();
     });
     
+    $(document).on("change", "#cxDependencySettingsCustom", function (event) {
+        checkVisibility();
+    });
+    
+    $(document).on("change", "input[name='dependencyScanType']", function (event) {
+    checkVisibility();
+	});
+	
+	$(document).on("change", "input[name='scanControlSection']", function (event) {
+    checkVisibility();
+	});
+	
+	$(document).on("change", "input[name='globalDependencyScanType']", function (event) {
+		alert('globalDependencyScanType value before calling checkVisibility func ' + $("input[name='globalDependencyScanType']:checked").val());
+		alert('globalDependencyScanType value before calling checkVisibility func 1 ' + $("input[name='globalDependencyScanType']:checked").value());
+    checkVisibility();
+	});
+    
 	function checkVisibility() {
-		alert('inside checkVisibility funtion');
 		var cxDependencySettingsCustomVar = $('#cxDependencySettingsCustom').prop('checked');
 		var checkVisiblityOfScaVar = $('#checkVisiblityOfSca');
 		var dependencyScanTypeVar = $("input[name='dependencyScanType']:checked").val();
-		var dependencyScanTypeVar2 = $("#dependencyScanType:checked").val();
 		var globalDependencyScanTypeVar = $("input[name='globalDependencyScanType']:checked").val();
-		
-		alert('cxDependencySettingsCustomVar:' + cxDependencySettingsCustomVar);
-		alert('checkVisiblityOfScaVar:' + checkVisiblityOfScaVar.prop('value')  + ':'+ checkVisiblityOfScaVar.value);
-		alert('dependencyScanTypeVar' + dependencyScanTypeVar);
-		alert('dependencyScanTypeVar2' + dependencyScanTypeVar2);
-		alert('globalDependencyScanTypeVar' + globalDependencyScanTypeVar);
 
+		alert('cxDependencySettingsCustomVar:' + cxDependencySettingsCustomVar);
+		alert('globalDependencyScanTypeVar' + globalDependencyScanTypeVar);
 		if ((cxDependencySettingsCustomVar == true && dependencyScanTypeVar == 'AST_SCA') ||
 			(cxDependencySettingsCustomVar == false && globalDependencyScanTypeVar == 'AST_SCA')) {
-			alert('inside checkVisibility funtion checkVisiblityOfSca set true');
 			checkVisiblityOfScaVar.prop('checked',true);
+			$('#checkVisiblityOfSca').trigger('change');
 		} else {
-			alert('inside checkVisibility funtion checkVisiblityOfSca set false');
 			checkVisiblityOfScaVar.prop('checked',false);
+			$('#checkVisiblityOfSca').trigger('change');
 		}
 	}
-        
-        function showAlert() {
-			alert('inside alert funtion *****');
-		}
 
     function getInputData() {
         return {

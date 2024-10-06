@@ -175,7 +175,7 @@
 [@ui.bambooSection title='Dependency Scan' cssClass="cx center"]
 	[@ww.checkbox labelKey="enableDependencyScan.label" name="enableDependencyScan" descriptionKey="enableDependencyScan.description" toggle='true' /]
     [@ui.bambooSection dependsOn="enableDependencyScan" showOn="true"]
-    [@ww.checkbox labelKey="cxDependencySettingsCustom.label" name="cxDependencySettingsCustom" descriptionKey="cxDependencySettingsCustom.description" toggle='true' onchange='showAlert()'/]
+    [@ww.checkbox labelKey="cxDependencySettingsCustom.label" name="cxDependencySettingsCustom" descriptionKey="cxDependencySettingsCustom.description" toggle='true'/]
     [@ui.bambooSection dependsOn="cxDependencySettingsCustom" showOn="true"]
 			[@ww.textarea labelKey="cxDependencyScanFilterPatterns.label" name="cxDependencyScanFilterPatterns" descriptionKey="cxDependencyScanFilterPatterns.description" rows="4" cssClass="long-field"/]
 			[@ww.textfield labelKey="cxDependencyScanfolderExclusions.label" name="cxDependencyScanfolderExclusions" descriptionKey="cxDependencyScanfolderExclusions.description" cssClass="long-field"/]
@@ -302,7 +302,7 @@
             [/@ui.bambooSection]
 			[/@ui.bambooSection]
             [@ui.bambooSection dependsOn='enableDependencyScan' showOn='true']
-                [@ww.checkbox labelKey="osaThresholdsEnabled.label" name="osaThresholdsEnabled"  descriptionKey="thresholdsEnabled.description" toggle='true' onclick='checkVisibility()' /]
+                [@ww.checkbox labelKey="osaThresholdsEnabled.label" name="osaThresholdsEnabled"  descriptionKey="thresholdsEnabled.description" toggle='true' /]
 				[@ui.bambooSection dependsOn='osaThresholdsEnabled' showOn='true']
                  
 				[@ww.checkbox labelKey="checkVisiblityOfSca.label" name="checkVisiblityOfSca" toggle='true'/]
