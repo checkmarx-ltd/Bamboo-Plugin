@@ -95,26 +95,18 @@
 	});
 	
 	$(document).on("change", "input[name='globalDependencyScanType']", function (event) {
-		alert('globalDependencyScanType value before calling checkVisibility func ' + $("input[name='globalDependencyScanType']:checked").val());
-		alert('globalDependencyScanType value before calling checkVisibility func 1 ' + $("input[name='globalDependencyScanType']:checked").value());
     checkVisibility();
 	});
     
 	function checkVisibility() {
 		var cxDependencySettingsCustomVar = $('#cxDependencySettingsCustom').prop('checked');
-		var checkVisiblityOfScaVar = $('#checkVisiblityOfSca');
-		var globalMediumThresholdVar = $('#globalMediumThreshold').val();
-		var mediumThresholdVar = $('#mediumThreshold').val();
 		var dependencyScanTypeVar = $("input[name='dependencyScanType']:checked").val();
 		var globalDependencyScanTypeVar = $("input[name='globalDependencyScanType']:checked").val();
-
+		var checkVisiblityOfScaVar = $('#checkVisiblityOfSca');
 		alert('cxDependencySettingsCustomVar:' + cxDependencySettingsCustomVar);
 		alert('globalDependencyScanTypeVar' + globalDependencyScanTypeVar);
 		alert('dependencyScanTypeVar 1' + dependencyScanTypeVar);
-		alert('globalDependencyScanTypeVar' + globalDependencyScanTypeVar);
-		alert('globalMediumThresholdVar ' + globalMediumThresholdVar);
-		alert('mediumThresholdVar ' + mediumThresholdVar);
-		alert('dependencyScanTypeVar 1' + dependencyScanTypeVar);
+		
 		if ((cxDependencySettingsCustomVar == true && dependencyScanTypeVar == 'AST_SCA') ||
 			(cxDependencySettingsCustomVar == false && globalDependencyScanTypeVar == 'AST_SCA')) {
 			checkVisiblityOfScaVar.prop('checked',true);
@@ -123,8 +115,7 @@
 			checkVisiblityOfScaVar.prop('checked',false);
 			$('#checkVisiblityOfSca').trigger('change');
 		}
-	}
-
+		}
     function getInputData() {
         return {
             "url": $("#serverUrl").val(),

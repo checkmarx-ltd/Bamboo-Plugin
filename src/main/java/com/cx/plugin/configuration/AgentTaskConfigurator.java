@@ -61,6 +61,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     //create task configuration
     @Override
     public void populateContextForCreate(@NotNull final Map<String, Object> context) {
+    	adminConfig = (AdministrationConfiguration) ContainerManager.getComponent(ADMINISTRATION_CONFIGURATION);
     	super.populateContextForCreate(context);
         context.put("configurationModeTypesServer", CONFIGURATION_MODE_TYPES_MAP_SERVER);
         context.put("configurationModeTypesCxSAST", CONFIGURATION_MODE_TYPES_MAP_CXSAST);
@@ -157,6 +158,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     //edit task configuration
     @Override
     public void populateContextForEdit(@NotNull final Map<String, Object> context, @NotNull final TaskDefinition taskDefinition) {
+    	adminConfig = (AdministrationConfiguration) ContainerManager.getComponent(ADMINISTRATION_CONFIGURATION);
     	super.populateContextForEdit(context, taskDefinition);
         Map<String, String> configMap = taskDefinition.getConfiguration();
 
