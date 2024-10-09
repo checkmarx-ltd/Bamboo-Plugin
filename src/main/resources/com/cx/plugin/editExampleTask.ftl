@@ -46,6 +46,10 @@
     .hidden{
    visibility:hidden;
    }
+   
+   .hidden-completely {
+    display: none !important;
+}
 
     form.aui .field-value {
         border-radius: 3.01px;
@@ -305,8 +309,9 @@
                 [@ww.checkbox labelKey="osaThresholdsEnabled.label" name="osaThresholdsEnabled"  descriptionKey="thresholdsEnabled.description" toggle='true' /]
 				[@ui.bambooSection dependsOn='osaThresholdsEnabled' showOn='true']
                  
-				[@ww.checkbox labelKey="checkVisiblityOfSca.label" name="checkVisiblityOfSca" toggle='true'/]
-				
+                [@ui.bambooSection cssClass="hidden"]
+					[@ww.checkbox labelKey="checkVisiblityOfSca.label" name="checkVisiblityOfSca" toggle='true'/]
+				[/@ui.bambooSection]
                 [@ui.bambooSection dependsOn='checkVisiblityOfSca' showOn='true']
     				[@ww.textfield labelKey="osaCriticalThreshold.label" name="osaCriticalThreshold"  /]
 				[/@ui.bambooSection]

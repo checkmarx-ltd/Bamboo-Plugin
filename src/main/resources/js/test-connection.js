@@ -79,6 +79,7 @@
     }
     
     $(document).on("change", "#osaThresholdsEnabled", function (event) {
+		alert('inside osaThresholdsEnabled');
         checkVisibility();
     });
     
@@ -97,15 +98,15 @@
 	$(document).on("change", "input[name='globalDependencyScanType']", function (event) {
     checkVisibility();
 	});
+	
+	
     
 	function checkVisibility() {
+		alert('inside check visiblity');
 		var cxDependencySettingsCustomVar = $('#cxDependencySettingsCustom').prop('checked');
 		var dependencyScanTypeVar = $("input[name='dependencyScanType']:checked").val();
 		var globalDependencyScanTypeVar = $("input[name='globalDependencyScanType']:checked").val();
 		var checkVisiblityOfScaVar = $('#checkVisiblityOfSca');
-		alert('cxDependencySettingsCustomVar:' + cxDependencySettingsCustomVar);
-		alert('globalDependencyScanTypeVar' + globalDependencyScanTypeVar);
-		alert('dependencyScanTypeVar 1' + dependencyScanTypeVar);
 		
 		if ((cxDependencySettingsCustomVar == true && dependencyScanTypeVar == 'AST_SCA') ||
 			(cxDependencySettingsCustomVar == false && globalDependencyScanTypeVar == 'AST_SCA')) {
@@ -150,6 +151,15 @@
             $(selector).append(itemval);
         }
     }
-
+    
+	$(".item.ui-sortable-handle").click(function(){
+		alert("item clicked!");
+				var abc  = $('.item.ui-sortable-handle.active h3').html();
+				if(abc == 'Checkmarx')
+				{
+					alert("Checkmarx clicked!");
+					checkVisibility();
+				}
+	});
 })
 (AJS.$);
