@@ -110,10 +110,9 @@
 		
 		if ((cxDependencySettingsCustomVar == true && dependencyScanTypeVar == 'AST_SCA') ||
 			(cxDependencySettingsCustomVar == false && globalDependencyScanTypeVar == 'AST_SCA')) {
-			$('#checkVisiblityOfSca').prop('checked',true);
+			$('#checkVisiblityOfSca').prop('checked','checked');
 			$('#checkVisiblityOfSca').trigger('change');
 		} else {
-			$('#checkVisiblityOfSca').prop('checked',false);
 			$('#checkVisiblityOfSca').trigger('change');
 		}
 		}
@@ -151,12 +150,5 @@
             $(selector).append(itemval);
         }
     }
-    
-$(document).ready(function() {
-            // Handle input change event
-            $('.form-content-container .task-heading h2').on('change', function() {
-                alert("Checkmarx clicked 11111111111111!");
-            });
-        });
 })
 (AJS.$);

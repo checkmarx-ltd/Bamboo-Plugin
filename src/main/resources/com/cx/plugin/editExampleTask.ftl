@@ -312,7 +312,7 @@
                 [@ui.bambooSection]
 					[@ww.checkbox labelKey="checkVisiblityOfSca.label" name="checkVisiblityOfSca" toggle='true'/]
 				[/@ui.bambooSection]
-                [@ui.bambooSection dependsOn='checkVisiblityOfSca' showOn='false']
+                [@ui.bambooSection dependsOn='checkVisiblityOfSca' showOn='true']
     				[@ww.textfield labelKey="osaCriticalThreshold.label" name="osaCriticalThreshold"  /]
 				[/@ui.bambooSection]
                     [@ww.textfield labelKey="osaHighThreshold.label" name="osaHighThreshold"/]
