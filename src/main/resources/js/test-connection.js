@@ -110,10 +110,10 @@
 		
 		if ((cxDependencySettingsCustomVar == true && dependencyScanTypeVar == 'AST_SCA') ||
 			(cxDependencySettingsCustomVar == false && globalDependencyScanTypeVar == 'AST_SCA')) {
-			checkVisiblityOfScaVar.prop('checked',true);
+			$('#checkVisiblityOfSca').prop('checked',true);
 			$('#checkVisiblityOfSca').trigger('change');
 		} else {
-			checkVisiblityOfScaVar.prop('checked',false);
+			$('#checkVisiblityOfSca').prop('checked',false);
 			$('#checkVisiblityOfSca').trigger('change');
 		}
 		}
@@ -152,14 +152,11 @@
         }
     }
     
-	$(".item.ui-sortable-handle").click(function(){
-		alert("item clicked!");
-				var abc  = $('.item.ui-sortable-handle.active h3').html();
-				if(abc == 'Checkmarx')
-				{
-					alert("Checkmarx clicked!");
-					checkVisibility();
-				}
-	});
+$(document).ready(function() {
+            // Handle input change event
+            $('.form-content-container .task-heading h2').on('change', function() {
+                alert("Checkmarx clicked 11111111111111!");
+            });
+        });
 })
 (AJS.$);
