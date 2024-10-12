@@ -79,7 +79,6 @@
     }
     
     $(document).on("change", "#osaThresholdsEnabled", function (event) {
-		alert('inside osaThresholdsEnabled');
         checkVisibility();
     });
     
@@ -102,20 +101,20 @@
 	
     
 	function checkVisibility() {
-		alert('inside check visiblity');
 		var cxDependencySettingsCustomVar = $('#cxDependencySettingsCustom').prop('checked');
 		var dependencyScanTypeVar = $("input[name='dependencyScanType']:checked").val();
 		var globalDependencyScanTypeVar = $("input[name='globalDependencyScanType']:checked").val();
 		var checkVisiblityOfScaVar = $('#checkVisiblityOfSca');
-		
 		if ((cxDependencySettingsCustomVar == true && dependencyScanTypeVar == 'AST_SCA') ||
 			(cxDependencySettingsCustomVar == false && globalDependencyScanTypeVar == 'AST_SCA')) {
-			$('#checkVisiblityOfSca').prop('checked','checked');
+			$('#checkVisiblityOfSca').prop('checked', true);
 			$('#checkVisiblityOfSca').trigger('change');
 		} else {
+			$('#checkVisiblityOfSca').prop('checked', false);
 			$('#checkVisiblityOfSca').trigger('change');
 		}
-		}
+	}
+	
     function getInputData() {
         return {
             "url": $("#serverUrl").val(),
