@@ -206,7 +206,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     		visiblity = true;
     	}
     
-    	return visiblity;
+    	return true;
     }
 
     private void populateOSA_SCA_FieldsForEdit(Map<String, Object> context, Map<String, String> configMap) {
@@ -611,15 +611,16 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 			config.put(CXSCA_RESOLVER_ADD_PARAM_GLOBAL,getAdminConfig(CXSCA_RESOLVER_ADD_PARAM_GLOBAL).trim());
 			
 		}
-		boolean visiblity = checkVisiblityOfSCACriticalThreshold(getDefaultString(params, CX_USE_CUSTOM_DEPENDENCY_SETTINGS).trim(),
-		getDefaultString(params, CX_USE_CUSTOM_DEPENDENCY_SETTINGS).trim(),getDefaultString(params, DEPENDENCY_SCAN_TYPE),getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE));
-		log.info("visiblity " + visiblity);
-		log.info("ENABLE_DEPENDENCY_SCAN " + getDefaultString(params, CX_USE_CUSTOM_DEPENDENCY_SETTINGS).trim());
-		log.info("CX_USE_CUSTOM_DEPENDENCY_SETTINGS " + getDefaultString(params, CX_USE_CUSTOM_DEPENDENCY_SETTINGS).trim());
-		log.info("DEPENDENCY_SCAN_TYPE " + getDefaultString(params, DEPENDENCY_SCAN_TYPE));
-		log.info("GLOBAL_DEPENDENCY_SCAN_TYPE " + getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE));
-		config.put("checkVisiblityOfSca", ""+ visiblity);
 		
+		
+		boolean visiblity = checkVisiblityOfSCACriticalThreshold(getDefaultString(params, CX_USE_CUSTOM_DEPENDENCY_SETTINGS).trim(),
+				getDefaultString(params, CX_USE_CUSTOM_DEPENDENCY_SETTINGS).trim(),getDefaultString(params, DEPENDENCY_SCAN_TYPE),getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE));
+				log.info("visiblity " + visiblity);
+				log.info("ENABLE_DEPENDENCY_SCAN " + getDefaultString(params, CX_USE_CUSTOM_DEPENDENCY_SETTINGS).trim());
+				log.info("CX_USE_CUSTOM_DEPENDENCY_SETTINGS " + getDefaultString(params, CX_USE_CUSTOM_DEPENDENCY_SETTINGS).trim());
+				log.info("DEPENDENCY_SCAN_TYPE " + getDefaultString(params, DEPENDENCY_SCAN_TYPE));
+				log.info("GLOBAL_DEPENDENCY_SCAN_TYPE " + getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE));
+				config.put("checkVisiblityOfSca", ""+ visiblity);
 		
         return config;
     }
@@ -651,14 +652,6 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         config.put(OSA_MEDIUM_THRESHOLD, getDefaultString(params, OSA_MEDIUM_THRESHOLD));
         config.put(OSA_LOW_THRESHOLD, getDefaultString(params, OSA_LOW_THRESHOLD));
 
-//        boolean visiblity = checkVisiblityOfSCACriticalThreshold(getDefaultString(params, CX_USE_CUSTOM_DEPENDENCY_SETTINGS).trim(),
-//        		getDefaultString(params, CX_USE_CUSTOM_DEPENDENCY_SETTINGS).trim(),getDefaultString(params, DEPENDENCY_SCAN_TYPE),getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE));
-//        		log.info("visiblity " + visiblity);
-//        		log.info("ENABLE_DEPENDENCY_SCAN " + getDefaultString(params, CX_USE_CUSTOM_DEPENDENCY_SETTINGS).trim());
-//        		log.info("CX_USE_CUSTOM_DEPENDENCY_SETTINGS " + getDefaultString(params, CX_USE_CUSTOM_DEPENDENCY_SETTINGS).trim());
-//        		log.info("DEPENDENCY_SCAN_TYPE " + getDefaultString(params, DEPENDENCY_SCAN_TYPE));
-//        		log.info("GLOBAL_DEPENDENCY_SCAN_TYPE " + getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE));
-//        		config.put("checkVisiblityOfSca", ""+ visiblity);
 
         return config;
     }

@@ -95,6 +95,7 @@ public class CxParam {
     public final static String GLOBAL_CXSCA_ACCOUNT_NAME = "globalcxScaAccountName";
     
     public final static String CX_USE_CUSTOM_DEPENDENCY_SETTINGS = "cxDependencySettingsCustom";
+    public final static String CHECK_VISIBLITY_OF_SCA = "checkVisiblityOfSca";
     public final static String CXSCA_USERNAME = "cxScaUsername";
     public final static String CXSCA_PWD = "cxScaPassword";
     public static final String GLOBAL_CXSCA_USERNAME = "globalcxScaUsername";
