@@ -300,11 +300,6 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
        
         boolean visiblity = checkVisiblityOfSCACriticalThreshold(configMap.get(ENABLE_DEPENDENCY_SCAN),
         		configMap.get(CX_USE_CUSTOM_DEPENDENCY_SETTINGS),configMap.get(DEPENDENCY_SCAN_TYPE),getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE));
-        log.info("visiblity " + visiblity);
-        log.info("ENABLE_DEPENDENCY_SCAN " + configMap.get(ENABLE_DEPENDENCY_SCAN));
-        log.info("CX_USE_CUSTOM_DEPENDENCY_SETTINGS " + configMap.get(CX_USE_CUSTOM_DEPENDENCY_SETTINGS));
-        log.info("DEPENDENCY_SCAN_TYPE " + configMap.get(DEPENDENCY_SCAN_TYPE));
-        log.info("GLOBAL_DEPENDENCY_SCAN_TYPE " + getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE));
         context.put(CHECK_VISIBLITY_OF_SCA ,""+ visiblity);
 	}
 
@@ -353,11 +348,6 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         
         boolean visiblity = checkVisiblityOfSCACriticalThreshold(getAdminConfig(GLOBAL_ENABLE_DEPENDENCY_SCAN),
         		OPTION_FALSE ,getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE),getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE));
-        log.info("visiblity " + visiblity);
-        log.info("ENABLE_DEPENDENCY_SCAN " + getAdminConfig(GLOBAL_ENABLE_DEPENDENCY_SCAN));
-        log.info("CX_USE_CUSTOM_DEPENDENCY_SETTINGS " + OPTION_FALSE);
-        log.info("DEPENDENCY_SCAN_TYPE " + getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE));
-        log.info("GLOBAL_DEPENDENCY_SCAN_TYPE " + getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE));
         context.put(CHECK_VISIBLITY_OF_SCA ,""+ visiblity);
 			
 	}
@@ -477,15 +467,6 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         context.put(GLOBAL_OSA_LOW_THRESHOLD, getAdminConfig(GLOBAL_OSA_LOW_THRESHOLD));
         context.put(GLOBAL_HIDE_RESULTS, getAdminConfig(GLOBAL_HIDE_RESULTS));
         context.put(GLOBAL_DENY_PROJECT, getAdminConfig(GLOBAL_DENY_PROJECT));
-        
-//        boolean visiblity = checkVisiblityOfSCACriticalThreshold(configMap.get(ENABLE_DEPENDENCY_SCAN),
-//        		configMap.get(CX_USE_CUSTOM_DEPENDENCY_SETTINGS),configMap.get(DEPENDENCY_SCAN_TYPE),getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE));
-//        log.info("visiblity " + visiblity);
-//        log.info("ENABLE_DEPENDENCY_SCAN " + configMap.get(ENABLE_DEPENDENCY_SCAN));
-//        log.info("CX_USE_CUSTOM_DEPENDENCY_SETTINGS " + configMap.get(CX_USE_CUSTOM_DEPENDENCY_SETTINGS));
-//        log.info("DEPENDENCY_SCAN_TYPE " + configMap.get(DEPENDENCY_SCAN_TYPE));
-//        log.info("GLOBAL_DEPENDENCY_SCAN_TYPE " + getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE));
-//        context.put("checkVisiblityOfSca", visiblity);
     }
 
     //save task configuration
@@ -621,11 +602,6 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 		
 		boolean visiblity = checkVisiblityOfSCACriticalThreshold(getDefaultString(params, ENABLE_DEPENDENCY_SCAN).trim(),
 				getDefaultString(params, CX_USE_CUSTOM_DEPENDENCY_SETTINGS).trim(),getDefaultString(params, DEPENDENCY_SCAN_TYPE),getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE));
-				log.info("visiblity " + visiblity);
-				log.info("ENABLE_DEPENDENCY_SCAN " + getDefaultString(params, CX_USE_CUSTOM_DEPENDENCY_SETTINGS).trim());
-				log.info("CX_USE_CUSTOM_DEPENDENCY_SETTINGS " + getDefaultString(params, CX_USE_CUSTOM_DEPENDENCY_SETTINGS).trim());
-				log.info("DEPENDENCY_SCAN_TYPE " + getDefaultString(params, DEPENDENCY_SCAN_TYPE));
-				log.info("GLOBAL_DEPENDENCY_SCAN_TYPE " + getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE));
 				config.put(CHECK_VISIBLITY_OF_SCA , ""+ visiblity);
 		
         return config;
