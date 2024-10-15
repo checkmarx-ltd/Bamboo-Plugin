@@ -104,8 +104,8 @@
 		var cxDependencySettingsCustomVar = $('#cxDependencySettingsCustom').prop('checked');
 		var dependencyScanTypeVar = $("input[name='dependencyScanType']:checked").val();
 		var globalDependencyScanTypeVar = $("input[name='globalDependencyScanType']:checked").val();
-		if ((cxDependencySettingsCustomVar == true && dependencyScanTypeVar == 'AST_SCA') ||
-			(cxDependencySettingsCustomVar == false && globalDependencyScanTypeVar == 'AST_SCA')) {
+		if ((cxDependencySettingsCustomVar === true && dependencyScanTypeVar === 'AST_SCA') ||
+			(cxDependencySettingsCustomVar === false && globalDependencyScanTypeVar === 'AST_SCA')) {
 			$('#checkVisiblityOfSca').prop('checked', true);
 			$('#checkVisiblityOfSca').trigger('change');
 		} else {

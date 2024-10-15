@@ -309,7 +309,7 @@
                 [@ww.checkbox labelKey="osaThresholdsEnabled.label" name="osaThresholdsEnabled"  descriptionKey="thresholdsEnabled.description" toggle='true' /]
 				[@ui.bambooSection dependsOn='osaThresholdsEnabled' showOn='true']
                  
-                [@ui.bambooSection]
+                [@ui.bambooSection cssClass="hidden"]
 					[@ww.checkbox labelKey="checkVisiblityOfSca.label" name="checkVisiblityOfSca" toggle='true'/]
 				[/@ui.bambooSection]
                 [@ui.bambooSection dependsOn='checkVisiblityOfSca' showOn='true']
