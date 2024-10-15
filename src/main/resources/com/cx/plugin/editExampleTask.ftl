@@ -46,10 +46,6 @@
     .hidden{
    visibility:hidden;
    }
-   
-   .hidden-completely {
-    display: none !important;
-}
 
     form.aui .field-value {
         border-radius: 3.01px;
@@ -435,8 +431,3 @@
     [/@ui.bambooSection]
 
 [/@ui.bambooSection]
-
-
-
-
-

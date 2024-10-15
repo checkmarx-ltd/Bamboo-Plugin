@@ -197,6 +197,19 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         populateScanControlFields(context, configMap, false);
     }
     
+    /**
+     * Checks the visibility of the SCA critical threshold
+     * based on the parameters.
+     *
+     * The method evaluates the following conditions:
+     * 1. If dependency scanning is enabled.
+     * 2. If custom dependency settings are used, checks if the scan type is 'AST_SCA'.
+     * 3. If custom settings are not used, checks if the global scan type is 'AST_SCA'.
+     * 
+     * If any of these conditions are met, the method returns true, indicating that the
+     * SCA critical threshold is visible; otherwise, it returns false.
+     */
+    
     private boolean checkVisiblityOfSCACriticalThreshold(String enableDependencyScan, String useCustomDependencySettings,
     		String dependencyScanType, String globalDependencyScanType) {
     	boolean visiblity = false;
