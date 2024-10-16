@@ -77,7 +77,43 @@
 
         return true;
     }
-
+    
+    $(document).on("change", "#osaThresholdsEnabled", function (event) {
+        checkVisibility();
+    });
+    
+    $(document).on("change", "#cxDependencySettingsCustom", function (event) {
+        checkVisibility();
+    });
+    
+    $(document).on("change", "input[name='dependencyScanType']", function (event) {
+    checkVisibility();
+	});
+	
+	$(document).on("change", "input[name='scanControlSection']", function (event) {
+    checkVisibility();
+	});
+	
+	$(document).on("change", "input[name='globalDependencyScanType']", function (event) {
+    checkVisibility();
+	});
+	
+	
+    
+	function checkVisibility() {
+		var cxDependencySettingsCustomVar = $('#cxDependencySettingsCustom').prop('checked');
+		var dependencyScanTypeVar = $("input[name='dependencyScanType']:checked").val();
+		var globalDependencyScanTypeVar = $("input[name='globalDependencyScanType']:checked").val();
+		if ((cxDependencySettingsCustomVar === true && dependencyScanTypeVar === 'AST_SCA') ||
+			(cxDependencySettingsCustomVar === false && globalDependencyScanTypeVar === 'AST_SCA')) {
+			$('#checkVisiblityOfSca').prop('checked', true);
+			$('#checkVisiblityOfSca').trigger('change');
+		} else {
+			$('#checkVisiblityOfSca').prop('checked', false);
+			$('#checkVisiblityOfSca').trigger('change');
+		}
+	}
+	
     function getInputData() {
         return {
             "url": $("#serverUrl").val(),
@@ -112,6 +148,5 @@
             $(selector).append(itemval);
         }
     }
-
 })
 (AJS.$);

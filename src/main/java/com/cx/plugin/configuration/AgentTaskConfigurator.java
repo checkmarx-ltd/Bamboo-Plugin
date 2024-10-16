@@ -61,6 +61,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     //create task configuration
     @Override
     public void populateContextForCreate(@NotNull final Map<String, Object> context) {
+    	adminConfig = (AdministrationConfiguration) ContainerManager.getComponent(ADMINISTRATION_CONFIGURATION);
     	super.populateContextForCreate(context);
         context.put("configurationModeTypesServer", CONFIGURATION_MODE_TYPES_MAP_SERVER);
         context.put("configurationModeTypesCxSAST", CONFIGURATION_MODE_TYPES_MAP_CXSAST);
@@ -157,6 +158,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     //edit task configuration
     @Override
     public void populateContextForEdit(@NotNull final Map<String, Object> context, @NotNull final TaskDefinition taskDefinition) {
+    	adminConfig = (AdministrationConfiguration) ContainerManager.getComponent(ADMINISTRATION_CONFIGURATION);
     	super.populateContextForEdit(context, taskDefinition);
         Map<String, String> configMap = taskDefinition.getConfiguration();
 
@@ -194,9 +196,39 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 
         populateScanControlFields(context, configMap, false);
     }
+    
+    /**
+     * Checks the visibility of the SCA critical threshold
+     * based on the parameters.
+     *
+     * The method evaluates the following conditions:
+     * 1. If dependency scanning is enabled.
+     * 2. If custom dependency settings are used, checks if the scan type is 'AST_SCA'.
+     * 3. If custom settings are not used, checks if the global scan type is 'AST_SCA'.
+     * 
+     * If any of these conditions are met, the method returns true, indicating that the
+     * SCA critical threshold is visible; otherwise, it returns false.
+     */
+    
+    private boolean checkVisiblityOfSCACriticalThreshold(String enableDependencyScan, String useCustomDependencySettings,
+    		String dependencyScanType, String globalDependencyScanType) {
+    	boolean visiblity = false;
+    	if("true".equalsIgnoreCase(enableDependencyScan)){
+    		if(!StringUtils.isEmpty(useCustomDependencySettings) && "true".equalsIgnoreCase(useCustomDependencySettings)){
+    			if("AST_SCA".equalsIgnoreCase(dependencyScanType)) {
+    				return true;
+    			}    			
+    		}
+    		else {
+    			if("AST_SCA".equalsIgnoreCase(globalDependencyScanType)) {
+    				return true;
+    			}    			
+    		}
+    	}    
+    	return visiblity;
+    }
 
     private void populateOSA_SCA_FieldsForEdit(Map<String, Object> context, Map<String, String> configMap) {
-		
 		context.put(CX_USE_CUSTOM_DEPENDENCY_SETTINGS,configMap.get(CX_USE_CUSTOM_DEPENDENCY_SETTINGS));
 		String useCustomdependencyScanSettings = configMap.get(CX_USE_CUSTOM_DEPENDENCY_SETTINGS);
 		
@@ -279,6 +311,9 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         context.put(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS, getAdminConfig(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS));
         context.put(GLOBAL_OSA_INSTALL_BEFORE_SCAN, getAdminConfig(GLOBAL_OSA_INSTALL_BEFORE_SCAN));
        
+        boolean visiblity = checkVisiblityOfSCACriticalThreshold(configMap.get(ENABLE_DEPENDENCY_SCAN),
+        		configMap.get(CX_USE_CUSTOM_DEPENDENCY_SETTINGS),configMap.get(DEPENDENCY_SCAN_TYPE),getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE));
+        context.put(CHECK_VISIBLITY_OF_SCA ,""+ visiblity);
 	}
 
     private void populateOSA_SCA_FieldsForCreate(Map<String, Object> context) {
@@ -323,6 +358,10 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 
         context.put(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS, getAdminConfig(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS));
         context.put(GLOBAL_OSA_INSTALL_BEFORE_SCAN, getAdminConfig(GLOBAL_OSA_INSTALL_BEFORE_SCAN));
+        
+        boolean visiblity = checkVisiblityOfSCACriticalThreshold(getAdminConfig(GLOBAL_ENABLE_DEPENDENCY_SCAN),
+        		OPTION_FALSE ,getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE),getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE));
+        context.put(CHECK_VISIBLITY_OF_SCA ,""+ visiblity);
 			
 	}
     
@@ -404,6 +443,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
             context.put(MEDIUM_THRESHOLD, "");
             context.put(LOW_THRESHOLD, "");
             context.put(OSA_THRESHOLDS_ENABLED, OPTION_FALSE);
+            context.put(OSA_CRITICAL_THRESHOLD, "");
             context.put(OSA_HIGH_THRESHOLD, "");
             context.put(OSA_MEDIUM_THRESHOLD, "");
             context.put(OSA_LOW_THRESHOLD, "");
@@ -419,6 +459,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
             context.put(MEDIUM_THRESHOLD, configMap.get(MEDIUM_THRESHOLD));
             context.put(LOW_THRESHOLD, configMap.get(LOW_THRESHOLD));
             context.put(OSA_THRESHOLDS_ENABLED, configMap.get(OSA_THRESHOLDS_ENABLED));
+            context.put(OSA_CRITICAL_THRESHOLD, configMap.get(OSA_CRITICAL_THRESHOLD));
             context.put(OSA_HIGH_THRESHOLD, configMap.get(OSA_HIGH_THRESHOLD));
             context.put(OSA_MEDIUM_THRESHOLD, configMap.get(OSA_MEDIUM_THRESHOLD));
             context.put(OSA_LOW_THRESHOLD, configMap.get(OSA_LOW_THRESHOLD));
@@ -433,6 +474,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         context.put(GLOBAL_MEDIUM_THRESHOLD, getAdminConfig(GLOBAL_MEDIUM_THRESHOLD));
         context.put(GLOBAL_LOW_THRESHOLD, getAdminConfig(GLOBAL_LOW_THRESHOLD));
         context.put(GLOBAL_OSA_THRESHOLDS_ENABLED, getAdminConfig(GLOBAL_OSA_THRESHOLDS_ENABLED));
+        context.put(GLOBAL_OSA_CRITICAL_THRESHOLD, getAdminConfig(GLOBAL_OSA_CRITICAL_THRESHOLD));
         context.put(GLOBAL_OSA_HIGH_THRESHOLD, getAdminConfig(GLOBAL_OSA_HIGH_THRESHOLD));
         context.put(GLOBAL_OSA_MEDIUM_THRESHOLD, getAdminConfig(GLOBAL_OSA_MEDIUM_THRESHOLD));
         context.put(GLOBAL_OSA_LOW_THRESHOLD, getAdminConfig(GLOBAL_OSA_LOW_THRESHOLD));
@@ -568,7 +610,12 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
 			config.put(CXSCA_RESOLVER_PATH_GLOBAL,getAdminConfig(CXSCA_RESOLVER_PATH_GLOBAL).trim());
 			config.put(CXSCA_RESOLVER_ADD_PARAM_GLOBAL,getAdminConfig(CXSCA_RESOLVER_ADD_PARAM_GLOBAL).trim());
 			
-		}	
+		}
+		
+		
+		boolean visiblity = checkVisiblityOfSCACriticalThreshold(getDefaultString(params, ENABLE_DEPENDENCY_SCAN).trim(),
+				getDefaultString(params, CX_USE_CUSTOM_DEPENDENCY_SETTINGS).trim(),getDefaultString(params, DEPENDENCY_SCAN_TYPE),getAdminConfig(GLOBAL_DEPENDENCY_SCAN_TYPE));
+				config.put(CHECK_VISIBLITY_OF_SCA , ""+ visiblity);
 		
         return config;
     }
@@ -595,6 +642,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
         config.put(MEDIUM_THRESHOLD, getDefaultString(params, MEDIUM_THRESHOLD));
         config.put(LOW_THRESHOLD, getDefaultString(params, LOW_THRESHOLD));
         config.put(OSA_THRESHOLDS_ENABLED, params.getString(OSA_THRESHOLDS_ENABLED));
+        config.put(OSA_CRITICAL_THRESHOLD, getDefaultString(params, OSA_CRITICAL_THRESHOLD));
         config.put(OSA_HIGH_THRESHOLD, getDefaultString(params, OSA_HIGH_THRESHOLD));
         config.put(OSA_MEDIUM_THRESHOLD, getDefaultString(params, OSA_MEDIUM_THRESHOLD));
         config.put(OSA_LOW_THRESHOLD, getDefaultString(params, OSA_LOW_THRESHOLD));
@@ -710,6 +758,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
             validateNotNegative(params, errorCollection, HIGH_THRESHOLD);
             validateNotNegative(params, errorCollection, MEDIUM_THRESHOLD);
             validateNotNegative(params, errorCollection, LOW_THRESHOLD);
+            validateNotNegative(params, errorCollection, OSA_CRITICAL_THRESHOLD);
             validateNotNegative(params, errorCollection, OSA_HIGH_THRESHOLD);
             validateNotNegative(params, errorCollection, OSA_MEDIUM_THRESHOLD);
             validateNotNegative(params, errorCollection, OSA_LOW_THRESHOLD);

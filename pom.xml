@@ -5,7 +5,7 @@
     <groupId>com.cx</groupId>
     <artifactId>checkmarx-bamboo-plugin</artifactId>
 
-    <version>2024.2.3</version>
+    <version>2024.3.2</version>
 
     <organization>
         <name>Checkmarx LTD</name>
@@ -89,7 +89,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <common.client.version>2024.2.6</common.client.version>
+        <common.client.version>2024.3.26</common.client.version>
 
         <slf4jVersion>1.7.16</slf4jVersion>
 
