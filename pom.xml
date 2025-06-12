@@ -243,6 +243,11 @@
             <artifactId>spring-beans</artifactId>
             <version>5.3.31</version>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.13.0</version>
+        </dependency>
         <!--  <dependency>
               <groupId>org.springframework</groupId>
               <artifactId>spring-beans</artifactId>
@@ -443,6 +448,17 @@
             <groupId>io.netty</groupId>
             <artifactId>netty-codec-http</artifactId>
             <version>4.1.104.Final</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.netty</groupId>
+                    <artifactId>netty-handler</artifactId>
+                </exclusion>
+            </exclusions>    
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-handler</artifactId>
+            <version>4.1.118.Final</version>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
@@ -484,7 +500,7 @@
         <dependency>
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
-            <version>1.9.4</version>
+            <version>1.11.0</version>
             <exclusions>
             <exclusion>
                 <groupId>commons-collections</groupId>
