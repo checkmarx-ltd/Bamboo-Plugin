@@ -5,7 +5,7 @@
     <groupId>com.cx</groupId>
     <artifactId>checkmarx-bamboo-plugin</artifactId>
 
-    <version>2024.3.2</version>
+    <version>2025.2.1</version>
 
     <organization>
         <name>Checkmarx LTD</name>
@@ -151,6 +151,10 @@
                     <artifactId>commons-collections4</artifactId>
                     <groupId>org.apache.commons</groupId>
                 </exclusion>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -202,6 +206,12 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
             <version>1.26.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- <dependency>
             <groupId>org.apache.struts</groupId>
@@ -426,6 +436,10 @@
                 <exclusion>
                     <groupId>org.mozilla</groupId>
                     <artifactId>rhino</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
