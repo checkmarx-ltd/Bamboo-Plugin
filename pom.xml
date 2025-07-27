@@ -14,7 +14,18 @@
     <name>Checkmarx Bamboo Plugin</name>
     <description>Checkmarx Plugin For Atlassian Bamboo</description>
     <packaging>atlassian-plugin</packaging>
-
+    <properties>
+        <bamboo.version>10.2.6</bamboo.version>
+        <bamboo.data.version>${bamboo.version}</bamboo.data.version>
+        <amps.version>9.1.4</amps.version>
+        <java.version>17</java.version>
+        <jersey.version>1.0.3</jersey.version>
+        <atlassian.plugin.key>${project.groupId}.${project.artifactId}</atlassian.plugin.key>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <common.client.version>2024.3.26</common.client.version>
+        <slf4jVersion>1.7.16</slf4jVersion>
+    </properties>
     <pluginRepositories>
         <pluginRepository>
             <id>atlassian-public</id>
@@ -51,14 +62,26 @@
         <plugins>
             <plugin>
                 <groupId>com.atlassian.maven.plugins</groupId>
-                <artifactId>maven-bamboo-plugin</artifactId>
-                <version>6.3.21</version>
+                <artifactId>bamboo-maven-plugin</artifactId>
+                <version>${amps.version}</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <productVersion>9.2.10</productVersion>
-                    <productDataVersion>5.7.2</productDataVersion>
+                    <productVersion>${bamboo.version}</productVersion>
+                    <productDataVersion>${bamboo.data.version}</productDataVersion>
                     <enableQuickReload>true</enableQuickReload>
-                    <allowGoogleTracking>false</allowGoogleTracking>
+                    <extractDependencies>false</extractDependencies>
+                    <instructions>
+                        <Atlassian-Plugin-Key>${atlassian.plugin.key}</Atlassian-Plugin-Key>
+                        <Bundle-SymbolicName>${atlassian.plugin.key}</Bundle-SymbolicName>
+                        <Spring-Context>*</Spring-Context>
+                        <Export-Package>
+                        </Export-Package>
+                        <Import-Packages>
+                            !com.opensymphony.*,
+                            *;resolution:="optional",
+                        </Import-Packages>
+                        <skipManifestValidation>true</skipManifestValidation>
+                    </instructions>
                 </configuration>
             </plugin>
             <plugin>
@@ -69,31 +92,14 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
+                <version>3.13.0</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-
-    <properties>
-        <bamboo.version>9.2.10</bamboo.version>
-        <bamboo.data.version>9.2.10</bamboo.data.version>
-        <amps.version>6.3.21</amps.version>
-        <jersey.version>1.0.3</jersey.version>
-        <!--     <atlassian.spring.scanner.version>1.2.13</atlassian.spring.scanner.version>-->
-        <!-- This key is used to keep the consistency between the key in atlassian-plugin.xml and the key to generate bundle. -->
-        <atlassian.plugin.key>${project.groupId}.${project.artifactId}</atlassian.plugin.key>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
-        <common.client.version>2024.3.26</common.client.version>
-
-        <slf4jVersion>1.7.16</slf4jVersion>
-
-    </properties>
 
     <dependencies>
 
@@ -150,6 +156,7 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.5.13</version>
+            <scope>provided</scope>
             <exclusions>
                 <exclusion>
                     <groupId>commons-codec</groupId>
@@ -165,6 +172,7 @@
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
             <version>1.16.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -180,6 +188,7 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.16.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.codehaus.plexus</groupId>
@@ -201,6 +210,7 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
             <version>2.15.0</version>
+            <scope>provided</scope>
         </dependency>  
         <dependency>
             <groupId>org.springframework</groupId>
@@ -212,6 +222,7 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
             <version>5.3.31</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.activemq</groupId>
@@ -246,6 +257,7 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>2.12.7.1</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.parsers</groupId>
@@ -278,6 +290,7 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4jVersion}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -305,6 +318,7 @@
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
             <version>3.0.1</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -420,6 +434,7 @@
             <groupId>commons-validator</groupId>
             <artifactId>commons-validator</artifactId>
             <version>1.8.0</version>
+            <scope>provided</scope>
             <exclusions>
                 <exclusion>
                     <groupId>commons-beanutils</groupId>
@@ -484,6 +499,49 @@
                     <artifactId>commons-io</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>  
+        </dependency>
+        <dependency>
+            <groupId>com.atlassian.plugins</groupId>
+            <artifactId>atlassian-plugins-webfragment-api</artifactId>
+            <version>7.2.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Platform provided dependencies - will not be bundled -->
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>3.0.2</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.17.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20231013</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.14.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+            <version>4.5.14</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>4.4.13</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>
