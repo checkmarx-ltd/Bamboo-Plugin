@@ -1,7 +1,8 @@
 package com.cx.plugin.results;
 
 import com.atlassian.bamboo.chains.ChainResultsSummaryImpl;
-import com.atlassian.plugin.web.model.WebPanel;
+import com.atlassian.plugin.web.api.model.WebPanel;
+//import com.atlassian.plugin.web.model.WebPanel;
 
 import java.io.IOException;
 import java.io.Writer;

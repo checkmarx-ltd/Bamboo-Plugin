@@ -17,11 +17,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Response;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.codehaus.plexus.util.StringUtils;
@@ -55,6 +56,11 @@ public class CxRestResource {
     private LegacyClient commonClient;
     private String result = "";
     private Logger logger = LoggerFactory.getLogger(CxRestResource.class);
+
+    @Inject
+    public CxRestResource() {
+        // Default constructor with @Inject for REST v2 compatibility
+    }
 
 
     @POST

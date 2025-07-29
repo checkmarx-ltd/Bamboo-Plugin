@@ -71,4 +71,9 @@
         <description key="CxRest Resource Plugin">CxRest Resource Plugin</description>
     </rest>
 
+    <!-- REST v2 migration tag -->
+    <rest-migration key="rest-migration-key">
+        <rest-v2/>
+    </rest-migration>
+
 </atlassian-plugin>
