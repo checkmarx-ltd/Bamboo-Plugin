@@ -69,6 +69,10 @@ public class CheckmarxTask implements TaskType {
             //resolve configuration
             CxConfigHelper configHelper = new CxConfigHelper(log);
             CxScanConfig config = configHelper.resolveConfigurationMap(taskContext.getConfigurationMap(), taskContext.getWorkingDirectory(), taskContext);
+            String version = configHelper.getPluginVersion();
+    	    System.setProperty(CxParam.CX_PLUGIN_VERSION, version);
+    	    config.setPluginVersion(version);
+
             CxClientDelegator delegator = CommonClientFactory.getClientDelegatorInstance(config, log);
 
             //print configuration

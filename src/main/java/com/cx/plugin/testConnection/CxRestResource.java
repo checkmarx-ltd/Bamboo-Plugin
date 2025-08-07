@@ -9,6 +9,7 @@ import static com.cx.plugin.utils.CxParam.NO_TEAM_MESSAGE;
 import static com.cx.plugin.utils.CxParam.NO_TEAM_PATH;
 import static com.cx.plugin.utils.CxParam.OPTION_TRUE;
 import static com.cx.plugin.utils.CxPluginUtils.decrypt;
+import static com.cx.restclient.common.CxPARAM.CX_PLUGIN_VERSION;
 
 import java.io.File;
 import java.net.URL;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -32,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import com.cx.plugin.configuration.CommonClientFactory;
 import com.cx.plugin.testConnection.dto.TestConnectionResponse;
 import com.cx.plugin.testConnection.dto.TestScaConnectionResponse;
+import com.cx.plugin.utils.CxParam;
 import com.cx.plugin.utils.HttpHelper;
 import com.cx.restclient.CxClientDelegator;
 import com.cx.restclient.ast.dto.sca.AstScaConfig;
@@ -63,7 +66,7 @@ public class CxRestResource {
     @Produces({"application/json"})
     public Response testConnection(Map<Object, Object> data) {
 
-        TestConnectionResponse tcResponse;
+    	TestConnectionResponse tcResponse;
         result = "";
         URL url;
         String urlToCheck;
@@ -197,15 +200,27 @@ public class CxRestResource {
 				logger.debug("Proxy user: " + proxyConfig.getUsername());
 				logger.debug("Proxy password: *************");
 				logger.debug("Proxy Scheme: " + (proxyConfig.isUseHttps() ? "https" : "http"));
-				logger.debug("Non Proxy Hosts: " + proxyConfig.getNoproxyHosts());
+				logger.debug("Non Proxy Hosts: " + proxyConfig.getNoproxyHosts());				
 			}else {
 				scanConfig.setProxy(false);
 	            logger.debug("Testing login.");
 			}
 			
             commonClient = CommonClientFactory.getInstance(scanConfig, logger);
-            version = commonClient.login(true);
+            
+            String pluginVersion = "";
+            try {
+                Properties properties = new Properties();
+                java.io.InputStream is = getClass().getClassLoader().getResourceAsStream("english.properties");
+                if (is != null) {
+                    properties.load(is);
+                    pluginVersion = properties.getProperty("version");
+                }
+            } catch (Exception e) {
 
+            }
+            System.setProperty(CxParam.CX_PLUGIN_VERSION, pluginVersion);
+            version = commonClient.login(true);
             return version;
         } catch (Exception cxClientException) {
             logger.error("Fail to login: ", cxClientException);
