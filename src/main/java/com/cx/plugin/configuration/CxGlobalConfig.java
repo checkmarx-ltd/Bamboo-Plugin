@@ -6,7 +6,7 @@ import com.atlassian.bamboo.configuration.GlobalAdminAction;
 import com.atlassian.spring.container.ContainerManager;
 import com.cx.plugin.utils.CxParam;
 import com.cx.plugin.utils.SASTUtils;
-import com.google.common.collect.ImmutableMap;
+//import com.google.common.collect.ImmutableMap;
 import org.codehaus.plexus.util.StringUtils;
 
 import javax.annotation.Nonnull;
@@ -76,7 +76,7 @@ public class CxGlobalConfig extends GlobalAdminAction {
     private String globalCxScaResolverPath;
     private String globalCxScaResolverAddParam;
   
-	private Map<String, String> globalDependencyScanTypeValues = ImmutableMap.of("OSA", "Use CxOSA dependency scanner", "AST_SCA", "Use CxSCA dependency scanner");
+	private Map<String, String> globalDependencyScanTypeValues = Map.of("OSA", "Use CxOSA dependency scanner", "AST_SCA", "Use CxSCA dependency scanner");
 
     @Override
     public String execute() {

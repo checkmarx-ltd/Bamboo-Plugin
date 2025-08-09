@@ -1,5 +1,7 @@
 package com.cx.plugin.task;
 
+import com.atlassian.bamboo.build.logger.BuildLogger;
+import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import org.slf4j.impl.StaticLoggerBinder;
 import com.atlassian.bamboo.Key;
 import com.atlassian.bamboo.build.artifact.ArtifactManager;
@@ -28,6 +30,8 @@ import com.cx.restclient.sast.utils.LegacyClient;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,17 +44,26 @@ import static com.cx.plugin.utils.CxPluginUtils.printBuildFailure;
 import static com.cx.plugin.utils.CxPluginUtils.printConfiguration;
 
 
+
 public class CheckmarxTask implements TaskType {
 
     private final ArtifactManager artifactManager;
-   	   
-    public CheckmarxTask(final ArtifactManager artifactManager) {
+
+    public CheckmarxTask(@ComponentImport ArtifactManager artifactManager){
         this.artifactManager = artifactManager;
     }
 
+//    @Inject
+//    public CheckmarxTask(
+//            @ComponentImport ArtifactManager artifactManager,
+//            @ComponentImport BuildLogger buildLogger) {
+//        this.artifactManager = artifactManager;
+//        this.buildLogger = buildLogger;
+//    }
+
     @NotNull
     public TaskResult execute(@NotNull final TaskContext taskContext) throws TaskException {
-    	StaticLoggerBinder binder = StaticLoggerBinder.getSingleton(taskContext.getBuildLogger());    	
+    	StaticLoggerBinder binder = StaticLoggerBinder.getSingleton(taskContext.getBuildLogger());
         CxLoggerAdapter log;
         LegacyClient commonClient = null;
         BuildContext buildContext = taskContext.getBuildContext();

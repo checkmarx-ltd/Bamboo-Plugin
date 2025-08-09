@@ -190,13 +190,13 @@ function connectToScaServer() {
 
         function restScaRequest() {
 			var request;
-			var scaServerUrl = document.getElementById("checkmarxDefaultConfiguration_globalcxScaAPIUrl").value;
-            var scaAccessControlUrl = document.getElementById("checkmarxDefaultConfiguration_globalcxScaAccessControlServerUrl").value;
-            var scaWebAppUrl = document.getElementById("checkmarxDefaultConfiguration_globalcxScaWebAppUrl").value;
-			var scaAccountName = document.getElementById("checkmarxDefaultConfiguration_globalcxScaAccountName").value;
-			var scaUserName = document.getElementById("checkmarxDefaultConfiguration_globalcxScaUsername").value;
-			var pss = document.getElementById("checkmarxDefaultConfiguration_globalcxScaPss").value;
-			var enableProxy = document.getElementById("checkmarxDefaultConfiguration_globalEnableProxy").checked;
+			var scaServerUrl = document.getElementById("checkmarxDefaultConfiguration_save_globalcxScaAPIUrl").value;
+            var scaAccessControlUrl = document.getElementById("checkmarxDefaultConfiguration_save_globalcxScaAccessControlServerUrl").value;
+            var scaWebAppUrl = document.getElementById("checkmarxDefaultConfiguration_save_globalcxScaWebAppUrl").value;
+			var scaAccountName = document.getElementById("checkmarxDefaultConfiguration_save_globalcxScaAccountName").value;
+			var scaUserName = document.getElementById("checkmarxDefaultConfiguration_save_globalcxScaUsername").value;
+			var pss = document.getElementById("checkmarxDefaultConfiguration_save_globalcxScaPss").value;
+			var enableProxy = document.getElementById("checkmarxDefaultConfiguration_save_globalEnableProxy").checked;
 			
 			
         if (!validateScaFields()) {
@@ -306,10 +306,24 @@ function connectToScaServer() {
         function restRequest() {
             var request;
 
-            var url = document.getElementById("checkmarxDefaultConfiguration_globalServerUrl").value;
-            var username = document.getElementById("checkmarxDefaultConfiguration_globalUsername").value;
-            var pas = document.getElementById("checkmarxDefaultConfiguration_globalPss").value;
-            var enableProxy = document.getElementById("checkmarxDefaultConfiguration_globalEnableProxy").checked;
+            var urlElement = document.getElementById("checkmarxDefaultConfiguration_save_globalServerUrl");
+            var usernameElement = document.getElementById("checkmarxDefaultConfiguration_save_globalUsername"); 
+            var pasElement = document.getElementById("checkmarxDefaultConfiguration_save_globalPss");
+            var proxyElement = document.getElementById("checkmarxDefaultConfiguration_save_globalEnableProxy");
+            
+            if (!urlElement || !usernameElement || !pasElement || !proxyElement) {
+                console.error("One or more form elements not found:");
+                console.log("URL element:", urlElement);
+                console.log("Username element:", usernameElement);
+                console.log("Password element:", pasElement);
+                console.log("Proxy element:", proxyElement);
+                return;
+            }
+
+            var url = urlElement.value;
+            var username = usernameElement.value;
+            var pas = pasElement.value;
+            var enableProxy = proxyElement.checked;
 
             if (!validateGlobalFields()) {
                 return;
