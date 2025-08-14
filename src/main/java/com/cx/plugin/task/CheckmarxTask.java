@@ -122,16 +122,24 @@ public class CheckmarxTask implements TaskType {
             }
             ScanResults scanResults = config.getSynchronous() ? delegator.waitForScanResults() : delegator.getLatestScanResults();
 
+            /*
+             * Below Changes are done to avoid the vulnerabilities having 0 count and Not eploitable
+             * Below is the state and values/id for the vulnerability
+             * To Verify= 0;Not Exploitable	= 1; confirmed = 2; urgent = 3;proposed = 4
+             */
+            
             SASTResults sastresult  = scanResults.getSastResults();
             List<CxXMLResults.Query> queryResult = new ArrayList<>();
+            
+            for (CxXMLResults.Query query : sastresult.getQueryList()) {
+                query.getResult().removeIf(result -> "1".equals(result.getState()));
 
-            for(CxXMLResults.Query query: sastresult.getQueryList()) {
-            	if(query.getResult().size() == 0) {
-            		log.info("skipping query as the result is 0 for :"+query.getName());
-            		continue;
-            	}
-            	queryResult.add(query);
-            }
+                if (query.getResult().isEmpty()) {
+                    log.info("skipping query as the result is 0 for :" + query.getName());
+                    continue;
+                }
+                queryResult.add(query);
+            }            
             sastresult.setQueryList(queryResult);
             ret.put(ScannerType.SAST, sastresult);
 
