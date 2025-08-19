@@ -256,7 +256,7 @@ public class CheckmarxTask implements TaskType {
                     } else {
                         sastResults.setSastPDFLink(pdfBaseUrl +"/browse/" + buildKey + "-" + buildNumber + "/artifact/" + buildPath
                                 + "/Checkmarx-PDF-Report/" + pdfName);
-                        ArtifactDefinitionContext artifact = new ArtifactDefinitionContextImpl("Checkmarx PDF Report", false, null);
+                        ArtifactDefinitionContext artifact = new ArtifactDefinitionContextImpl("Checkmarx PDF Report", false, taskContext.getBuildContext().getArtifactContext().getSecureToken());
                         artifact.setCopyPattern("**/" + pdfName);
 
                         ArtifactPublishingResult result = artifactManager.publish(taskContext.getBuildLogger(),

@@ -5,7 +5,7 @@
     <groupId>com.cx</groupId>
     <artifactId>checkmarx-bamboo-plugin</artifactId>
 
-    <version>2025.3.1</version>
+    <version>2025.3.2</version>
 
     <organization>
         <name>Checkmarx LTD</name>
@@ -123,7 +123,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <common.client.version>2024.3.26</common.client.version>
+        <common.client.version>2025.3.27.bamboo</common.client.version>
 
         <slf4jVersion>1.7.16</slf4jVersion>
 
@@ -527,6 +527,12 @@
             <groupId>com.atlassian.plugins</groupId>
             <artifactId>atlassian-plugins-webfragment-api</artifactId>
             <version>7.2.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.struts</groupId>
+            <artifactId>struts2-core</artifactId>
+            <version>6.6.0-atlassian-1</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
