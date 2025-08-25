@@ -158,4 +158,6 @@ public class CxParam {
             "In addition, make sure the installed plugin version is compatible with the CxSAST version according to CxSAST release notes.";
     public static final String ENABLE_SAST_SCAN = "enableSASTScan";
     public static final String  GLOBAL_ENABLE_CRITICAL_SEVERITY = "globalEnableCriticalSeverity";
+
+	public static final String CX_PLUGIN_VERSION = "CxPluginVersion";
 }
