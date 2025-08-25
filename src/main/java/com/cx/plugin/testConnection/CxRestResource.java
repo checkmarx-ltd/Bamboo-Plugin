@@ -217,7 +217,7 @@ public class CxRestResource {
                     pluginVersion = properties.getProperty("version");
                 }
             } catch (Exception e) {
-
+				log.error("Error occured while loading propertied for plugin ",e );
             }
             System.setProperty(CxParam.CX_PLUGIN_VERSION, pluginVersion);
             version = commonClient.login(true);
