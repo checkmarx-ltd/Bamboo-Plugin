@@ -29,8 +29,13 @@
 
     <!-- Actions -->
     <xwork key="checkmarx-default-config-xwork" name="Checkmarx Default Configuration XWork">
-        <package name="checkmarxDefaultConfigurationPackage" extends="admin">
+        <package name="checkmarxDefaultConfigurationPackage" extends="admin" namespace="/admin">
             <action name="checkmarxDefaultConfiguration" class="com.cx.plugin.configuration.CxGlobalConfig">
+                <result name="input" type="freemarker">/com/cx/plugin/cxGlobalConfig.ftl</result>
+                <result name="error" type="freemarker">/com/cx/plugin/cxGlobalConfig.ftl</result>
+                <result name="success" type="freemarker">/com/cx/plugin/cxGlobalConfig.ftl</result>
+            </action>
+            <action name="checkmarxDefaultConfiguration!save" class="com.cx.plugin.configuration.CxGlobalConfig" method="save">
                 <result name="input" type="freemarker">/com/cx/plugin/cxGlobalConfig.ftl</result>
                 <result name="error" type="freemarker">/com/cx/plugin/cxGlobalConfig.ftl</result>
                 <result name="success" type="freemarker">/com/cx/plugin/cxGlobalConfig.ftl</result>
