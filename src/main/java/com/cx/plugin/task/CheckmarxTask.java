@@ -25,6 +25,7 @@ import com.cx.restclient.dto.ScanResults;
 import com.cx.restclient.dto.ScannerType;
 import com.cx.restclient.dto.scansummary.ScanSummary;
 import com.cx.restclient.exception.CxClientException;
+import com.cx.restclient.sast.dto.CxXMLResults;
 import com.cx.restclient.sast.dto.SASTResults;
 import com.cx.restclient.sast.utils.LegacyClient;
 import org.apache.commons.lang3.StringUtils;
@@ -82,6 +83,10 @@ public class CheckmarxTask implements TaskType {
             //resolve configuration
             CxConfigHelper configHelper = new CxConfigHelper(log);
             CxScanConfig config = configHelper.resolveConfigurationMap(taskContext.getConfigurationMap(), taskContext.getWorkingDirectory(), taskContext);
+            String version = configHelper.getPluginVersion();
+    	    System.setProperty(CxParam.CX_PLUGIN_VERSION, version);
+    	    config.setPluginVersion(version);
+
             CxClientDelegator delegator = CommonClientFactory.getClientDelegatorInstance(config, log);
 
             //print configuration
@@ -129,9 +134,32 @@ public class CheckmarxTask implements TaskType {
 
             ScanResults createScanResults = delegator.initiateScan();
             results.add(createScanResults);
+            if (!config.getSynchronous()) {
+				log.info("Running in Asynchronous mode. Not waiting for scan to finish.");
+            }
             ScanResults scanResults = config.getSynchronous() ? delegator.waitForScanResults() : delegator.getLatestScanResults();
 
-            ret.put(ScannerType.SAST, scanResults.getSastResults());
+            /*
+             * Below Changes are done to avoid the vulnerabilities having 0 count and Not eploitable
+             * Below is the state and values/id for the vulnerability
+             * To Verify= 0;Not Exploitable	= 1; confirmed = 2; urgent = 3;proposed = 4
+             */
+            
+            SASTResults sastresult  = scanResults.getSastResults();
+            List<CxXMLResults.Query> queryResult = new ArrayList<>();
+            
+            for (CxXMLResults.Query query : sastresult.getQueryList()) {
+                query.getResult().removeIf(result -> "1".equals(result.getState()));
+
+                if (query.getResult().isEmpty()) {
+                    log.info("skipping query as the result is 0 for :" + query.getName());
+                    continue;
+                }
+                queryResult.add(query);
+            }            
+            sastresult.setQueryList(queryResult);
+            ret.put(ScannerType.SAST, sastresult);
+
             if (config.isOsaEnabled()) {
                 ret.put(ScannerType.OSA, scanResults.getOsaResults());
             } else if (config.isAstScaEnabled()) {
@@ -198,8 +226,6 @@ public class CheckmarxTask implements TaskType {
 			}
 
 			if (!config.getSynchronous()) {
-				log.info("Running in Asynchronous mode. Not waiting for scan to finish.");
-
 				if(config.isSastEnabled() || config.isOsaEnabled() || config.isAstScaEnabled()) {
 				if (generateAsyncReport) {
 					ScanResults finalScanResults = getFinalScanResults(results);
@@ -295,23 +321,23 @@ public class CheckmarxTask implements TaskType {
         }
     }
 
-	private String extractPDFBaseUrlFromCxOriginUrl(String cxOriginUrl) {
+    private String extractPDFBaseUrlFromCxOriginUrl(String cxOriginUrl) {		
 		try {
 			if (cxOriginUrl.contains("/browse")) {
 				int browseIndex = cxOriginUrl.indexOf("/browse");
-				if (browseIndex != -1) {
-					String baseUrl = cxOriginUrl.substring(0, browseIndex);
-					if (!StringUtils.isEmpty(baseUrl)) {
-						int slashIndex = baseUrl.indexOf("://");
-						int nextSlashIndex = baseUrl.indexOf("/", slashIndex + 3);
-						if (nextSlashIndex != -1) {
-							String path = baseUrl.substring(nextSlashIndex);
-							if (!path.isEmpty()) {
-								return path;
+					if (browseIndex != -1) {
+						String baseUrl = cxOriginUrl.substring(0, browseIndex);
+						if (!StringUtils.isEmpty(baseUrl)) {
+							int slashIndex = baseUrl.indexOf("://");
+							int nextSlashIndex = baseUrl.indexOf("/", slashIndex + 3);
+							if (nextSlashIndex != -1) {
+								String path = baseUrl.substring(nextSlashIndex);
+								if (!path.isEmpty()) {
+									return path;
+								}
 							}
 						}
 					}
-				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
