@@ -168,6 +168,18 @@ public class CheckmarxTask implements TaskType {
             results.add(scanResults);
 
             if (((config.isSastEnabled()||config.isOsaEnabled()) && config.getEnablePolicyViolations()) || (config.isAstScaEnabled() && config.getEnablePolicyViolationsSCA())) {
+                String cxARMPolicyURL = config.getCxARMUrl();
+                String newCxARMPolicyURL;
+
+                if (cxARMPolicyURL.contains("CxPolicyManagement")) {
+                    newCxARMPolicyURL = cxARMPolicyURL.split("CxPolicyManagement")[0] + "CxPolicyManagement";
+                } else {// If CxPolicyManagement is not in URL getting Ip and appending cxarm/webclient/
+                    if (!cxARMPolicyURL.endsWith("/")) {
+                        cxARMPolicyURL += "/";
+                    }
+                    newCxARMPolicyURL = cxARMPolicyURL + "cxarm/webclient/";
+                }
+                config.setCxARMUrl(newCxARMPolicyURL);
                 delegator.printIsProjectViolated(scanResults);
             }
 
