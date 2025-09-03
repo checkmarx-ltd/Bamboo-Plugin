@@ -9,7 +9,6 @@ import static com.cx.plugin.utils.CxParam.NO_TEAM_MESSAGE;
 import static com.cx.plugin.utils.CxParam.NO_TEAM_PATH;
 import static com.cx.plugin.utils.CxParam.OPTION_TRUE;
 import static com.cx.plugin.utils.CxPluginUtils.decrypt;
-import static com.cx.restclient.common.CxPARAM.CX_PLUGIN_VERSION;
 
 import java.io.File;
 import java.net.URL;
