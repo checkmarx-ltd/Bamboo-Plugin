@@ -6,6 +6,7 @@ import com.atlassian.bamboo.build.artifact.ArtifactManager;
 import com.atlassian.bamboo.plan.artifact.ArtifactDefinitionContext;
 import com.atlassian.bamboo.plan.artifact.ArtifactDefinitionContextImpl;
 import com.atlassian.bamboo.plan.artifact.ArtifactPublishingResult;
+import com.atlassian.bamboo.security.SecureToken;
 import com.atlassian.bamboo.task.*;
 import com.atlassian.bamboo.v2.build.BuildContext;
 import com.atlassian.bamboo.variable.VariableDefinitionContext;
@@ -30,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,6 +60,8 @@ public class CheckmarxTask implements TaskType {
         final TaskResultBuilder taskResultBuilder = TaskResultBuilder.newBuilder(taskContext);
         log = new CxLoggerAdapter(taskContext.getBuildLogger());
 
+        SecureToken secureToken = taskContext.getBuildContext().getArtifactContext().getSecureToken();
+        
         try {
             Map<String, VariableDefinitionContext> effectiveVariables = taskContext.getBuildContext().getVariableContext().getEffectiveVariables();
             for (Map.Entry<String, VariableDefinitionContext> entry : effectiveVariables.entrySet()) {
@@ -236,7 +240,7 @@ public class CheckmarxTask implements TaskType {
 					buildContext.getBuildResult().getCustomBuildData().putAll(ret.getSummary());
 				}
 			}
-
+			
             if (config.getSynchronous() && config.isSastEnabled() &&
                     ((createScanResults.getSastResults() != null && createScanResults.getSastResults().getException() != null && createScanResults.getSastResults().getScanId() > 0) || (scanResults.getSastResults() != null && scanResults.getSastResults().getException() != null))) {
                 cancelScan(delegator);
@@ -253,13 +257,13 @@ public class CheckmarxTask implements TaskType {
                     int buildNumber = buildContext.getParentBuildContext().getResultKey().getResultNumber();
                     String buildPath = buildContext.getPlanResultKey().getPlanKey().getKey()
                             .substring(buildContext.getPlanResultKey().getPlanKey().getKey().lastIndexOf("-") + 1);
-                    String pdfBaseUrl ="";
-                    if(config.getCxOriginUrl() != null) {
-                    pdfBaseUrl = extractPDFBaseUrlFromCxOriginUrl(config.getCxOriginUrl());
+                    String pdfBaseUrl = "";
+                    if (config.getCxOriginUrl() != null) {
+                        pdfBaseUrl = extractPDFBaseUrlFromCxOriginUrl(config.getCxOriginUrl());
                     }
                     ArtifactDefinitionContext pdfArt = getPDFArt(taskContext);
                     if (pdfArt != null) {
-                        if (pdfArt.isSharedArtifact()) {
+                    	if (pdfArt.isSharedArtifact()) {
                             sastResults.setSastPDFLink(pdfBaseUrl +"/browse/" + buildKey + "-" + buildNumber + "/artifact/shared/" + pdfArt.getName()
                                     + "/" + pdfName);
                         } else {
@@ -267,10 +271,25 @@ public class CheckmarxTask implements TaskType {
                                     + "/" + pdfArt.getName() + "/" + pdfName);
                         }
                     } else {
-                        sastResults.setSastPDFLink(pdfBaseUrl +"/browse/" + buildKey + "-" + buildNumber + "/artifact/" + buildPath
+                    	sastResults.setSastPDFLink(pdfBaseUrl +"/browse/" + buildKey + "-" + buildNumber + "/artifact/" + buildPath
                                 + "/Checkmarx-PDF-Report/" + pdfName);
-                        ArtifactDefinitionContext artifact = new ArtifactDefinitionContextImpl("Checkmarx PDF Report", false, null);
+                        ArtifactDefinitionContext artifact = new ArtifactDefinitionContextImpl("Checkmarx PDF Report", false, secureToken);
                         artifact.setCopyPattern("**/" + pdfName);
+//                      String pdfViewerUrl = "/report/viewCheckmarxPdf.action?pdfReportPath=" + pdfEncodedPath;
+//                      sastResults.setSastPDFLink(pdfViewerUrl);
+                        
+                        String pdfAbsolutePath = config.getReportsDir() + CxParam.CX_REPORT_LOCATION + File.separator + pdfName;
+                        String pdfEncodedPath = URLEncoder.encode(pdfAbsolutePath, "UTF-8");
+                        
+                        String resultPdf = pdfName.substring(0, pdfName.lastIndexOf("."));
+                        System.out.println(resultPdf);
+                        
+//                        String pdfViewerUrl = "/report/CxSASTPDFReport.action?pdfReportPath=" + pdfEncodedPath;
+                        String pdfViewerUrl = "/report/pdfReport/viewCheckmarxPdf.action?pdfReportPath=" + pdfEncodedPath
+                                + "&title=" + URLEncoder.encode(resultPdf, "UTF-8");    
+                        sastResults.setSastPDFLink(pdfViewerUrl);
+                        log.info("pdfName >> "+pdfName);
+                        log.info("pdfViewerUrl >> "+pdfViewerUrl);
 
                         ArtifactPublishingResult result = artifactManager.publish(taskContext.getBuildLogger(),
                                 buildContext.getPlanResultKey(),
@@ -292,7 +311,7 @@ public class CheckmarxTask implements TaskType {
             if (scanSummary.hasErrors()) {
                 return taskResultBuilder.failed().build();
             }
-            ///////////////
+            ///////////////            
             return taskResultBuilder.success().build();
         } catch (InterruptedException e) {
             log.error("Interrupted exception: " + e.getMessage(), e);
@@ -368,5 +387,5 @@ public class CheckmarxTask implements TaskType {
         } catch (Exception ignored) {
         }
     }
-
+    
 }

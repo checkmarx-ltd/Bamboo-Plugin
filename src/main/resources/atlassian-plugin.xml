@@ -36,6 +36,14 @@
                 <result name="success" type="freemarker">/com/cx/plugin/cxGlobalConfig.ftl</result>
             </action>
 
+			<action name="pdfReport/viewCheckmarxPdf" class="com.cx.plugin.results.ViewCheckmarxPdfAction">
+            	<result name="success" type="stream">
+                	<param name="contentType">application/pdf</param>
+                	<param name="inputName">pdfStream</param>
+                	<param name="contentDisposition">${contentDisposition}</param>
+            	</result>
+        	</action>
+        
         </package>
     </xwork>
 
