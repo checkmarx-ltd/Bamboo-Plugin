@@ -139,26 +139,30 @@ public class CheckmarxTask implements TaskType {
             }
             ScanResults scanResults = config.getSynchronous() ? delegator.waitForScanResults() : delegator.getLatestScanResults();
 
+            ret.put(ScannerType.SAST, scanResults.getSastResults());
             /*
-             * Below Changes are done to avoid the vulnerabilities having 0 count and Not eploitable
+             * Below Changes are done to avoid the vulnerabilities having 0 count and Not exploitable
              * Below is the state and values/id for the vulnerability
              * To Verify= 0;Not Exploitable	= 1; confirmed = 2; urgent = 3;proposed = 4
              */
             
             SASTResults sastresult  = scanResults.getSastResults();
-            List<CxXMLResults.Query> queryResult = new ArrayList<>();
-            
-            for (CxXMLResults.Query query : sastresult.getQueryList()) {
-                query.getResult().removeIf(result -> "1".equals(result.getState()));
+            if( sastresult != null ) {
+                List<CxXMLResults.Query> queryResult = new ArrayList<>();
+                List<CxXMLResults.Query> sastQueryResult = sastresult.getQueryList();
+                for (CxXMLResults.Query query : sastQueryResult) {
+                    query.getResult().removeIf(result -> "1".equals(result.getState()));
 
-                if (query.getResult().isEmpty()) {
-                    log.info("skipping query as the result is 0 for :" + query.getName());
-                    continue;
+                    if (query.getResult().isEmpty()) {
+                        log.info("skipping query as the result is 0 for :" + query.getName());
+                        continue;
+                    }
+                    queryResult.add(query);
                 }
-                queryResult.add(query);
-            }            
-            sastresult.setQueryList(queryResult);
-            ret.put(ScannerType.SAST, sastresult);
+                sastresult.setQueryList(queryResult);
+                ret.getResults().remove(ScannerType.SAST);
+                ret.put(ScannerType.SAST, sastresult);
+            }
 
             if (config.isOsaEnabled()) {
                 ret.put(ScannerType.OSA, scanResults.getOsaResults());
