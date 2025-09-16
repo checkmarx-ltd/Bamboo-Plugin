@@ -134,9 +134,6 @@ public class CheckmarxTask implements TaskType {
 
             ScanResults createScanResults = delegator.initiateScan();
             results.add(createScanResults);
-            if (!config.getSynchronous()) {
-				log.info("Running in Asynchronous mode. Not waiting for scan to finish.");
-            }
             ScanResults scanResults = config.getSynchronous() ? delegator.waitForScanResults() : delegator.getLatestScanResults();
 
             ret.put(ScannerType.SAST, scanResults.getSastResults());
@@ -147,7 +144,7 @@ public class CheckmarxTask implements TaskType {
              */
             
             SASTResults sastresult  = scanResults.getSastResults();
-            if( sastresult != null ) {
+            if( sastresult != null && sastresult.getQueryList() != null && !sastresult.getQueryList().isEmpty()) {
                 List<CxXMLResults.Query> queryResult = new ArrayList<>();
                 List<CxXMLResults.Query> sastQueryResult = sastresult.getQueryList();
                 for (CxXMLResults.Query query : sastQueryResult) {
@@ -242,6 +239,7 @@ public class CheckmarxTask implements TaskType {
 			}
 
 			if (!config.getSynchronous()) {
+                log.info("Running in Asynchronous mode. Not waiting for scan to finish.");
 				if(config.isSastEnabled() || config.isOsaEnabled() || config.isAstScaEnabled()) {
 				if (generateAsyncReport) {
 					ScanResults finalScanResults = getFinalScanResults(results);
