@@ -2,7 +2,6 @@ package com.cx.plugin.results;
 
 import com.atlassian.bamboo.resultsummary.BuildResultsSummaryImpl;
 import com.atlassian.plugin.web.api.model.WebPanel;
-//import com.atlassian.plugin.web.model.WebPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,14 +24,14 @@ public class CxJobResultsWebPanel implements WebPanel {
         log.info("CxJobResultsWebPanel.getHtml() called");
         
         try {
-            BuildResultsSummaryImpl a = (BuildResultsSummaryImpl) map.get("resultSummary");
-            if (a == null) {
+            BuildResultsSummaryImpl buildResultsSummaryImpl = (BuildResultsSummaryImpl) map.get("resultSummary");
+            if (buildResultsSummaryImpl == null) {
                 log.warn("resultSummary is null");
                 return null;
             }
-            
-            Map<String, String> results = a.getCustomBuildData();
-            log.info("CustomBuildData keys: {}", results.keySet());
+
+            Map<String, String> results = buildResultsSummaryImpl.getCustomBuildData();
+            log.debug("CustomBuildData keys: {}", results.keySet());
             
             String htmlReport = results.get(HTML_REPORT);
             log.info("HTML_REPORT value: {}", htmlReport != null ? "Found (length=" + htmlReport.length() + ")" : "null");
