@@ -2,7 +2,6 @@ package com.cx.plugin.results;
 
 import com.atlassian.bamboo.chains.ChainResultsSummaryImpl;
 import com.atlassian.plugin.web.api.model.WebPanel;
-//import com.atlassian.plugin.web.model.WebPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,18 +24,18 @@ public class CxPlanResultsWebPanel implements WebPanel {
         log.info("CxPlanResultsWebPanel.getHtml() called");
         
         try {
-            ChainResultsSummaryImpl a = (ChainResultsSummaryImpl) map.get("resultSummary");
-            if (a == null) {
+            ChainResultsSummaryImpl chainResultsSummaryImpl = (ChainResultsSummaryImpl) map.get("resultSummary");
+            if (chainResultsSummaryImpl == null) {
                 log.warn("resultSummary is null");
                 return null;
             }
-            
-            if (a.getOrderedJobResultSummaries().isEmpty()) {
+
+            if (chainResultsSummaryImpl.getOrderedJobResultSummaries().isEmpty()) {
                 log.warn("No job result summaries found");
                 return null;
             }
-            
-            Map<String, String> results = a.getOrderedJobResultSummaries().get(0).getCustomBuildData();
+
+            Map<String, String> results = chainResultsSummaryImpl.getOrderedJobResultSummaries().get(0).getCustomBuildData();
             log.info("CustomBuildData keys: {}", results.keySet());
             
             String htmlReport = results.get(HTML_REPORT);

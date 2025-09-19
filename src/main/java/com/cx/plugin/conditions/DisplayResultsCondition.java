@@ -1,5 +1,10 @@
 package com.cx.plugin.conditions;
 
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Created by Galn on 07/06/2017.
  */
@@ -11,14 +16,8 @@ import com.atlassian.bamboo.resultsummary.AbstractResultsSummary;
 import com.atlassian.bamboo.task.TaskDefinition;
 import com.atlassian.bamboo.task.TaskIdentifier;
 import com.atlassian.plugin.web.Condition;
-import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.Map;
 
 public class DisplayResultsCondition implements Condition {
 
@@ -37,8 +36,8 @@ public class DisplayResultsCondition implements Condition {
         log.info("DisplayResultsCondition.shouldDisplay() called");
 
         try {
-            AbstractResultsSummary a = (AbstractResultsSummary) context.get("resultSummary");
-            if (a == null) {
+            AbstractResultsSummary abstractResultsSummary = (AbstractResultsSummary) context.get("resultSummary");
+            if (abstractResultsSummary == null) {
                 log.warn("resultSummary is null");
                 return false;
             }
@@ -49,7 +48,7 @@ public class DisplayResultsCondition implements Condition {
                 return false;
             }
 
-            String lifeCycleState = a.getLifeCycleState().toString();
+            String lifeCycleState = abstractResultsSummary.getLifeCycleState().toString();
             boolean buildFinished = "Finished".equals(lifeCycleState);
             log.info("Build lifecycle state: {}, buildFinished: {}", lifeCycleState, buildFinished);
 

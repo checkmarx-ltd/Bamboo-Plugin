@@ -143,7 +143,6 @@ public class CxGlobalConfig extends GlobalAdminAction {
         globalOsaMediumThreshold = adminConfig.getSystemProperty(GLOBAL_OSA_MEDIUM_THRESHOLD);
         globalOsaLowThreshold = adminConfig.getSystemProperty(GLOBAL_OSA_LOW_THRESHOLD);
         globalDenyProject = adminConfig.getSystemProperty(GLOBAL_DENY_PROJECT);
-        globalHideResults = adminConfig.getSystemProperty(GLOBAL_HIDE_RESULTS);
 
 
         return INPUT;

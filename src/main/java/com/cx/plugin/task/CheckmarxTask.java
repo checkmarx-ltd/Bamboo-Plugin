@@ -1,19 +1,35 @@
 package com.cx.plugin.task;
 
-import com.atlassian.bamboo.build.logger.BuildLogger;
-import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
+import static com.cx.plugin.utils.CxParam.CONNECTION_FAILED_COMPATIBILITY;
+import static com.cx.plugin.utils.CxParam.HTML_REPORT;
+import static com.cx.plugin.utils.CxPluginUtils.printBuildFailure;
+import static com.cx.plugin.utils.CxPluginUtils.printConfiguration;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.impl.StaticLoggerBinder;
+
 import com.atlassian.bamboo.Key;
 import com.atlassian.bamboo.build.artifact.ArtifactManager;
 import com.atlassian.bamboo.plan.artifact.ArtifactDefinitionContext;
 import com.atlassian.bamboo.plan.artifact.ArtifactDefinitionContextImpl;
 import com.atlassian.bamboo.plan.artifact.ArtifactPublishingResult;
-import com.atlassian.bamboo.task.*;
+import com.atlassian.bamboo.task.TaskContext;
+import com.atlassian.bamboo.task.TaskException;
+import com.atlassian.bamboo.task.TaskResult;
+import com.atlassian.bamboo.task.TaskResultBuilder;
+import com.atlassian.bamboo.task.TaskType;
 import com.atlassian.bamboo.v2.build.BuildContext;
 import com.atlassian.bamboo.variable.VariableDefinitionContext;
+import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.cx.plugin.configuration.CommonClientFactory;
 import com.cx.plugin.dto.BambooScanResults;
-//import com.cx.plugin.utils.CxAppender;
 import com.cx.plugin.utils.CxConfigHelper;
 import com.cx.plugin.utils.CxLoggerAdapter;
 import com.cx.plugin.utils.CxParam;
@@ -28,39 +44,18 @@ import com.cx.restclient.exception.CxClientException;
 import com.cx.restclient.sast.dto.CxXMLResults;
 import com.cx.restclient.sast.dto.SASTResults;
 import com.cx.restclient.sast.utils.LegacyClient;
-import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static com.cx.plugin.utils.CxParam.CONNECTION_FAILED_COMPATIBILITY;
-import static com.cx.plugin.utils.CxParam.HTML_REPORT;
-import static com.cx.plugin.utils.CxPluginUtils.printBuildFailure;
-import static com.cx.plugin.utils.CxPluginUtils.printConfiguration;
 
 
 
 public class CheckmarxTask implements TaskType {
 
     private final ArtifactManager artifactManager;
+    private static final String CX_ARM_WEBCLIENT_PATH = "cxarm/webclient/";
+
 
     public CheckmarxTask(@ComponentImport ArtifactManager artifactManager){
         this.artifactManager = artifactManager;
     }
-
-//    @Inject
-//    public CheckmarxTask(
-//            @ComponentImport ArtifactManager artifactManager,
-//            @ComponentImport BuildLogger buildLogger) {
-//        this.artifactManager = artifactManager;
-//        this.buildLogger = buildLogger;
-//    }
 
     @NotNull
     public TaskResult execute(@NotNull final TaskContext taskContext) throws TaskException {
@@ -172,13 +167,13 @@ public class CheckmarxTask implements TaskType {
                 String cxARMPolicyURL = config.getCxARMUrl();
                 String newCxARMPolicyURL;
 
-                if (cxARMPolicyURL.contains("CxPolicyManagement")) {
+                if (cxARMPolicyURL != null && cxARMPolicyURL.contains("CxPolicyManagement")) {
                     newCxARMPolicyURL = cxARMPolicyURL.split("CxPolicyManagement")[0] + "CxPolicyManagement";
                 } else {// If CxPolicyManagement is not in URL getting Ip and appending cxarm/webclient/
-                    if (!cxARMPolicyURL.endsWith("/")) {
+                    if (!(cxARMPolicyURL != null && cxARMPolicyURL.endsWith("/"))) {
                         cxARMPolicyURL += "/";
                     }
-                    newCxARMPolicyURL = cxARMPolicyURL + "cxarm/webclient/";
+                    newCxARMPolicyURL = cxARMPolicyURL + CX_ARM_WEBCLIENT_PATH;
                 }
                 config.setCxARMUrl(newCxARMPolicyURL);
                 delegator.printIsProjectViolated(scanResults);
