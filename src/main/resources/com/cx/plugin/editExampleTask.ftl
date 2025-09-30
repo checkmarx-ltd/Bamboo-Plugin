@@ -255,7 +255,7 @@
 	        [@ww.checkbox labelKey="cxScaResolverEnabled.label" name="globalCxScaResolverEnabled" id="globalCxScaResolverEnabled" toggle='true' disabled="true" /]
             [@ui.bambooSection dependsOn='globalCxScaResolverEnabled' showOn='true' cssClass="cx"]
                 [@ww.label labelKey="cxScaResolverPath.label" name="globalCxScaResolverPath" rows="3" cssClass="long-field"/]
-                [@ww.label labelKey="cxScaResolverAddParam.label" name="globalCxScaResolverAddParam" rows="3" cssClass="textarea autoresizing"/]
+                [@ww.label labelKey="cxScaResolverAddParam.label" name="globalCxScaResolverAddParam" rows="3" cssClass="long-field"/]
             [/@ui.bambooSection]
 		[/@ui.bambooSection]
 	[/@ui.bambooSection]

@@ -6,7 +6,8 @@ import com.atlassian.bamboo.configuration.GlobalAdminAction;
 import com.atlassian.spring.container.ContainerManager;
 import com.cx.plugin.utils.CxParam;
 import com.cx.plugin.utils.SASTUtils;
-import com.google.common.collect.ImmutableMap;
+//import com.google.common.collect.ImmutableMap;
+import org.apache.struts2.interceptor.parameter.StrutsParameter;
 import org.codehaus.plexus.util.StringUtils;
 
 import javax.annotation.Nonnull;
@@ -34,7 +35,7 @@ public class CxGlobalConfig extends GlobalAdminAction {
 
     private String globalcxScaUsername;
     private String globalcxScaPss;
-    
+
     private String globalFilterPatterns = DEFAULT_FILTER_PATTERNS;
     private String globalFolderExclusions;
     private String globalIsSynchronous;
@@ -55,17 +56,17 @@ public class CxGlobalConfig extends GlobalAdminAction {
     private String globalDenyProject;
     private String globalHideResults;
     private String globalEnableCriticalSeverity = OPTION_FALSE;
-    
+
     private String globalEnableDependencyScan = OPTION_FALSE;
 
-	private String globalDependencyScanType;
-	
-    private String globalDependencyScanFilterPatterns="";
-    
+    private String globalDependencyScanType;
+
+    private String globalDependencyScanFilterPatterns = "";
+
     private boolean criticalSupported = false;
 
-	private String globalDependencyScanfolderExclusions;
-	private String globalOsaArchiveIncludePatterns = DEFAULT_OSA_ARCHIVE_INCLUDE_PATTERNS;
+    private String globalDependencyScanfolderExclusions;
+    private String globalOsaArchiveIncludePatterns = DEFAULT_OSA_ARCHIVE_INCLUDE_PATTERNS;
     private String globalOsaInstallBeforeScan;
     private String globalcxScaAPIUrl = DEFAULT_CXSCA_API_URL;
     private String globalcxScaAccessControlServerUrl = DEFAULT_CXSCA_ACCESS_CONTROL_URL;
@@ -75,8 +76,8 @@ public class CxGlobalConfig extends GlobalAdminAction {
     private String globalCxScaResolverEnabled;
     private String globalCxScaResolverPath;
     private String globalCxScaResolverAddParam;
-  
-	private Map<String, String> globalDependencyScanTypeValues = ImmutableMap.of("OSA", "Use CxOSA dependency scanner", "AST_SCA", "Use CxSCA dependency scanner");
+
+    private Map<String, String> globalDependencyScanTypeValues = Map.of("OSA", "Use CxOSA dependency scanner", "AST_SCA", "Use CxSCA dependency scanner");
 
     @Override
     public String execute() {
@@ -86,31 +87,31 @@ public class CxGlobalConfig extends GlobalAdminAction {
         globalUsername = adminConfig.getSystemProperty(GLOBAL_USER_NAME);
         globalPss = adminConfig.getSystemProperty(GLOBAL_PWD);
         if (adminConfig.getSystemProperty(GLOBAL_ENABLE_DEPENDENCY_SCAN) != null
-				&& !(adminConfig.getSystemProperty(GLOBAL_ENABLE_DEPENDENCY_SCAN)).isEmpty()) {
-        globalEnableDependencyScan = adminConfig.getSystemProperty(GLOBAL_ENABLE_DEPENDENCY_SCAN);
+                && !(adminConfig.getSystemProperty(GLOBAL_ENABLE_DEPENDENCY_SCAN)).isEmpty()) {
+            globalEnableDependencyScan = adminConfig.getSystemProperty(GLOBAL_ENABLE_DEPENDENCY_SCAN);
         }
         globalDependencyScanType = adminConfig.getSystemProperty(GLOBAL_DEPENDENCY_SCAN_TYPE);
         globalDependencyScanFilterPatterns = adminConfig.getSystemProperty(GLOBAL_DEPENDENCY_SCAN_FILTER_PATTERNS);
         globalDependencyScanfolderExclusions = adminConfig.getSystemProperty(GLOBAL_DEPENDENCY_SCAN_FOLDER_EXCLUDE);
         if (adminConfig.getSystemProperty(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS) != null
-				&& !(adminConfig.getSystemProperty(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS)).isEmpty()) {
-        globalOsaArchiveIncludePatterns = adminConfig.getSystemProperty(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS);
+                && !(adminConfig.getSystemProperty(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS)).isEmpty()) {
+            globalOsaArchiveIncludePatterns = adminConfig.getSystemProperty(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS);
         }
         globalOsaInstallBeforeScan = adminConfig.getSystemProperty(GLOBAL_OSA_INSTALL_BEFORE_SCAN);
-		if (adminConfig.getSystemProperty(GLOBAL_CXSCA_API_URL) != null
-				&& !(adminConfig.getSystemProperty(GLOBAL_CXSCA_API_URL)).isEmpty()) {
-			globalcxScaAPIUrl = adminConfig.getSystemProperty(GLOBAL_CXSCA_API_URL);
-		}
-		if (adminConfig.getSystemProperty(GLOBAL_CXSCA_ACCESS_CONTROL_URL) != null
-				&& !(adminConfig.getSystemProperty(GLOBAL_CXSCA_ACCESS_CONTROL_URL)).isEmpty()) {
-        globalcxScaAccessControlServerUrl = adminConfig.getSystemProperty(GLOBAL_CXSCA_ACCESS_CONTROL_URL);
-		}
-		if (adminConfig.getSystemProperty(GLOBAL_CXSCA_WEBAPP_URL) != null
-				&& !(adminConfig.getSystemProperty(GLOBAL_CXSCA_WEBAPP_URL)).isEmpty()) {
-        globalcxScaWebAppUrl = adminConfig.getSystemProperty(GLOBAL_CXSCA_WEBAPP_URL);
-		}
+        if (adminConfig.getSystemProperty(GLOBAL_CXSCA_API_URL) != null
+                && !(adminConfig.getSystemProperty(GLOBAL_CXSCA_API_URL)).isEmpty()) {
+            globalcxScaAPIUrl = adminConfig.getSystemProperty(GLOBAL_CXSCA_API_URL);
+        }
+        if (adminConfig.getSystemProperty(GLOBAL_CXSCA_ACCESS_CONTROL_URL) != null
+                && !(adminConfig.getSystemProperty(GLOBAL_CXSCA_ACCESS_CONTROL_URL)).isEmpty()) {
+            globalcxScaAccessControlServerUrl = adminConfig.getSystemProperty(GLOBAL_CXSCA_ACCESS_CONTROL_URL);
+        }
+        if (adminConfig.getSystemProperty(GLOBAL_CXSCA_WEBAPP_URL) != null
+                && !(adminConfig.getSystemProperty(GLOBAL_CXSCA_WEBAPP_URL)).isEmpty()) {
+            globalcxScaWebAppUrl = adminConfig.getSystemProperty(GLOBAL_CXSCA_WEBAPP_URL);
+        }
         globalcxScaAccountName = adminConfig.getSystemProperty(GLOBAL_CXSCA_ACCOUNT_NAME);
-        						
+
         globalcxScaUsername = adminConfig.getSystemProperty(GLOBAL_CXSCA_USERNAME);
         globalcxScaPss = adminConfig.getSystemProperty(GLOBAL_CXSCA_PWD);
 
@@ -127,7 +128,7 @@ public class CxGlobalConfig extends GlobalAdminAction {
         globalEnableCriticalSeverity = adminConfig.getSystemProperty(GLOBAL_ENABLE_CRITICAL_SEVERITY);
         globalScanTimeoutInMinutes = adminConfig.getSystemProperty(GLOBAL_SCAN_TIMEOUT_IN_MINUTES);
         globalIsSynchronous = adminConfig.getSystemProperty(GLOBAL_IS_SYNCHRONOUS);
-        globalEnableProxy=adminConfig.getSystemProperty(GLOBAL_ENABLE_PROXY);
+        globalEnableProxy = adminConfig.getSystemProperty(GLOBAL_ENABLE_PROXY);
         globalHideResults = adminConfig.getSystemProperty(GLOBAL_HIDE_RESULTS);
         globalEnablePolicyViolations = adminConfig.getSystemProperty(GLOBAL_POLICY_VIOLATION_ENABLED);
         globalEnablePolicyViolationsSCA = adminConfig.getSystemProperty(GLOBAL_POLICY_VIOLATION_ENABLED_SCA);
@@ -142,8 +143,7 @@ public class CxGlobalConfig extends GlobalAdminAction {
         globalOsaMediumThreshold = adminConfig.getSystemProperty(GLOBAL_OSA_MEDIUM_THRESHOLD);
         globalOsaLowThreshold = adminConfig.getSystemProperty(GLOBAL_OSA_LOW_THRESHOLD);
         globalDenyProject = adminConfig.getSystemProperty(GLOBAL_DENY_PROJECT);
-        globalHideResults = adminConfig.getSystemProperty(GLOBAL_HIDE_RESULTS);
-                
+
 
         return INPUT;
     }
@@ -154,23 +154,23 @@ public class CxGlobalConfig extends GlobalAdminAction {
         final AdministrationConfiguration adminConfig = (AdministrationConfiguration) ContainerManager.getComponent(ADMINISTRATION_CONFIGURATION);
         error |= isScanTimeoutInvalid();
         if ("true".equals(globalEnableDependencyScan)) {
-        	if("AST_SCA".equals(globalDependencyScanType)){
-        		error |= isURLInvalid(globalcxScaAPIUrl, GLOBAL_CXSCA_API_URL);
-        		error |= isURLInvalid(globalcxScaAccessControlServerUrl, GLOBAL_CXSCA_ACCESS_CONTROL_URL);
-        		error |= isURLInvalid(globalcxScaWebAppUrl, GLOBAL_CXSCA_WEBAPP_URL);
-        	}
+            if ("AST_SCA".equals(globalDependencyScanType)) {
+                error |= isURLInvalid(globalcxScaAPIUrl, GLOBAL_CXSCA_API_URL);
+                error |= isURLInvalid(globalcxScaAccessControlServerUrl, GLOBAL_CXSCA_ACCESS_CONTROL_URL);
+                error |= isURLInvalid(globalcxScaWebAppUrl, GLOBAL_CXSCA_WEBAPP_URL);
+            }
         }
         if ("true".equals(globalIsSynchronous)) {
             if ("true".equals(globalThresholdsEnabled)) {
-                
+
                 error |= isNegative(getGlobalCriticalThreshold(), GLOBAL_CRITICAL_THRESHOLD);
                 error |= isNegative(getGlobalHighThreshold(), GLOBAL_HIGH_THRESHOLD);
                 error |= isNegative(getGlobalMediumThreshold(), GLOBAL_MEDIUM_THRESHOLD);
                 error |= isNegative(getGlobalLowThreshold(), GLOBAL_LOW_THRESHOLD);
-                
+
             }
             if ("true".equals(globalOsaThresholdsEnabled)) {
-            	error |= isNegative(getGlobalOsaCriticalThreshold(), GLOBAL_OSA_CRITICAL_THRESHOLD);
+                error |= isNegative(getGlobalOsaCriticalThreshold(), GLOBAL_OSA_CRITICAL_THRESHOLD);
                 error |= isNegative(getGlobalOsaHighThreshold(), GLOBAL_OSA_HIGH_THRESHOLD);
                 error |= isNegative(getGlobalOsaMediumThreshold(), GLOBAL_OSA_MEDIUM_THRESHOLD);
                 error |= isNegative(getGlobalOsaLowThreshold(), GLOBAL_OSA_LOW_THRESHOLD);
@@ -182,19 +182,19 @@ public class CxGlobalConfig extends GlobalAdminAction {
         adminConfig.setSystemProperty(GLOBAL_SERVER_URL, globalServerUrl);
         adminConfig.setSystemProperty(GLOBAL_USER_NAME, globalUsername);
         adminConfig.setSystemProperty(GLOBAL_PWD, encrypt(globalPss));
-        
+
         adminConfig.setSystemProperty(GLOBAL_ENABLE_DEPENDENCY_SCAN, globalEnableDependencyScan);
         adminConfig.setSystemProperty(GLOBAL_DEPENDENCY_SCAN_TYPE, globalDependencyScanType);
         adminConfig.setSystemProperty(GLOBAL_DEPENDENCY_SCAN_FILTER_PATTERNS, globalDependencyScanFilterPatterns);
         adminConfig.setSystemProperty(GLOBAL_DEPENDENCY_SCAN_FOLDER_EXCLUDE, globalDependencyScanfolderExclusions);
-        
+
         adminConfig.setSystemProperty(GLOBAL_OSA_ARCHIVE_INCLUDE_PATTERNS, globalOsaArchiveIncludePatterns);
         adminConfig.setSystemProperty(GLOBAL_OSA_INSTALL_BEFORE_SCAN, globalOsaInstallBeforeScan);
         adminConfig.setSystemProperty(GLOBAL_CXSCA_API_URL, globalcxScaAPIUrl);
         adminConfig.setSystemProperty(GLOBAL_CXSCA_ACCESS_CONTROL_URL, globalcxScaAccessControlServerUrl);
         adminConfig.setSystemProperty(GLOBAL_CXSCA_WEBAPP_URL, globalcxScaWebAppUrl);
         adminConfig.setSystemProperty(GLOBAL_CXSCA_ACCOUNT_NAME, globalcxScaAccountName);
-        
+
         adminConfig.setSystemProperty(GLOBAL_CXSCA_USERNAME, globalcxScaUsername);
         adminConfig.setSystemProperty(GLOBAL_CXSCA_PWD, encrypt(globalcxScaPss));
 
@@ -214,7 +214,7 @@ public class CxGlobalConfig extends GlobalAdminAction {
             globalEnablePolicyViolations = null;
             globalEnablePolicyViolationsSCA = null;
         }
-        
+
         adminConfig.setSystemProperty(GLOBAL_POLICY_VIOLATION_ENABLED, globalEnablePolicyViolations);
         adminConfig.setSystemProperty(GLOBAL_POLICY_VIOLATION_ENABLED_SCA, globalEnablePolicyViolationsSCA);
         adminConfig.setSystemProperty(GLOBAL_THRESHOLDS_ENABLED, globalThresholdsEnabled);
@@ -229,45 +229,44 @@ public class CxGlobalConfig extends GlobalAdminAction {
         adminConfig.setSystemProperty(GLOBAL_DENY_PROJECT, globalDenyProject);
         adminConfig.setSystemProperty(GLOBAL_HIDE_RESULTS, globalHideResults);
         if ("true".equals(globalIsSynchronous)) {
-        	if ("true".equals(globalThresholdsEnabled)) {
-        		Double version=9.0; 
-        		//invoke api to fetch SAST version
-        		try {
-        			String sastVersion = SASTUtils.loginToServer(new URL(globalServerUrl),globalUsername,decrypt(globalPss),globalEnableProxy);        			
-        			String[] sastVersionSplit = sastVersion.split("\\.");        			
-        			version = Double.parseDouble(sastVersionSplit[0]+"."+sastVersionSplit[1]);
-        		} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-        		if(version >= 9.7) {
-        			if( OPTION_FALSE.equalsIgnoreCase(globalEnableCriticalSeverity)){
-        				//This condition represents version of SAST is changed from SAST < 9.7 to SAST >=9.7
-        				
-        			//following property will make critical threshold visible in UI
-                	globalEnableCriticalSeverity = OPTION_TRUE;
-                	//reset the critical threshold value to empty
-                	globalCriticalThreshold = "";
-                	// following message is displayed on UI to make user aware of the critical threshold being supported by this version of SAST.
-                	addActionError("The configured SAST version supports Critical severity. Critical threshold can also be configured.");
-        			} else {
-        				//This condition represents version of SAST remains same as before i.e SAST >=9.7. Thus no change is needed.
-        			}
-                }else {
-                	if( OPTION_TRUE.equalsIgnoreCase(globalEnableCriticalSeverity)){
-                		//This condition represents version of SAST is changed from SAST >= 9.7 to SAST < 9.7
-                	
-                	//if SAST version is prior to 9.7 then do not show critical threshold on UI
-                	globalEnableCriticalSeverity = OPTION_FALSE;
-                	//reset the critical threshold value to empty
-                	globalCriticalThreshold = "";
-                	// following message is displayed on UI to make user aware of the critical threshold is not supported by this version of SAST.
-                	addActionError("The configured SAST version does not support Critical severity. Critical threshold will not be applicable.");
-                	}
-                	else {
-                		//This condition represents version of SAST remains same as before i.e SAST < 9.7. Thus no change is needed.
-                	}
-                }            	
+            if ("true".equals(globalThresholdsEnabled)) {
+                Double version = 9.0;
+                //invoke api to fetch SAST version
+                try {
+                    String sastVersion = SASTUtils.loginToServer(new URL(globalServerUrl), globalUsername, decrypt(globalPss), globalEnableProxy);
+                    String[] sastVersionSplit = sastVersion.split("\\.");
+                    version = Double.parseDouble(sastVersionSplit[0] + "." + sastVersionSplit[1]);
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                if (version >= 9.7) {
+                    if (OPTION_FALSE.equalsIgnoreCase(globalEnableCriticalSeverity)) {
+                        //This condition represents version of SAST is changed from SAST < 9.7 to SAST >=9.7
+
+                        //following property will make critical threshold visible in UI
+                        globalEnableCriticalSeverity = OPTION_TRUE;
+                        //reset the critical threshold value to empty
+                        globalCriticalThreshold = "";
+                        // following message is displayed on UI to make user aware of the critical threshold being supported by this version of SAST.
+                        addActionError("The configured SAST version supports Critical severity. Critical threshold can also be configured.");
+                    } else {
+                        //This condition represents version of SAST remains same as before i.e SAST >=9.7. Thus no change is needed.
+                    }
+                } else {
+                    if (OPTION_TRUE.equalsIgnoreCase(globalEnableCriticalSeverity)) {
+                        //This condition represents version of SAST is changed from SAST >= 9.7 to SAST < 9.7
+
+                        //if SAST version is prior to 9.7 then do not show critical threshold on UI
+                        globalEnableCriticalSeverity = OPTION_FALSE;
+                        //reset the critical threshold value to empty
+                        globalCriticalThreshold = "";
+                        // following message is displayed on UI to make user aware of the critical threshold is not supported by this version of SAST.
+                        addActionError("The configured SAST version does not support Critical severity. Critical threshold will not be applicable.");
+                    } else {
+                        //This condition represents version of SAST remains same as before i.e SAST < 9.7. Thus no change is needed.
+                    }
+                }
             }
         }
         adminConfig.setSystemProperty(GLOBAL_CRITICAL_THRESHOLD, globalCriticalThreshold);
@@ -278,7 +277,7 @@ public class CxGlobalConfig extends GlobalAdminAction {
         addActionMessage(getText("cxDefaultConfigSuccess.label"));
         return SUCCESS;
     }
-    
+
     private boolean isURLInvalid(final String value, final String fieldName) {
         boolean ret = false;
         if (!StringUtils.isEmpty(value)) {
@@ -336,312 +335,394 @@ public class CxGlobalConfig extends GlobalAdminAction {
 
 
     /*************** Setters & Getters  ****************************/
+    @StrutsParameter
     public String getGlobalServerUrl() {
         return globalServerUrl;
     }
 
+    @StrutsParameter
     public void setGlobalServerUrl(String globalServerUrl) {
         this.globalServerUrl = globalServerUrl;
     }
 
+    @StrutsParameter
     public String getGlobalUsername() {
         return globalUsername;
     }
 
+    @StrutsParameter
     public void setGlobalUsername(String globalUsername) {
         this.globalUsername = globalUsername.trim();
     }
 
+    @StrutsParameter
     public String getGlobalPss() {
         return globalPss;
     }
 
+    @StrutsParameter
     public void setGlobalPss(String globalPss) {
         this.globalPss = globalPss;
     }
 
+    @StrutsParameter
     public String getGlobalcxScaUsername() {
-		return globalcxScaUsername;
-	}
+        return globalcxScaUsername;
+    }
 
-	public void setGlobalcxScaUsername(String globalcxScaUsername) {
-		this.globalcxScaUsername = globalcxScaUsername;
-	}
+    @StrutsParameter
+    public void setGlobalcxScaUsername(String globalcxScaUsername) {
+        this.globalcxScaUsername = globalcxScaUsername;
+    }
 
-	public String getGlobalcxScaPss() {
-		return globalcxScaPss;
-	}
+    @StrutsParameter
+    public String getGlobalcxScaPss() {
+        return globalcxScaPss;
+    }
 
-	public void setGlobalcxScaPss(String globalcxScaPss) {
-		this.globalcxScaPss = globalcxScaPss;
-	}
+    @StrutsParameter
+    public void setGlobalcxScaPss(String globalcxScaPss) {
+        this.globalcxScaPss = globalcxScaPss;
+    }
 
-	public String getGlobalFilterPatterns() {
+    @StrutsParameter
+    public String getGlobalFilterPatterns() {
         return globalFilterPatterns;
     }
 
+    @StrutsParameter
     public void setGlobalFilterPatterns(String globalFilterPatterns) {
         this.globalFilterPatterns = globalFilterPatterns;
     }
 
+    @StrutsParameter
     public String getGlobalFolderExclusions() {
         return globalFolderExclusions;
     }
 
+    @StrutsParameter
     public void setGlobalFolderExclusions(String globalFolderExclusions) {
         this.globalFolderExclusions = globalFolderExclusions;
     }
 
+    @StrutsParameter
     public String getGlobalIsSynchronous() {
         return globalIsSynchronous;
     }
-    
 
+    @StrutsParameter
     public String getGlobalEnableProxy() {
-		return globalEnableProxy;
-	}
+        return globalEnableProxy;
+    }
 
-	public void setGlobalEnableProxy(String globalEnableProxy) {
-		this.globalEnableProxy = globalEnableProxy;
-	}
+    @StrutsParameter
+    public void setGlobalEnableProxy(String globalEnableProxy) {
+        this.globalEnableProxy = globalEnableProxy;
+    }
 
-	public String getGlobalEnablePolicyViolations() {
+    @StrutsParameter
+    public String getGlobalEnablePolicyViolations() {
         return globalEnablePolicyViolations;
     }
 
+    @StrutsParameter
     public void setGlobalEnablePolicyViolations(String globalEnablePolicyViolations) {
         this.globalEnablePolicyViolations = globalEnablePolicyViolations;
     }
-    
+
+    @StrutsParameter
     public String getGlobalEnablePolicyViolationsSCA() {
         return globalEnablePolicyViolationsSCA;
     }
 
+    @StrutsParameter
     public void setGlobalEnablePolicyViolationsSCA(String globalEnablePolicyViolationsSCA) {
         this.globalEnablePolicyViolationsSCA = globalEnablePolicyViolationsSCA;
     }
 
+    @StrutsParameter
     public void setGlobalIsSynchronous(String globalIsSynchronous) {
         this.globalIsSynchronous = globalIsSynchronous;
     }
 
+    @StrutsParameter
     public String getGlobalScanTimeoutInMinutes() {
         return globalScanTimeoutInMinutes;
     }
 
+    @StrutsParameter
     public void setGlobalScanTimeoutInMinutes(String globalScanTimeoutInMinutes) {
         this.globalScanTimeoutInMinutes = globalScanTimeoutInMinutes.trim();
     }
 
+    @StrutsParameter
     public String getGlobalThresholdsEnabled() {
         return globalThresholdsEnabled;
     }
 
+    @StrutsParameter
     public void setGlobalThresholdsEnabled(String globalThresholdsEnabled) {
         this.globalThresholdsEnabled = globalThresholdsEnabled;
     }
-    
+
+    @StrutsParameter
     public String getGlobalCriticalThreshold() {
         return globalCriticalThreshold;
     }
 
+    @StrutsParameter
     public void setGlobalCriticalThreshold(String globalCriticalThreshold) {
         this.globalCriticalThreshold = globalCriticalThreshold;
     }
 
+    @StrutsParameter
     public String getGlobalHighThreshold() {
         return globalHighThreshold;
     }
 
+    @StrutsParameter
     public void setGlobalHighThreshold(String globalHighThreshold) {
         this.globalHighThreshold = globalHighThreshold;
     }
 
+    @StrutsParameter
     public String getGlobalMediumThreshold() {
         return globalMediumThreshold;
     }
 
+    @StrutsParameter
     public void setGlobalMediumThreshold(String globalMediumThreshold) {
         this.globalMediumThreshold = globalMediumThreshold;
     }
 
+    @StrutsParameter
     public String getGlobalLowThreshold() {
         return globalLowThreshold;
     }
 
+    @StrutsParameter
     public void setGlobalLowThreshold(String globalLowThreshold) {
         this.globalLowThreshold = globalLowThreshold;
     }
 
+    @StrutsParameter
     public String getGlobalOsaThresholdsEnabled() {
         return globalOsaThresholdsEnabled;
     }
 
+    @StrutsParameter
     public void setGlobalOsaThresholdsEnabled(String globalOsaThresholdsEnabled) {
         this.globalOsaThresholdsEnabled = globalOsaThresholdsEnabled;
     }
-    
+
+    @StrutsParameter
     public String getGlobalOsaCriticalThreshold() {
         return globalOsaCriticalThreshold;
     }
 
+    @StrutsParameter
     public void setGlobalOsaCriticalThreshold(String globalOsaCriticalThreshold) {
         this.globalOsaCriticalThreshold = globalOsaCriticalThreshold;
     }
 
+    @StrutsParameter
     public String getGlobalOsaHighThreshold() {
         return globalOsaHighThreshold;
     }
 
+    @StrutsParameter
     public void setGlobalOsaHighThreshold(String globalOsaHighThreshold) {
         this.globalOsaHighThreshold = globalOsaHighThreshold;
     }
 
+    @StrutsParameter
     public String getGlobalOsaMediumThreshold() {
         return globalOsaMediumThreshold;
     }
 
+    @StrutsParameter
     public void setGlobalOsaMediumThreshold(String globalOsaMediumThreshold) {
         this.globalOsaMediumThreshold = globalOsaMediumThreshold;
     }
 
+    @StrutsParameter
     public String getGlobalOsaLowThreshold() {
         return globalOsaLowThreshold;
     }
 
+    @StrutsParameter
     public void setGlobalOsaLowThreshold(String globalOsaLowThreshold) {
         this.globalOsaLowThreshold = globalOsaLowThreshold;
     }
 
+    @StrutsParameter
     public String getGlobalDenyProject() {
         return globalDenyProject;
     }
 
+    @StrutsParameter
     public void setGlobalDenyProject(String globalDenyProject) {
         this.globalDenyProject = globalDenyProject;
     }
 
+    @StrutsParameter
     public String getGlobalHideResults() {
         return globalHideResults;
     }
 
+    @StrutsParameter
     public void setGlobalHideResults(String globalHideResults) {
         this.globalHideResults = globalHideResults;
     }
-    
+
+    @StrutsParameter
     public String getGlobalEnableCriticalSeverity() {
-		return globalEnableCriticalSeverity;
-	}
+        return globalEnableCriticalSeverity;
+    }
 
-	public void setGlobalEnableCriticalSeverity(String globalEnableCriticalSeverity) {
-		this.globalEnableCriticalSeverity = globalEnableCriticalSeverity;
-	}
-    
+    @StrutsParameter
+    public void setGlobalEnableCriticalSeverity(String globalEnableCriticalSeverity) {
+        this.globalEnableCriticalSeverity = globalEnableCriticalSeverity;
+    }
 
-	public String getGlobalEnableDependencyScan() {
-		return globalEnableDependencyScan;
-	}
+    @StrutsParameter
+    public String getGlobalEnableDependencyScan() {
+        return globalEnableDependencyScan;
+    }
 
-	public void setGlobalEnableDependencyScan(String globalEnableDependencyScan) {
-		this.globalEnableDependencyScan = globalEnableDependencyScan;
-	}
+    @StrutsParameter
+    public void setGlobalEnableDependencyScan(String globalEnableDependencyScan) {
+        this.globalEnableDependencyScan = globalEnableDependencyScan;
+    }
 
-	public String getGlobalDependencyScanType() {
-		return globalDependencyScanType;
-	}
+    @StrutsParameter
+    public String getGlobalDependencyScanType() {
+        return globalDependencyScanType;
+    }
 
-	public void setGlobalDependencyScanType(String globalDependencyScanType) {
-		this.globalDependencyScanType = globalDependencyScanType;
-	}
+    @StrutsParameter
+    public void setGlobalDependencyScanType(String globalDependencyScanType) {
+        this.globalDependencyScanType = globalDependencyScanType;
+    }
 
-	public String getGlobalDependencyScanFilterPatterns() {
-		return globalDependencyScanFilterPatterns;
-	}
+    @StrutsParameter
+    public String getGlobalDependencyScanFilterPatterns() {
+        return globalDependencyScanFilterPatterns;
+    }
 
-	public void setGlobalDependencyScanFilterPatterns(String globalDependencyScanFilterPatterns) {
-		this.globalDependencyScanFilterPatterns = globalDependencyScanFilterPatterns;
-	}
+    @StrutsParameter
+    public void setGlobalDependencyScanFilterPatterns(String globalDependencyScanFilterPatterns) {
+        this.globalDependencyScanFilterPatterns = globalDependencyScanFilterPatterns;
+    }
 
-	public String getGlobalDependencyScanfolderExclusions() {
-		return globalDependencyScanfolderExclusions;
-	}
+    @StrutsParameter
+    public String getGlobalDependencyScanfolderExclusions() {
+        return globalDependencyScanfolderExclusions;
+    }
 
-	public void setGlobalDependencyScanfolderExclusions(String globalDependencyScanfolderExclusions) {
-		this.globalDependencyScanfolderExclusions = globalDependencyScanfolderExclusions;
-	}
+    @StrutsParameter
+    public void setGlobalDependencyScanfolderExclusions(String globalDependencyScanfolderExclusions) {
+        this.globalDependencyScanfolderExclusions = globalDependencyScanfolderExclusions;
+    }
 
-	public String getGlobalOsaArchiveIncludePatterns() {
-		return globalOsaArchiveIncludePatterns;
-	}
+    @StrutsParameter
+    public String getGlobalOsaArchiveIncludePatterns() {
+        return globalOsaArchiveIncludePatterns;
+    }
 
-	public void setGlobalOsaArchiveIncludePatterns(String globalOsaArchiveIncludePatterns) {
-		this.globalOsaArchiveIncludePatterns = globalOsaArchiveIncludePatterns;
-	}
+    @StrutsParameter
+    public void setGlobalOsaArchiveIncludePatterns(String globalOsaArchiveIncludePatterns) {
+        this.globalOsaArchiveIncludePatterns = globalOsaArchiveIncludePatterns;
+    }
 
-	public String getGlobalOsaInstallBeforeScan() {
-		return globalOsaInstallBeforeScan;
-	}
+    @StrutsParameter
+    public String getGlobalOsaInstallBeforeScan() {
+        return globalOsaInstallBeforeScan;
+    }
 
-	public void setGlobalOsaInstallBeforeScan(String globalOsaInstallBeforeScan) {
-		this.globalOsaInstallBeforeScan = globalOsaInstallBeforeScan;
-	}
+    @StrutsParameter
+    public void setGlobalOsaInstallBeforeScan(String globalOsaInstallBeforeScan) {
+        this.globalOsaInstallBeforeScan = globalOsaInstallBeforeScan;
+    }
 
-	public String getGlobalcxScaAPIUrl() {
-		return globalcxScaAPIUrl;
-	}
+    @StrutsParameter
+    public String getGlobalcxScaAPIUrl() {
+        return globalcxScaAPIUrl;
+    }
 
-	public void setGlobalcxScaAPIUrl(String globalcxScaAPIUrl) {
-		this.globalcxScaAPIUrl = globalcxScaAPIUrl;
-	}
+    @StrutsParameter
+    public void setGlobalcxScaAPIUrl(String globalcxScaAPIUrl) {
+        this.globalcxScaAPIUrl = globalcxScaAPIUrl;
+    }
 
-	public String getGlobalcxScaAccessControlServerUrl() {
-		return globalcxScaAccessControlServerUrl;
-	}
+    @StrutsParameter
+    public String getGlobalcxScaAccessControlServerUrl() {
+        return globalcxScaAccessControlServerUrl;
+    }
 
-	public void setGlobalcxScaAccessControlServerUrl(String globalcxScaAccessControlServerUrl) {
-		this.globalcxScaAccessControlServerUrl = globalcxScaAccessControlServerUrl;
-	}
+    @StrutsParameter
+    public void setGlobalcxScaAccessControlServerUrl(String globalcxScaAccessControlServerUrl) {
+        this.globalcxScaAccessControlServerUrl = globalcxScaAccessControlServerUrl;
+    }
 
-	public String getGlobalcxScaWebAppUrl() {
-		return globalcxScaWebAppUrl;
-	}
+    @StrutsParameter
+    public String getGlobalcxScaWebAppUrl() {
+        return globalcxScaWebAppUrl;
+    }
 
-	public void setGlobalcxScaWebAppUrl(String globalcxScaWebAppUrl) {
-		this.globalcxScaWebAppUrl = globalcxScaWebAppUrl;
-	}
+    @StrutsParameter
+    public void setGlobalcxScaWebAppUrl(String globalcxScaWebAppUrl) {
+        this.globalcxScaWebAppUrl = globalcxScaWebAppUrl;
+    }
 
-	public String getGlobalcxScaAccountName() {
-		return globalcxScaAccountName;
-	}
+    @StrutsParameter
+    public String getGlobalcxScaAccountName() {
+        return globalcxScaAccountName;
+    }
 
-	public void setGlobalcxScaAccountName(String globalcxScaAccountName) {
-		this.globalcxScaAccountName = globalcxScaAccountName;
-	}
+    @StrutsParameter
+    public void setGlobalcxScaAccountName(String globalcxScaAccountName) {
+        this.globalcxScaAccountName = globalcxScaAccountName;
+    }
 
-    public String getGlobalCxScaResolverEnabled() { return globalCxScaResolverEnabled; }
+    @StrutsParameter
+    public String getGlobalCxScaResolverEnabled() {
+        return globalCxScaResolverEnabled;
+    }
 
+    @StrutsParameter
     public void setGlobalCxScaResolverEnabled(String globalCxScaResolverEnabled) {
         this.globalCxScaResolverEnabled = globalCxScaResolverEnabled;
     }
 
-    public String getGlobalCxScaResolverPath() { return globalCxScaResolverPath; }
+    @StrutsParameter
+    public String getGlobalCxScaResolverPath() {
+        return globalCxScaResolverPath;
+    }
 
+    @StrutsParameter
     public void setGlobalCxScaResolverPath(String globalCxScaResolverPath) {
         this.globalCxScaResolverPath = globalCxScaResolverPath;
     }
 
-    public String getGlobalCxScaResolverAddParam() { return globalCxScaResolverAddParam; }
+    @StrutsParameter
+    public String getGlobalCxScaResolverAddParam() {
+        return globalCxScaResolverAddParam;
+    }
 
+    @StrutsParameter
     public void setGlobalCxScaResolverAddParam(String globalCxScaResolverAddParam) {
         this.globalCxScaResolverAddParam = globalCxScaResolverAddParam;
     }
 
-	public Map<String, String> getGlobalDependencyScanTypeValues() {
-		return globalDependencyScanTypeValues;
-	}
+    @StrutsParameter
+    public Map<String, String> getGlobalDependencyScanTypeValues() {
+        return globalDependencyScanTypeValues;
+    }
 
-	public void setGlobalDependencyScanTypeValues(Map<String, String> globalDependencyScanTypeValues) {
-		this.globalDependencyScanTypeValues = globalDependencyScanTypeValues;
-	}
+    @StrutsParameter
+    public void setGlobalDependencyScanTypeValues(Map<String, String> globalDependencyScanTypeValues) {
+        this.globalDependencyScanTypeValues = globalDependencyScanTypeValues;
+    }
 
 }
