@@ -123,7 +123,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <common.client.version>2025.3.27</common.client.version>
+        <common.client.version>2025.3.31</common.client.version>
 
         <slf4jVersion>1.7.16</slf4jVersion>
 
