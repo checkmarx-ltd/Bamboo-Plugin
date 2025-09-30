@@ -67,7 +67,6 @@ public class DisplayResultsCondition implements Condition {
     }
 
     public static boolean hasCxTask(ImmutablePlan plan, Predicate<TaskDefinition> predicate) {
-        Logger log = LoggerFactory.getLogger(DisplayResultsCondition.class);
         log.info("Checking for Checkmarx task in plan: {}", plan.getKey());
 
         if (plan instanceof ImmutableChain) {
@@ -104,7 +103,7 @@ public class DisplayResultsCondition implements Condition {
     private static class IsCxTaskPredicate<TASKDEF extends TaskIdentifier> implements Predicate<TASKDEF> {
 
         public boolean apply(@javax.annotation.Nullable TASKDEF taskIdentifier) {
-            Logger log = LoggerFactory.getLogger(DisplayResultsCondition.class);
+            Logger log = LoggerFactory.getLogger(IsCxTaskPredicate.class);
             if (taskIdentifier == null) {
                 log.warn("Task identifier is null");
                 return false;
