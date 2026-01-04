@@ -413,7 +413,7 @@
         <dependency>
             <groupId>org.mozilla</groupId>
             <artifactId>rhino</artifactId>
-            <version>1.7.14</version>
+            <version>1.7.14.1</version>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
@@ -428,7 +428,7 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-codec-http</artifactId>
-            <version>4.1.125.Final</version>
+            <version>4.1.129.Final</version>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
@@ -438,7 +438,7 @@
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-web</artifactId>
-            <version>4.3.8</version>
+            <version>4.5.22</version>
             <exclusions>
                 <exclusion>
                     <groupId>io.netty</groupId>
@@ -539,7 +539,7 @@
         <dependency>
             <groupId>org.apache.struts</groupId>
             <artifactId>struts2-core</artifactId>
-            <version>6.6.0-atlassian-1</version>
+            <version>6.8.0</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
