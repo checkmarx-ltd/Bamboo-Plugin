@@ -485,7 +485,7 @@ public class AgentTaskConfigurator extends AbstractTaskConfigurator {
     //save task configuration
     @NotNull
     @Override
-    public Map<String, String> generateTaskConfigMap(@NotNull final ActionParametersMap params, @javax.annotation.Nullable final TaskDefinition previousTaskDefinition) {
+    public Map<String, String> generateTaskConfigMap(@NotNull final ActionParametersMap params, @jakarta.annotation.Nullable final TaskDefinition previousTaskDefinition) {
     	Map<String, String> config = super.generateTaskConfigMap(params, previousTaskDefinition);
         config = generateCredentialsFields(params, config);
         config.put(ENABLE_SAST_SCAN, params.getString(ENABLE_SAST_SCAN));
