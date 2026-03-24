@@ -10,7 +10,7 @@ import com.cx.plugin.utils.SASTUtils;
 import org.apache.struts2.interceptor.parameter.StrutsParameter;
 import org.codehaus.plexus.util.StringUtils;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;

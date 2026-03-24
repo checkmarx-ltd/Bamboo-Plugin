@@ -102,7 +102,7 @@ public class DisplayResultsCondition implements Condition {
 
     private static class IsCxTaskPredicate<TASKDEF extends TaskIdentifier> implements Predicate<TASKDEF> {
 
-        public boolean apply(@javax.annotation.Nullable TASKDEF taskIdentifier) {
+        public boolean apply(@jakarta.annotation.Nullable TASKDEF taskIdentifier) {
             Logger log = LoggerFactory.getLogger(IsCxTaskPredicate.class);
             if (taskIdentifier == null) {
                 log.warn("Task identifier is null");
@@ -116,7 +116,7 @@ public class DisplayResultsCondition implements Condition {
             return matches;
         }
 
-        public boolean test(@javax.annotation.Nullable TASKDEF input) {
+        public boolean test(@jakarta.annotation.Nullable TASKDEF input) {
             return this.apply(input);
         }
 
