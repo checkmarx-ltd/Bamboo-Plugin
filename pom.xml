@@ -5,7 +5,7 @@
     <groupId>com.cx</groupId>
     <artifactId>checkmarx-bamboo-plugin</artifactId>
 
-    <version>2026.2.1</version>
+    <version>2026.3.1</version>
 
     <organization>
         <name>Checkmarx LTD</name>
@@ -123,11 +123,40 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <common.client.version>2025.4.40</common.client.version>
+        <common.client.version>2026.2.32</common.client.version>
 
         <slf4jVersion>1.7.16</slf4jVersion>
 
+        <netty.version>4.1.137.Final</netty.version>
+        <activemq.version>5.19.7</activemq.version>
+        <jackson.version>2.18.9</jackson.version>
+        <vertx.version>4.5.27</vertx.version>
+        <bouncycastle.version>1.84</bouncycastle.version>
+        <jsoup.version>1.23.1</jsoup.version>
+
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-bom</artifactId>
+                <version>${netty.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk18on</artifactId>
+                <version>${bouncycastle.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>${jsoup.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
 
@@ -224,7 +253,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-cbor</artifactId>
-            <version>2.18.6</version>
+            <version>${jackson.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.fasterxml.jackson.core</groupId>
@@ -235,7 +264,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.18.6</version>
+            <version>${jackson.version}</version>
         </dependency>  
         <dependency>
             <groupId>org.springframework</groupId>
@@ -252,7 +281,7 @@
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-broker</artifactId>
-            <version>5.19.5</version>
+            <version>${activemq.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.fasterxml.jackson.core</groupId>
@@ -271,17 +300,17 @@
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-client</artifactId>
-            <version>5.19.5</version>
+            <version>${activemq.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-openwire-legacy</artifactId>
-            <version>5.19.5</version>
+            <version>${activemq.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.18.6</version>
+            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.parsers</groupId>
@@ -297,7 +326,7 @@
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk14</artifactId>
-            <version>1.78</version>
+            <version>${bouncycastle.version}</version>
         </dependency>
         <dependency>
             <groupId>xalan</groupId>
@@ -418,7 +447,7 @@
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
-            <version>4.5.24</version>
+            <version>${vertx.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.junrar</groupId>
@@ -428,17 +457,17 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-codec-http</artifactId>
-            <version>4.1.132.Final</version>
+            <version>${netty.version}</version>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-codec-http2</artifactId>
-            <version>4.1.132.Final</version>
+            <version>${netty.version}</version>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-web</artifactId>
-            <version>4.5.22</version>
+            <version>${vertx.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>io.netty</groupId>
@@ -506,12 +535,12 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-common</artifactId>
-            <version>4.1.132.Final</version>
+            <version>${netty.version}</version>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-handler</artifactId>
-            <version>4.1.132.Final</version>
+            <version>${netty.version}</version>
         </dependency>
         <dependency>
             <groupId>org.iq80.snappy</groupId>
